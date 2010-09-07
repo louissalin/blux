@@ -42,11 +42,6 @@ describe BlogManager do
 		it "should read the editor from the config file" do
 			@manager.launch_editor_cmd.should == 'gedit'
 		end
-
-		def create_config
-			config = "editor: gedit"
-			system "echo #{config} > #{@blux_rc}"
-		end
 	end
 
 	context "starting the blog manager" do
@@ -66,19 +61,42 @@ describe BlogManager do
 			@manager.blux_rc.should == @blux_rc
 		end
 
-		it "should clear create a .blux folder in the home dir if it doesn't exist" do
+		it "should create a .blux folder in the home dir if it doesn't exist" do
 			File.exists?(@blux).should == true
 		end
 
-		it "should clear create a draft folder in the .blux dir if it doesn't exist" do
-			File.exists?("#{@blux}/drafts").should == true
+		it "should create a .tmp folder in the .blux dir if it doesn't exist" do
+			File.exists?("#{@blux}/tmp").should == true
+		end
+
+		it "should create a draft folder in the .blux dir if it doesn't exist" do
+			File.exists?("#{@blux}/draft").should == true
 		end
 	end
 
-	#context "creating a draft" do
-		#before :each do
-			#@manager.start
-			#@manager.create_new_draft
-		#end
-	#end
+	context "creating a draft" do
+		before :each do
+			create_config
+			@manager.load_config
+			@manager.start
+			@manager.create_new_draft
+		end
+
+		it "should create a draft manager" do
+			@manager.draft_manager.should_not == nil
+		end
+		
+		it "should pass the editor command to the draft manager" do
+			@manager.draft_manager.launch_editor_cmd.should == @manager.launch_editor_cmd
+		end
+
+		it "should pass the tmp folder to the draft manager" do
+			@manager.draft_manager.temp_dir.should == @manager.blux_temp_dir
+		end
+	end
+
+	def create_config
+		config = "editor: gedit"
+		system "echo #{config} > #{@blux_rc}"
+	end
 end

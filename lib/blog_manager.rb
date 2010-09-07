@@ -1,21 +1,24 @@
+require "#{File.dirname(__FILE__)}/draft_manager"
+
 class BlogManager
-	attr_accessor :home, :blux_dir, :blux_rc
+	attr_accessor :home, :blux_dir, :blux_rc, :blux_temp_dir
 	attr_accessor :launch_editor_cmd
+	attr_accessor :draft_manager 
 
 	def initialize(io = STDOUT)
 		@home = ENV['HOME']
 		@blux_dir = "#{@home}/.blux"
+		@blux_draft_dir = "#{@blux_dir}/draft"
+		@blux_tmp_dir = "#{@blux_dir}/tmp"
 		@blux_rc = "#{@home}/.bluxrc"
 
 		@io = io
 	end
 
 	def start
-		dir_name = "#{@home}/.blux"
-		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
-
-		draft_dir = "#{dir_name}/drafts"
-		Dir.mkdir(draft_dir) unless Dir.exists?(draft_dir)
+		Dir.mkdir(@blux_dir) unless Dir.exists?(@blux_dir)
+		Dir.mkdir(@blux_draft_dir) unless Dir.exists?(@blux_draft_dir)
+		Dir.mkdir(@blux_tmp_dir) unless Dir.exists?(@blux_tmp_dir)
 	end
 
 	def load_config
@@ -26,6 +29,10 @@ class BlogManager
 		@launch_editor_cmd = $1
 
 		validate
+	end
+
+	def create_new_draft
+		@draft_manager = DraftManager.new(@launch_editor_cmd, @blux_temp_dir)
 	end
 
 private
