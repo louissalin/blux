@@ -18,6 +18,29 @@ describe DraftManager do
 		`rm -Rf #{@blux_dir}`
 	end
 
+	context "when using a new manager" do
+		it "should have an empty draft index" do
+			@manager.draft_index.keys.length.should == 0
+		end
+
+		it "should load the draft index from disk" do
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write('{"test.sh":{"a":1,"b":2}}')
+			end
+			
+			manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			manager.draft_index.key?("test.sh").should == true
+			manager.draft_index["test.sh"].key?("a").should == true
+			manager.draft_index["test.sh"].key?("b").should == true
+		end
+	end
+
+	context "when using a new manager with no draft index" do
+		it "should create an empty draft index" do
+			File.exists?("#{@draft_dir}/.draft_index").should == true
+		end
+	end
+
 	context "when creating a new draft" do
 		before :each do
 			@manager.stub!(:system).and_return(nil)
@@ -47,7 +70,7 @@ describe DraftManager do
 			end
 
 			@manager.create_draft
-			Dir.entries(@draft_dir).length.should == 2 # . and ..
+			Dir.entries(@draft_dir).length.should == 3 # . and .. and .draft_index
 		end
 
 		it "should copy the temp file in the draft folder if it has data" do
@@ -65,20 +88,25 @@ describe DraftManager do
 	context "when saving a new draft" do
 		before :each do
 			@manager.stub!(:system).and_return(nil)
+
+			class Tempfile
+				def size() 123 end
+				def path() 'test/test.sh' end
+			end
 		end
 
 		after :each do
 			`rm -f #{@draft_dir}/*`
 		end
 
-		it "should create an entry in the draft index" do
-			class Tempfile
-				def size() 123 end
-				def path() 'test/test.sh' end
-			end
-
+		it "should create an entry in the draft index with empty attributes" do
 			@manager.create_draft
-			@manager.draft_index.key?("test/test.sh").should == true
+			@manager.draft_index["test/test.sh"].should == {}
+		end
+
+		it "should save the draft index to disk" do
+			@manager.create_draft
+			File.exists?("#{@draft_dir}/.draft_index").should == true
 		end
 	end
 end
