@@ -61,5 +61,25 @@ describe DraftManager do
 			@manager.create_draft
 		end
 	end
+
+	context "when saving a new draft" do
+		before :each do
+			@manager.stub!(:system).and_return(nil)
+		end
+
+		after :each do
+			`rm -f #{@draft_dir}/*`
+		end
+
+		it "should create an entry in the draft index" do
+			class Tempfile
+				def size() 123 end
+				def path() 'test/test.sh' end
+			end
+
+			@manager.create_draft
+			@manager.draft_index.key?("test/test.sh").should == true
+		end
+	end
 end
 
