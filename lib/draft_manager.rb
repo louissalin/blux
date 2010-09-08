@@ -23,6 +23,6 @@ class DraftManager
 		puts "editor closed. File size: #{temp_file.size}" if @verbose
 		system "mv #{temp_file.path} #{@draft_dir}" if temp_file.size > 0
 
-		@draft_index[temp_file.path] = ''
+		@draft_index[temp_file.path] = {}
 	end
 end
