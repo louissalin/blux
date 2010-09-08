@@ -79,7 +79,7 @@ describe BlogManager do
 			create_config
 			@manager.load_config
 			@manager.start
-			@manager.create_new_draft
+			@manager.create_draft_manager
 		end
 
 		it "should create a draft manager" do

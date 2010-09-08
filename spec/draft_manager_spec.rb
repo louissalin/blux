@@ -28,7 +28,11 @@ describe DraftManager do
 		end
 
 		it "should call the editor command" do
-			@manager.should_receive(:system).with('gedit')
+			class Tempfile
+				def path() 'test/test.sh' end
+			end
+
+			@manager.should_receive(:system).with('gedit test/test.sh')
 			@manager.create_draft
 		end
 
@@ -52,20 +56,8 @@ describe DraftManager do
 				def path() 'test/test.sh' end
 			end
 
-			@manager.should_receive(:system).with('gedit').ordered
+			@manager.should_receive(:system).with('gedit test/test.sh').ordered
 			@manager.should_receive(:system).with("mv test/test.sh #{@draft_dir}").ordered
-			@manager.create_draft
-		end
-
-		it "should delete the temp file from the tmp folder after copying it" do
-			class Tempfile
-				def size() 123 end
-				def path() 'test/test.sh' end
-			end
-
-			@manager.should_receive(:system).with('gedit').ordered
-			@manager.should_receive(:system).with("mv test/test.sh #{@draft_dir}").ordered
-			@manager.should_receive(:system).with("rm test/test.sh").ordered
 			@manager.create_draft
 		end
 	end

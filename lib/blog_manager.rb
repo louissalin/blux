@@ -5,7 +5,10 @@ class BlogManager
 	attr_accessor :launch_editor_cmd
 	attr_accessor :draft_manager 
 
-	def initialize(io = STDOUT)
+	def initialize(io = STDOUT, options = {})
+		@options = options
+		@verbose = options[:verbose] ||= false
+
 		@home = ENV['HOME']
 		@blux_dir = "#{@home}/.blux"
 		@blux_draft_dir = "#{@blux_dir}/draft"
@@ -16,23 +19,38 @@ class BlogManager
 	end
 
 	def start
-		Dir.mkdir(@blux_dir) unless Dir.exists?(@blux_dir)
-		Dir.mkdir(@blux_draft_dir) unless Dir.exists?(@blux_draft_dir)
-		Dir.mkdir(@blux_tmp_dir) unless Dir.exists?(@blux_tmp_dir)
+		unless Dir.exists?(@blux_dir)
+			puts "creating #{@blux_dir}" if @verbose
+			Dir.mkdir(@blux_dir) 
+		end
+
+		unless Dir.exists?(@blux_draft_dir)
+			puts "creating #{@blux_draft_dir}" if @verbose
+			Dir.mkdir(@blux_draft_dir) 
+		end
+
+		unless Dir.exists?(@blux_tmp_dir)
+			puts "creating #{@blux_tmp_dir}" if @verbose
+			Dir.mkdir(@blux_tmp_dir) 
+		end
 	end
 
 	def load_config
-		system "touch #{@blux_rc}" unless File.exists? @blux_rc
+		unless File.exists? @blux_rc
+			puts "creating #{@blux_rc}" if @verbose
+			system "touch #{@blux_rc}" 
+		end
 
 		editor_line = `grep editor: #{@blux_rc}`
 		editor_match = editor_line =~ /^editor:\s(.+)$/
 		@launch_editor_cmd = $1
 
+		puts "editor command: #{@launch_editor_cmd}" if @verbose
 		validate
 	end
 
-	def create_new_draft
-		@draft_manager = DraftManager.new(@launch_editor_cmd, @blux_temp_dir)
+	def create_draft_manager
+		@draft_manager = DraftManager.new(@launch_editor_cmd, @blux_temp_dir, @blux_draft_dir, @options)
 	end
 
 private
