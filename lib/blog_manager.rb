@@ -1,11 +1,14 @@
+require "#{File.dirname(__FILE__)}/IO.rb"
 require "#{File.dirname(__FILE__)}/draft_manager"
 
 class BlogManager
+	include BluxOutput
+
 	attr_accessor :home, :blux_dir, :blux_rc, :blux_temp_dir
 	attr_accessor :launch_editor_cmd
 	attr_accessor :draft_manager 
 
-	def initialize(io = STDOUT, options = {})
+	def initialize(options = {})
 		@options = options
 		@verbose = options[:verbose] ||= false
 
@@ -14,8 +17,6 @@ class BlogManager
 		@blux_draft_dir = "#{@blux_dir}/draft"
 		@blux_tmp_dir = "#{@blux_dir}/tmp"
 		@blux_rc = "#{@home}/.bluxrc"
-
-		@io = io
 	end
 
 	def start
@@ -50,7 +51,8 @@ class BlogManager
 	end
 
 	def create_draft_manager
-		@draft_manager = DraftManager.new(@launch_editor_cmd, @blux_temp_dir, @blux_draft_dir, @io, @options)
+		@draft_manager = DraftManager.new(@launch_editor_cmd, @blux_temp_dir, @blux_draft_dir, @options)
+		@draft_manager.set_io(@io)
 	end
 
 private

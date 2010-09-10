@@ -13,7 +13,8 @@ describe DraftManager do
 		
 		@io = mock("IO")
 		def @io.<<(str) end
-		@manager = DraftManager.new('gedit', @temp_dir, @draft_dir, @io)
+		@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+		@manager.set_io(@io)
 	end
 
 	after :each do
@@ -151,7 +152,8 @@ describe DraftManager do
 			system "touch #{@draft_dir}/file1"
 			system "touch #{@draft_dir}/file2"
 
-			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir, @io)
+			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager.set_io(@io)
 		end
 
 		it "should display the info about the selected draft in json format" do

@@ -1,21 +1,22 @@
+require "#{File.dirname(__FILE__)}/IO.rb"
 require 'tempfile'
 require 'json'
 
 class DraftManager
+	include BluxOutput
+
 	attr_reader :launch_editor_cmd
 	attr_reader :temp_dir, :draft_dir
 	attr_reader :draft_index
 	attr_reader :current_draft
 
-	def initialize(editor_cmd, temp_dir, draft_dir, io = STDOUT, options = {})
+	def initialize(editor_cmd, temp_dir, draft_dir, options = {})
 		@verbose = options[:verbose] ||= false
 
 		@launch_editor_cmd = editor_cmd
 		@temp_dir = temp_dir
 		@draft_dir = draft_dir
 		@draft_index_file = "#{@draft_dir}/.draft_index"
-
-		@io = io
 
 		system "touch #{@draft_index_file}" unless File.exists? @draft_index_file
 

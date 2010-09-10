@@ -8,7 +8,8 @@ describe BlogManager do
 
 		@io = mock("IO")
 		def @io.<<(str) end
-		@manager = BlogManager.new(@io)
+		@manager = BlogManager.new()
+		@manager.set_io(@io)
 	end
 
 	after :each do
