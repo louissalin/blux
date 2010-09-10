@@ -11,7 +11,9 @@ describe DraftManager do
 		Dir.mkdir(@temp_dir) unless Dir.exists?(@temp_dir)
 		Dir.mkdir(@draft_dir) unless Dir.exists?(@draft_dir)
 		
-		@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+		@io = mock("IO")
+		def @io.<<(str) end
+		@manager = DraftManager.new('gedit', @temp_dir, @draft_dir, @io)
 	end
 
 	after :each do
@@ -107,6 +109,58 @@ describe DraftManager do
 		it "should save the draft index to disk" do
 			@manager.create_draft
 			File.exists?("#{@draft_dir}/.draft_index").should == true
+		end
+	end
+
+	context "when editing a draft" do
+		before :each do
+			@manager.stub!(:system).and_return(nil)
+		end
+
+		it "should call the editor command" do
+			system "touch #{@draft_dir}/test.sh"
+
+			@manager.should_receive(:system).with("gedit #{@draft_dir}/test.sh")
+			@manager.edit_draft('test.sh')
+		end
+
+		it "should show an error if the file doesn't exist" do
+			@io.should_receive(:<<).with('draft filename asdf.asf does not exist')
+			@manager.edit_draft('asdf.asf')
+		end
+	end
+
+	context "when listing drafts" do
+		before :each do
+			system "touch #{@draft_dir}/1"
+			system "touch #{@draft_dir}/2"
+			system "touch #{@draft_dir}/3"
+		end
+
+		it "should list all the draft filenames, one per line" do
+			@manager.list.should == "1\n2\n3"
+		end
+	end
+
+	context "when displaying info about a draft" do
+		before :each do
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write('{"file1":{"a":1,"b":2},"file1":{"a":1,"b":2}}')
+			end
+
+			system "touch #{@draft_dir}/file1"
+			system "touch #{@draft_dir}/file2"
+
+			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir, @io)
+		end
+
+		it "should display the info about the selected draft in json format" do
+			@manager.show_info('file1').should == '{"a":1,"b":2}'
+		end
+
+		it "should output an error message if the file does not exist" do
+			@io.should_receive(:<<).with('draft filename asdf.asf does not exist')
+			@manager.edit_draft('asdf.asf')
 		end
 	end
 end

@@ -50,7 +50,7 @@ class BlogManager
 	end
 
 	def create_draft_manager
-		@draft_manager = DraftManager.new(@launch_editor_cmd, @blux_temp_dir, @blux_draft_dir, @options)
+		@draft_manager = DraftManager.new(@launch_editor_cmd, @blux_temp_dir, @blux_draft_dir, @io, @options)
 	end
 
 private
