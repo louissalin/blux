@@ -125,7 +125,7 @@ describe DraftManager do
 		end
 
 		it "should show an error if the file doesn't exist" do
-			@io.should_receive(:<<).with('draft filename asdf.asf does not exist')
+			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
 			@manager.edit_draft('asdf.asf')
 		end
 	end
@@ -159,7 +159,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if the file does not exist" do
-			@io.should_receive(:<<).with('draft filename asdf.asf does not exist')
+			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
 			@manager.edit_draft('asdf.asf')
 		end
 	end

@@ -24,14 +24,14 @@ class DraftManager
 
 	def create_draft
 		temp_file = Tempfile.new('draft', @temp_dir)
-		@io << "created temp file #{temp_file.path}\nlaunching editor" if @verbose
+		@io << "created temp file #{temp_file.path}\nlaunching editor\n" if @verbose
 
 		system "#{@launch_editor_cmd} #{temp_file.path}"
 
-		@io << "editor closed. File size: #{temp_file.size}" if @verbose
+		@io << "editor closed. File size: #{temp_file.size}\n" if @verbose
 		system "mv #{temp_file.path} #{@draft_dir}" if temp_file.size > 0
 
-		@io << "adding #{temp_file.path} to draft index" if @verbose
+		@io << "adding #{temp_file.path} to draft index\n" if @verbose
 		@draft_index[temp_file.path] = {}
 		save_draft_index
 	end
@@ -59,7 +59,7 @@ class DraftManager
 		if (File.exists?(draft_filename))
 			yield draft_filename
 		else
-			@io << "draft filename #{filename} does not exist"
+			@io << "draft filename #{filename} does not exist\n"
 		end
 	end
 
@@ -74,7 +74,7 @@ private
 	end
 
 	def save_draft_index
-		@io << "saving draft index: #{@draft_index.to_json}" if @verbose
+		@io << "saving draft index: #{@draft_index.to_json}\n" if @verbose
 		File.open(@draft_index_file, 'w') do |f| 
 			f.write(@draft_index.to_json) if @draft_index
 		end

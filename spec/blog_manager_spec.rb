@@ -28,7 +28,7 @@ describe BlogManager do
 
 	context "loading the editor from the config file when it doesn't exist" do
 		it "should show a warning" do
-			@io.should_receive(:<<).with('please specify an editor in .bluxrc: editor: [your editor of choice]')
+			@io.should_receive(:<<).with("please specify an editor in .bluxrc: editor: [your editor of choice]\n")
 			@manager.load_config
 		end
 	end
