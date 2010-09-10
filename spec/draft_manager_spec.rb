@@ -142,7 +142,7 @@ describe DraftManager do
 		end
 	end
 
-	context "when displaying info about a draft" do
+	context "when requesting info about a draft" do
 		before :each do
 			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
 				f.write('{"file1":{"a":1,"b":2},"file1":{"a":1,"b":2}}')

@@ -74,7 +74,7 @@ describe BlogManager do
 		end
 	end
 
-	context "creating a draft" do
+	context "creating a draft manager" do
 		before :each do
 			create_config
 			@manager.load_config
