@@ -102,20 +102,27 @@ describe DraftManager do
 			`rm -f #{@draft_dir}/*`
 		end
 
-		it "should create an entry in the draft index with empty attributes" do
-			@manager.create_draft
-			@manager.draft_index["test/test.sh"].should == {}
-		end
-
 		it "should save the draft index to disk" do
 			@manager.create_draft
 			File.exists?("#{@draft_dir}/.draft_index").should == true
+		end
+
+		it "should add the creation time to the attributes of that draft" do
+			time = Time.now.to_s
+			@manager.create_draft
+			@manager.draft_index["test/test.sh"][:creation_time].to_s.should == time
 		end
 	end
 
 	context "when editing a draft" do
 		before :each do
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write('{"test.sh":{}}')
+			end
+
+			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
 			@manager.stub!(:system).and_return(nil)
+			@manager.set_io(@io)
 		end
 
 		it "should call the editor command" do
@@ -128,6 +135,14 @@ describe DraftManager do
 		it "should show an error if the file doesn't exist" do
 			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
 			@manager.edit_draft('asdf.asf')
+		end
+
+		it "should add the edited time to the attributes of that draft" do
+			system "touch #{@draft_dir}/test.sh"
+			time = Time.now.to_s
+
+			@manager.edit_draft('test.sh')
+			@manager.draft_index["test.sh"][:edited_time].to_s.should == time
 		end
 	end
 
@@ -163,6 +178,46 @@ describe DraftManager do
 		it "should output an error message if the file does not exist" do
 			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
 			@manager.edit_draft('asdf.asf')
+		end
+	end
+
+	context "when adding an attribute" do
+		before :each do
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write('{"draft.1":{}}')
+			end
+
+			system "touch #{@draft_dir}/draft.1"
+			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager.set_io(@io)
+		end
+
+		it "should add the attribute to the draft index" do
+			@manager.set_attribute('draft.1', :attr => 123)
+			@manager.draft_index['draft.1'][:attr].should == 123
+		end
+
+		it "should overwrite the value if the attribute already exists" do
+			@manager.set_attribute('draft.1', :attr => 123)
+			@manager.set_attribute('draft.1', :attr => 456)
+			@manager.draft_index['draft.1'][:attr].should == 456
+		end
+
+		it "should output an error message if the file does not exist" do
+			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
+			@manager.set_attribute('asdf.asf', :attr => 456)
+		end
+	end
+
+	context "when requesting the latest created draft" do
+		it "should return the latest draft filename" do
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write({"draft.1" => {"creation_time" => "2010-10-10 15:30:12"},
+						 "draft.2" => {"creation_time" => "2010-10-09 15:30:12"}}.to_json)
+			end
+
+			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager.get_latest_created_draft().should == "draft.1"
 		end
 	end
 end

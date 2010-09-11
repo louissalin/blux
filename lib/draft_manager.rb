@@ -1,6 +1,7 @@
 require "#{File.dirname(__FILE__)}/IO.rb"
 require 'tempfile'
 require 'json'
+require 'time'
 
 class DraftManager
 	include BluxOutput
@@ -8,7 +9,6 @@ class DraftManager
 	attr_reader :launch_editor_cmd
 	attr_reader :temp_dir, :draft_dir
 	attr_reader :draft_index
-	attr_reader :current_draft
 
 	def initialize(editor_cmd, temp_dir, draft_dir, options = {})
 		@verbose = options[:verbose] ||= false
@@ -33,13 +33,14 @@ class DraftManager
 		system "mv #{temp_file.path} #{@draft_dir}" if temp_file.size > 0
 
 		@io << "adding #{temp_file.path} to draft index\n" if @verbose
-		@draft_index[temp_file.path] = {}
+		@draft_index[temp_file.path] = {:creation_time => Time.now.to_s}
 		save_draft_index
 	end
 
 	def edit_draft(filename)
 		check_filename(filename) do  |draft_filename|
 			system "#{@launch_editor_cmd} #{draft_filename}"
+			set_attribute(filename, :edited_time => Time.now.to_s)
 		end
 	end
 
@@ -54,6 +55,22 @@ class DraftManager
 		end
 	end
 
+	def set_attribute(filename, key_val_hash)
+		key = key_val_hash.keys[0]
+		val = key_val_hash.values[0]
+
+		check_filename(filename) do
+			@draft_index[filename][key] = val
+		end
+	end
+
+	def get_latest_created_draft
+		@draft_index.sort do |a,b| 
+			Time.parse(a[1]["creation_time"]) <=> Time.parse(b[1]["creation_time"])
+		end[-1][0]
+	end
+
+private
 	def check_filename(filename)
 		draft_filename = "#{draft_dir}/#{filename}"
 
@@ -64,7 +81,6 @@ class DraftManager
 		end
 	end
 
-private
 	def load_draft_index
 		str = ''
 		File.open(@draft_index_file, 'r') do |f| 
