@@ -209,6 +209,28 @@ describe DraftManager do
 		end
 	end
 
+	context "when deleting an attribute" do
+		before :each do
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write('{"draft.1":{"a":1,"b":2}}')
+			end
+
+			system "touch #{@draft_dir}/draft.1"
+			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager.set_io(@io)
+		end
+
+		it "should remove the attribute from the draft index" do
+			@manager.delete_attribute('draft.1', :attr)
+			@manager.draft_index['draft.1'][:attr].should == nil 
+		end
+
+		it "should output an error message if the file does not exist" do
+			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
+			@manager.delete_attribute('asdf.asf', :attr)
+		end
+	end
+
 	context "when requesting the latest created draft" do
 		it "should return the latest draft filename" do
 			File.open("#{@draft_dir}/.draft_index", 'w') do |f|

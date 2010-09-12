@@ -50,8 +50,8 @@ class DraftManager
 	end
 
 	def show_info(filename)
-		check_filename(filename) do 
-			@draft_index[filename].to_json
+		check_index(filename) do |index|
+			index.to_json
 		end
 	end
 
@@ -59,8 +59,8 @@ class DraftManager
 		key = key_val_hash.keys[0]
 		val = key_val_hash.values[0]
 
-		check_filename(filename) do
-			@draft_index[filename][key] = val
+		check_index(filename) do |index|
+			index[key] = val
 		end
 	end
 
@@ -70,7 +70,19 @@ class DraftManager
 		end[-1][0]
 	end
 
+	def delete_attribute(filename, attr_name)
+		check_index(filename) do |index|
+			index.delete(attr_name.to_s)
+		end
+	end
+
 private
+	def check_index(filename)
+		check_filename(filename) do
+			yield @draft_index[filename]
+		end
+	end
+
 	def check_filename(filename)
 		draft_filename = "#{draft_dir}/#{filename}"
 
