@@ -9,7 +9,7 @@ describe BlogManager do
 		@io = mock("IO")
 		def @io.<<(str) end
 		@manager = BlogManager.new()
-		@manager.set_io(@io)
+		@manager.set_io(:err => @io)
 	end
 
 	after :each do

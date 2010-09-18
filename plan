@@ -4,19 +4,21 @@ blux.rb will be a dsl callable from the command line. This means everything must
 	- maybe replace stdout with stderr for error messages? Need to investigate...
 
 command examples (all work on drafts only for now):
-	$ blux --new (-n)  									--> new draft
-	$ blux --set (-s) title "bla bla bla" latest		--> sets title on latest draft
-	$ blux --set (-s) title "bla bla bla" -f draft1.23	--> sets title on draft draft1.23
-	$ blux --list (-l)									--> lists drafts & attributes
-	$ blux --list (-l) preview							--> lists drafts, attrs, & preview
-	$ blux --html (-h) latest							--> outputs html for latest draft
-	$ blux --html (-h) -f draft1.23						--> outputs html for draft draft1.23
-	$ blux --get (-g) title latest						--> gets title on latest draft
-	$ blux --get (-g) title -f draft1.23				--> gets title on draft draft1.23
+	$ blux new   						    			--> new draft
+	$ blux set --title (-t) "bla bla bla" --latest		--> sets title on latest draft
+	$ blux set --title (-t) "bla bla bla" -f draft1.23	--> sets title on draft draft1.23
+	$ blux list 						    			--> lists drafts & attributes
+	$ blux list --preview								--> lists drafts, attrs, & preview
+	$ blux html --latest								--> outputs html for latest draft
+	$ blux html --file -f draft1.23						--> outputs html for draft draft1.23
+	$ blux get --title (-t) --latest					--> gets title on latest draft
+	$ blux get --title (-t) -f draft1.23				--> gets title on draft draft1.23
+	$ blux edit --title (-t) "title 1"
+	$ blux edit --latest
 
 publishing commands should look like this:
-	$ blux --publish latest
-	$ blux --publish -f draft1.23
+	$ blux publish --latest
+	$ blux publish -f draft1.23
 
 after which the draft will be renamed to postxxx and a new list of commands should exist to manage published posts.
 

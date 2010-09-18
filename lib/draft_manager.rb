@@ -89,7 +89,7 @@ private
 		if (File.exists?(draft_filename))
 			yield draft_filename
 		else
-			@io << "draft filename #{filename} does not exist\n"
+			@err << "draft filename #{filename} does not exist\n"
 		end
 	end
 

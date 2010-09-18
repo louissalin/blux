@@ -52,13 +52,12 @@ class BlogManager
 
 	def create_draft_manager
 		@draft_manager = DraftManager.new(@launch_editor_cmd, @blux_temp_dir, @blux_draft_dir, @options)
-		@draft_manager.set_io(@io)
 	end
 
 private
 	def validate
 		if (@launch_editor_cmd == nil)
-			@io << "please specify an editor in .bluxrc: editor: [your editor of choice]\n"
+			@err << "please specify an editor in .bluxrc: editor: [your editor of choice]\n"
 		end
 	end
 end

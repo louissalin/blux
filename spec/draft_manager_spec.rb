@@ -14,7 +14,7 @@ describe DraftManager do
 		@io = mock("IO")
 		def @io.<<(str) end
 		@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
-		@manager.set_io(@io)
+		@manager.set_io(:err => @io)
 	end
 
 	after :each do
@@ -122,7 +122,7 @@ describe DraftManager do
 
 			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
 			@manager.stub!(:system).and_return(nil)
-			@manager.set_io(@io)
+			@manager.set_io(:err => @io)
 		end
 
 		it "should call the editor command" do
@@ -168,7 +168,7 @@ describe DraftManager do
 			system "touch #{@draft_dir}/file2"
 
 			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
-			@manager.set_io(@io)
+			@manager.set_io(:err => @io)
 		end
 
 		it "should display the info about the selected draft in json format" do
@@ -189,7 +189,7 @@ describe DraftManager do
 
 			system "touch #{@draft_dir}/draft.1"
 			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
-			@manager.set_io(@io)
+			@manager.set_io(:err => @io)
 		end
 
 		it "should add the attribute to the draft index" do
@@ -217,7 +217,7 @@ describe DraftManager do
 
 			system "touch #{@draft_dir}/draft.1"
 			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
-			@manager.set_io(@io)
+			@manager.set_io(:err => @io)
 		end
 
 		it "should remove the attribute from the draft index" do
