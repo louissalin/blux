@@ -5,14 +5,16 @@ def validate_command(options)
 	if (options.command != nil)
 		yield options
 	else
-		STDERR << "No command specified. Possible commands: --new, --edit, --get, --set, --list, --publish"
+		STDERR << "No command specified. Possible commands: --new, --edit, --set, --list, --publish"
 	end
 end
 
 def check_filename(options, draft_manager)
-	filename = manager.get_latest_created_draft if options.get_latest
+	filename = draft_manager.get_latest_created_draft if options.use_latest
+	filename = draft_manager.get_draft_by_title if options.use_title
 	filename = options.filename || filename
 
+	puts "check_filename: #{filename}" if options.verbose
 	if filename != nil
 		yield filename
 	else
@@ -21,6 +23,8 @@ def check_filename(options, draft_manager)
 end
 
 validate_command(BluxOptionParser.parse(ARGV)) do |options|
+	puts "#{options}" if options.verbose
+
 	mgr = BlogManager.new(:verbose => options.verbose)	
 	mgr.load_config
 	mgr.start
@@ -33,7 +37,13 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		draft_mgr = mgr.create_draft_manager
 
 		check_filename(options, draft_mgr) do |filename|
-			draft_mgr.edit_draft options.filename
+			draft_mgr.edit_draft filename
+		end
+	when :list
+		draft_mgr = mgr.create_draft_manager
+		draft_mgr.list.each do |item|
+			puts "#{item}"
+			puts "  #{draft_mgr.show_info(item)}"
 		end
 	end
 end

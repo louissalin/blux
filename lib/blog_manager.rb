@@ -1,9 +1,6 @@
-require "#{File.dirname(__FILE__)}/IO.rb"
 require "#{File.dirname(__FILE__)}/draft_manager"
 
 class BlogManager
-	include BluxOutput
-
 	attr_accessor :home, :blux_dir, :blux_rc, :blux_temp_dir
 	attr_accessor :launch_editor_cmd
 	attr_accessor :draft_manager 
@@ -21,24 +18,24 @@ class BlogManager
 
 	def start
 		unless Dir.exists?(@blux_dir)
-			@io << "creating #{@blux_dir}\n" if @verbose
+			puts "creating #{@blux_dir}\n" if @verbose
 			Dir.mkdir(@blux_dir) 
 		end
 
 		unless Dir.exists?(@blux_draft_dir)
-			@io << "creating #{@blux_draft_dir}\n" if @verbose
+			puts "creating #{@blux_draft_dir}\n" if @verbose
 			Dir.mkdir(@blux_draft_dir) 
 		end
 
 		unless Dir.exists?(@blux_tmp_dir)
-			@io << "creating #{@blux_tmp_dir}\n" if @verbose
+			puts "creating #{@blux_tmp_dir}\n" if @verbose
 			Dir.mkdir(@blux_tmp_dir) 
 		end
 	end
 
 	def load_config
 		unless File.exists? @blux_rc
-			@io << "creating #{@blux_rc}\n" if @verbose
+			puts "creating #{@blux_rc}\n" if @verbose
 			system "touch #{@blux_rc}" 
 		end
 
@@ -46,7 +43,7 @@ class BlogManager
 		editor_match = editor_line =~ /^editor:\s(.+)$/
 		@launch_editor_cmd = $1
 
-		@io << "editor command: #{@launch_editor_cmd}\n" if @verbose
+		puts "editor command: #{@launch_editor_cmd}\n" if @verbose
 		validate
 	end
 
@@ -57,7 +54,7 @@ class BlogManager
 private
 	def validate
 		if (@launch_editor_cmd == nil)
-			@err << "please specify an editor in .bluxrc: editor: [your editor of choice]\n"
+			STDERR.puts "please specify an editor in .bluxrc: editor: [your editor of choice]\n"
 		end
 	end
 end

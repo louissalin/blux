@@ -1,11 +1,8 @@
-require "#{File.dirname(__FILE__)}/IO.rb"
 require 'tempfile'
 require 'json'
 require 'time'
 
 class DraftManager
-	include BluxOutput
-
 	attr_reader :launch_editor_cmd
 	attr_reader :temp_dir, :draft_dir
 	attr_reader :draft_index
@@ -25,28 +22,32 @@ class DraftManager
 
 	def create_draft
 		temp_file = Tempfile.new('draft', @temp_dir)
-		@io << "created temp file #{temp_file.path}\nlaunching editor\n" if @verbose
+		puts "created temp file #{temp_file.path}\nlaunching editor\n" if @verbose
 
 		system "#{@launch_editor_cmd} #{temp_file.path}"
 
-		@io << "editor closed. File size: #{temp_file.size}\n" if @verbose
+		puts "editor closed. File size: #{temp_file.size}\n" if @verbose
 		system "mv #{temp_file.path} #{@draft_dir}" if temp_file.size > 0
 
-		@io << "adding #{temp_file.path} to draft index\n" if @verbose
-		@draft_index[temp_file.path] = {:creation_time => Time.now.to_s}
+		index_key = File.basename(temp_file.path)
+		puts "adding #{index_key} to draft index\n" if @verbose
+		@draft_index[index_key] = {:creation_time => Time.now.to_s}
 		save_draft_index
 	end
 
 	def edit_draft(filename)
+		puts "editing draft #{filename}" if @verbose
+
 		check_filename(filename) do  |draft_filename|
+			puts "editing: #{@launch_editor_cmd} #{draft_filename}" if @verbose
+
 			system "#{@launch_editor_cmd} #{draft_filename}"
 			set_attribute(filename, :edited_time => Time.now.to_s)
 		end
 	end
 
 	def list
-		entries = Dir.entries(@draft_dir).reject {|i| i[0] == '.'}
-		entries.join("\n")
+		Dir.entries(@draft_dir).reject {|i| i[0] == '.'}
 	end
 
 	def show_info(filename)
@@ -100,7 +101,7 @@ private
 			unique_title = false if (@draft_index[key][attr_key.to_s] == attr_val)
 		end
 		
-		@err << "title '#{attr_val}' is not unique\n" unless unique_title 
+		STDERR.puts "title '#{attr_val}' is not unique\n" unless unique_title 
 		unique_title
 	end
 
@@ -116,7 +117,7 @@ private
 		if (File.exists?(draft_filename))
 			yield draft_filename
 		else
-			@err << "draft filename #{filename} does not exist\n"
+			STDERR.puts "draft filename #{filename} does not exist\n"
 		end
 	end
 
@@ -124,7 +125,7 @@ private
 		if @draft_index.keys.length > 0
 			yield
 		else
-			@err << "there is currently no saved draft\n"
+			STDERR.puts "there is currently no saved draft\n"
 		end
 	end
 
@@ -138,7 +139,7 @@ private
 	end
 
 	def save_draft_index
-		@io << "saving draft index: #{@draft_index.to_json}\n" if @verbose
+		puts "saving draft index: #{@draft_index.to_json}\n" if @verbose
 		File.open(@draft_index_file, 'w') do |f| 
 			f.write(@draft_index.to_json) if @draft_index
 		end

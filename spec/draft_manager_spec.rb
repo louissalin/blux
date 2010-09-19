@@ -11,10 +11,8 @@ describe DraftManager do
 		Dir.mkdir(@temp_dir) unless Dir.exists?(@temp_dir)
 		Dir.mkdir(@draft_dir) unless Dir.exists?(@draft_dir)
 		
-		@io = mock("IO")
-		def @io.<<(str) end
+		def STDERR.puts(str) end
 		@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
-		@manager.set_io(:err => @io)
 	end
 
 	after :each do
@@ -110,7 +108,7 @@ describe DraftManager do
 		it "should add the creation time to the attributes of that draft" do
 			time = Time.now.to_s
 			@manager.create_draft
-			@manager.draft_index["test/test.sh"][:creation_time].to_s.should == time
+			@manager.draft_index["test.sh"][:creation_time].to_s.should == time
 		end
 	end
 
@@ -122,7 +120,6 @@ describe DraftManager do
 
 			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
 			@manager.stub!(:system).and_return(nil)
-			@manager.set_io(:err => @io)
 		end
 
 		it "should call the editor command" do
@@ -133,7 +130,7 @@ describe DraftManager do
 		end
 
 		it "should show an error if the file doesn't exist" do
-			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
+			STDERR.should_receive(:puts).with("draft filename asdf.asf does not exist\n")
 			@manager.edit_draft('asdf.asf')
 		end
 
@@ -154,7 +151,7 @@ describe DraftManager do
 		end
 
 		it "should list all the draft filenames, one per line" do
-			@manager.list.should == "1\n2\n3"
+			@manager.list.should == ["1", "2", "3"]
 		end
 	end
 
@@ -168,7 +165,6 @@ describe DraftManager do
 			system "touch #{@draft_dir}/file2"
 
 			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
-			@manager.set_io(:err => @io)
 		end
 
 		it "should display the info about the selected draft in json format" do
@@ -176,7 +172,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if the file does not exist" do
-			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
+			STDERR.should_receive(:puts).with("draft filename asdf.asf does not exist\n")
 			@manager.edit_draft('asdf.asf')
 		end
 	end
@@ -189,7 +185,6 @@ describe DraftManager do
 
 			system "touch #{@draft_dir}/draft.1"
 			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
-			@manager.set_io(:err => @io)
 		end
 
 		it "should add the attribute to the draft index" do
@@ -204,7 +199,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if the file does not exist" do
-			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
+			STDERR.should_receive(:puts).with("draft filename asdf.asf does not exist\n")
 			@manager.set_attribute('asdf.asf', :attr => 456)
 		end
 
@@ -223,13 +218,12 @@ describe DraftManager do
 			system "touch #{@draft_dir}/draft.1"
 			system "touch #{@draft_dir}/draft.2"
 			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
-			@manager.set_io(:err => @io)
 		end
 
 		it "should output an error message if the title is not unique" do
 			@manager.set_attribute('draft.1', :title => 'title')
 
-			@io.should_receive(:<<).with("title 'title' is not unique\n")
+			STDERR.should_receive(:puts).with("title 'title' is not unique\n")
 			@manager.set_attribute('draft.2', :title => 'title')
 		end
 
@@ -250,7 +244,6 @@ describe DraftManager do
 
 			system "touch #{@draft_dir}/draft.1"
 			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
-			@manager.set_io(:err => @io)
 		end
 
 		it "should remove the attribute from the draft index" do
@@ -259,7 +252,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if the file does not exist" do
-			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
+			STDERR.should_receive(:puts).with("draft filename asdf.asf does not exist\n")
 			@manager.delete_attribute('asdf.asf', :attr)
 		end
 
@@ -282,7 +275,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if there are no drafts saved" do
-			@io.should_receive(:<<).with("there is currently no saved draft\n")
+			STDERR.should_receive(:puts).with("there is currently no saved draft\n")
 			@manager.get_latest_created_draft
 		end
 	end
@@ -300,7 +293,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if there are no drafts saved" do
-			@io.should_receive(:<<).with("there is currently no saved draft\n")
+			STDERR.should_receive(:puts).with("there is currently no saved draft\n")
 			@manager.get_draft_by_title("title2")
 		end
 	end

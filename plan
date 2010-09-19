@@ -9,11 +9,10 @@ command examples (all work on drafts only for now):
 	$ blux -s --title (-t) "bla bla bla" -f draft1.23	--> sets title on draft draft1.23
 	$ blux -l (--list)							    			--> lists drafts & attributes
 	$ blux -l --with-preview								--> lists drafts, attrs, & preview
+	$ blux -l --attributes -f draft1.23						--> lists attributes for draft1.23
 	$ blux -c (--convert) html --latest						--> outputs html for latest draft
 	$ blux -c html --file -f draft1.23					--> outputs html for draft draft1.23
-	$ blux -g (--get) --title (-t) --latest						--> gets title on latest draft
-	$ blux -g --title (-t) -f draft1.23					--> gets title on draft draft1.23
-	$ blux -e (--edit) --title (-t) "title 1"
+	$ blux -e (--edit) --title "title 1"
 	$ blux -e --latest
 
 publishing commands should look like this:

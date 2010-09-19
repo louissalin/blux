@@ -6,10 +6,8 @@ describe BlogManager do
 		@blux_rc = "#{File.dirname(__FILE__)}/.bluxrc"
 		@blux= "#{File.dirname(__FILE__)}/.blux"
 
-		@io = mock("IO")
-		def @io.<<(str) end
+		def STDERR.puts(str) end
 		@manager = BlogManager.new()
-		@manager.set_io(:err => @io)
 	end
 
 	after :each do
@@ -29,7 +27,7 @@ describe BlogManager do
 
 	context "loading the editor from the config file when it doesn't exist" do
 		it "should show a warning" do
-			@io.should_receive(:<<).with("please specify an editor in .bluxrc: editor: [your editor of choice]\n")
+			STDERR.should_receive(:puts).with("please specify an editor in .bluxrc: editor: [your editor of choice]\n")
 			@manager.load_config
 		end
 	end
