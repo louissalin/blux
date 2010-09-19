@@ -68,9 +68,20 @@ class DraftManager
 	end
 
 	def get_latest_created_draft
-		@draft_index.sort do |a,b| 
-			Time.parse(a[1]["creation_time"]) <=> Time.parse(b[1]["creation_time"])
-		end[-1][0]
+		check_draft_count do
+			@draft_index.sort do |a,b| 
+				Time.parse(a[1]["creation_time"]) <=> Time.parse(b[1]["creation_time"])
+			end[-1][0]
+		end
+	end
+
+	def get_draft_by_title(title)
+		check_draft_count do
+			@draft_index.keys.each do |key|
+				draft_title = @draft_index[key]["title"]
+				return key if draft_title == title
+			end
+		end
 	end
 
 	def delete_attribute(filename, attr_name)
@@ -106,6 +117,14 @@ private
 			yield draft_filename
 		else
 			@err << "draft filename #{filename} does not exist\n"
+		end
+	end
+
+	def check_draft_count
+		if @draft_index.keys.length > 0
+			yield
+		else
+			@err << "there is currently no saved draft\n"
 		end
 	end
 

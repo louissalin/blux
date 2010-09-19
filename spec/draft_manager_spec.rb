@@ -280,6 +280,29 @@ describe DraftManager do
 			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
 			@manager.get_latest_created_draft().should == "draft.1"
 		end
+
+		it "should output an error message if there are no drafts saved" do
+			@io.should_receive(:<<).with("there is currently no saved draft\n")
+			@manager.get_latest_created_draft
+		end
+	end
+
+	context "when requesting a draft by title" do
+		it "should return the the proper filename" do
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write({"draft.1" => {"title" => "title1"},
+						 "draft.2" => {"title" => "title2"}}.to_json)
+			end
+
+			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager.get_draft_by_title("title1").should == "draft.1"
+			@manager.get_draft_by_title("title2").should == "draft.2"
+		end
+
+		it "should output an error message if there are no drafts saved" do
+			@io.should_receive(:<<).with("there is currently no saved draft\n")
+			@manager.get_draft_by_title("title2")
+		end
 	end
 end
 
