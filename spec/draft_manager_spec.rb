@@ -214,6 +214,34 @@ describe DraftManager do
 		end
 	end
 
+	context "when adding a title" do
+		before :each do
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write('{"draft.1":{},"draft.2":{}}')
+			end
+
+			system "touch #{@draft_dir}/draft.1"
+			system "touch #{@draft_dir}/draft.2"
+			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager.set_io(:err => @io)
+		end
+
+		it "should output an error message if the title is not unique" do
+			@manager.set_attribute('draft.1', :title => 'title')
+
+			@io.should_receive(:<<).with("title 'title' is not unique\n")
+			@manager.set_attribute('draft.2', :title => 'title')
+		end
+
+		it "should not change the value of the previous title" do
+			@manager.set_attribute('draft.1', :title => 'title')
+			@manager.set_attribute('draft.2', :title => 'title2')
+			@manager.set_attribute('draft.2', :title => 'title')
+
+			@manager.draft_index['draft.2']["title"].should == 'title2'
+		end
+	end
+
 	context "when deleting an attribute" do
 		before :each do
 			File.open("#{@draft_dir}/.draft_index", 'w') do |f|

@@ -60,8 +60,10 @@ class DraftManager
 		val = key_val_hash.values[0]
 
 		check_index(filename) do |index|
-			index[key.to_s] = val
-			save_draft_index
+			if check_title(filename, key, val)
+				index[key.to_s] = val 
+				save_draft_index
+			end
 		end
 	end
 
@@ -79,6 +81,18 @@ class DraftManager
 	end
 
 private
+	def check_title(filename, attr_key, attr_val)
+		return true unless attr_key.to_s == "title"
+		
+		unique_title = true
+		@draft_index.keys.reject{|k| k == filename}.each do |key|
+			unique_title = false if (@draft_index[key][attr_key.to_s] == attr_val)
+		end
+		
+		@err << "title '#{attr_val}' is not unique\n" unless unique_title 
+		unique_title
+	end
+
 	def check_index(filename)
 		check_filename(filename) do
 			yield @draft_index[filename]
