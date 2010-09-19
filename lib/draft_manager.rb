@@ -60,7 +60,8 @@ class DraftManager
 		val = key_val_hash.values[0]
 
 		check_index(filename) do |index|
-			index[key] = val
+			index[key.to_s] = val
+			save_draft_index
 		end
 	end
 
@@ -73,6 +74,7 @@ class DraftManager
 	def delete_attribute(filename, attr_name)
 		check_index(filename) do |index|
 			index.delete(attr_name.to_s)
+			save_draft_index
 		end
 	end
 

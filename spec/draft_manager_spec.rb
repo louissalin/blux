@@ -142,7 +142,7 @@ describe DraftManager do
 			time = Time.now.to_s
 
 			@manager.edit_draft('test.sh')
-			@manager.draft_index["test.sh"][:edited_time].to_s.should == time
+			@manager.draft_index["test.sh"]["edited_time"].to_s.should == time
 		end
 	end
 
@@ -194,18 +194,23 @@ describe DraftManager do
 
 		it "should add the attribute to the draft index" do
 			@manager.set_attribute('draft.1', :attr => 123)
-			@manager.draft_index['draft.1'][:attr].should == 123
+			@manager.draft_index['draft.1']["attr"].should == 123
 		end
 
 		it "should overwrite the value if the attribute already exists" do
 			@manager.set_attribute('draft.1', :attr => 123)
 			@manager.set_attribute('draft.1', :attr => 456)
-			@manager.draft_index['draft.1'][:attr].should == 456
+			@manager.draft_index['draft.1']["attr"].should == 456
 		end
 
 		it "should output an error message if the file does not exist" do
 			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
 			@manager.set_attribute('asdf.asf', :attr => 456)
+		end
+
+		it "should save the draft index to disk" do
+			File.should_receive(:open).with("#{@draft_dir}/.draft_index", 'w')
+			@manager.set_attribute('draft.1', :attr => 123)
 		end
 	end
 
@@ -221,13 +226,19 @@ describe DraftManager do
 		end
 
 		it "should remove the attribute from the draft index" do
-			@manager.delete_attribute('draft.1', :attr)
-			@manager.draft_index['draft.1'][:attr].should == nil 
+			@manager.delete_attribute('draft.1', :a)
+			@manager.draft_index['draft.1']["a"].should == nil 
 		end
 
 		it "should output an error message if the file does not exist" do
 			@io.should_receive(:<<).with("draft filename asdf.asf does not exist\n")
 			@manager.delete_attribute('asdf.asf', :attr)
+		end
+
+		it "should save the draft index to disk" do
+			File.stub!(:open)
+			File.should_receive(:open).with("#{@draft_dir}/.draft_index", 'w')
+			@manager.delete_attribute('draft.1', :attr)
 		end
 	end
 
