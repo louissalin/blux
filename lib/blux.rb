@@ -10,7 +10,7 @@ def validate_command(options)
 end
 
 def validate_set_options(options)
-	if options.attributes.length.modulo 2 == 0
+	if options.attributes.length.modulo(2) == 0
 		yield options.attributes[0], options.attributes[1]
 	else
 		STDERR << "Attribute error: you must specify an attribute name and a value."
@@ -29,6 +29,7 @@ def check_filename(options, draft_manager)
 		STDERR << "Please specify the draft file you want to work with. If you want to work with the latest created/edited draft, use the --latest option. You can also tell blux to get a draft with a specific title with --title."
 	end
 end
+
 
 validate_command(BluxOptionParser.parse(ARGV)) do |options|
 	puts "#{options}" if options.verbose
@@ -51,15 +52,17 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		draft_mgr = mgr.create_draft_manager
 		draft_mgr.list.each do |item|
 			puts "#{item}"
-			puts "  #{draft_mgr.show_info(item)}"
+			puts "  #{draft_mgr.show_info(item)}" if options.list_details
+			puts "  #{draft_mgr.show_preview(item)}" if options.list_preview
 		end
 	when :set
 		draft_mgr = mgr.create_draft_manager
 
 		check_filename(options, draft_mgr) do |filename|
-			validate_set_option(options) do |attribute, value|
+			validate_set_options(options) do |attribute, value|
 				draft_mgr.set_attribute(filename, attribute, value)
 			end
 		end
 	end
 end
+

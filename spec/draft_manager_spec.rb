@@ -177,6 +177,32 @@ describe DraftManager do
 		end
 	end
 
+	context "when showing a draft preview" do
+		before :each do
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write('{"file1":{"a":1,"b":2},"file2":{"a":1,"b":2}, "file3":{}}')
+			end
+
+			system "echo this is blog with lots of letters intended to go beyond the 76 chars that will be displayed by the preview functionnality of the draft manager > #{@draft_dir}/file1"
+			system "echo this is a blog > #{@draft_dir}/file2"
+			system "touch #{@draft_dir}/file3"
+
+			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+		end
+
+		it "should trunk the preview to 76 chars, with '...' appended at the end" do
+			@manager.show_preview('file1').should == 'this is blog with lots of letters intended to go beyond the 76 chars that wi...'
+		end
+
+		it "should display the first line as is if it doesn't have more than 76 chars" do
+			@manager.show_preview('file2').should == 'this is a blog'
+		end
+
+		it "should display an empty string for an empty draft" do
+			@manager.show_preview('file3').should == ''
+		end
+	end
+
 	context "when adding an attribute" do
 		before :each do
 			File.open("#{@draft_dir}/.draft_index", 'w') do |f|

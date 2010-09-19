@@ -5,6 +5,8 @@ class BluxOptionParser
 	def self.parse(args)
 		options = OpenStruct.new
 		options.verbose = false
+		options.list_preview = false
+		options.list_details = false
 
 		opts = OptionParser.new do |opts|
 			opts.banner = "Usage: blux <command> [options] [attributes]"
@@ -36,6 +38,14 @@ class BluxOptionParser
 
 			opts.on("-f", "--file FILENAME", "apply the selected command to a specific draft file") do |filename|
 				options.filename = filename
+			end
+
+			opts.on("--with-preview", "show a preview of each draft while listing") do
+				options.list_preview = true
+			end
+
+			opts.on("--details", "show all attributes when listing") do
+				options.list_details = true
 			end
 
 			opts.on("--verbose", "verbose mode") do
