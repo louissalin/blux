@@ -42,7 +42,7 @@ class DraftManager
 			puts "editing: #{@launch_editor_cmd} #{draft_filename}" if @verbose
 
 			system "#{@launch_editor_cmd} #{draft_filename}"
-			set_attribute(filename, :edited_time => Time.now.to_s)
+			set_attribute(filename, "edited_time", Time.now.to_s)
 		end
 	end
 
@@ -56,10 +56,7 @@ class DraftManager
 		end
 	end
 
-	def set_attribute(filename, key_val_hash)
-		key = key_val_hash.keys[0]
-		val = key_val_hash.values[0]
-
+	def set_attribute(filename, key, val)
 		check_index(filename) do |index|
 			if check_title(filename, key, val)
 				index[key.to_s] = val 

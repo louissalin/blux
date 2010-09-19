@@ -188,24 +188,24 @@ describe DraftManager do
 		end
 
 		it "should add the attribute to the draft index" do
-			@manager.set_attribute('draft.1', :attr => 123)
-			@manager.draft_index['draft.1']["attr"].should == 123
+			@manager.set_attribute('draft.1', "attr", "123")
+			@manager.draft_index['draft.1']["attr"].should == "123"
 		end
 
 		it "should overwrite the value if the attribute already exists" do
-			@manager.set_attribute('draft.1', :attr => 123)
-			@manager.set_attribute('draft.1', :attr => 456)
-			@manager.draft_index['draft.1']["attr"].should == 456
+			@manager.set_attribute('draft.1', "attr", "123")
+			@manager.set_attribute('draft.1', "attr", "456")
+			@manager.draft_index['draft.1']["attr"].should == "456"
 		end
 
 		it "should output an error message if the file does not exist" do
 			STDERR.should_receive(:puts).with("draft filename asdf.asf does not exist\n")
-			@manager.set_attribute('asdf.asf', :attr => 456)
+			@manager.set_attribute('asdf.asf', "attr", "456")
 		end
 
 		it "should save the draft index to disk" do
 			File.should_receive(:open).with("#{@draft_dir}/.draft_index", 'w')
-			@manager.set_attribute('draft.1', :attr => 123)
+			@manager.set_attribute('draft.1', "attr", "123")
 		end
 	end
 
@@ -221,16 +221,16 @@ describe DraftManager do
 		end
 
 		it "should output an error message if the title is not unique" do
-			@manager.set_attribute('draft.1', :title => 'title')
+			@manager.set_attribute('draft.1', "title", 'title')
 
 			STDERR.should_receive(:puts).with("title 'title' is not unique\n")
-			@manager.set_attribute('draft.2', :title => 'title')
+			@manager.set_attribute('draft.2', "title", 'title')
 		end
 
 		it "should not change the value of the previous title" do
-			@manager.set_attribute('draft.1', :title => 'title')
-			@manager.set_attribute('draft.2', :title => 'title2')
-			@manager.set_attribute('draft.2', :title => 'title')
+			@manager.set_attribute('draft.1', 'title', 'title')
+			@manager.set_attribute('draft.2', 'title', 'title2')
+			@manager.set_attribute('draft.2', 'title', 'title')
 
 			@manager.draft_index['draft.2']["title"].should == 'title2'
 		end

@@ -7,7 +7,7 @@ class BluxOptionParser
 		options.verbose = false
 
 		opts = OptionParser.new do |opts|
-			opts.banner = "Usage: blux command [options]"
+			opts.banner = "Usage: blux <command> [options] [attributes]"
 
 			opts.on("-n", "--new", "create a new draft") do 
 				options.command = :new
@@ -21,12 +21,17 @@ class BluxOptionParser
 				options.command = :list
 			end
 
+			opts.on("-s", "--set", "set an attribute on a draft") do
+				options.command = :set
+			end
+
 			opts.on("--latest", "apply the selected command to the latest draft") do
 				options.use_latest = true
 			end
 
-			opts.on("--title", "apply the selected command to a draft with a specific title") do
+			opts.on("--title TITLE", "apply the selected command to a draft with a specific title") do |title|
 				options.use_title = true
+				options.title = title
 			end
 
 			opts.on("-f", "--file FILENAME", "apply the selected command to a specific draft file") do |filename|
@@ -39,6 +44,8 @@ class BluxOptionParser
 		end
 
 		opts.parse!(args)
+
+		options.attributes = args
 		options
 	end
 end
