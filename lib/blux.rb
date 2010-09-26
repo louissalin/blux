@@ -51,6 +51,7 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 	when :list
 		draft_mgr = mgr.create_draft_manager
 		draft_mgr.list.each do |item|
+			break if options.filename != nil && options.filename != item
 			puts "#{item}"
 			puts "  #{draft_mgr.show_info(item)}" if options.list_details
 			puts "  #{draft_mgr.show_preview(item)}" if options.list_preview
