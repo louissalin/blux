@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require "#{File.dirname(__FILE__)}/lib/blux_option_parser.rb"
 require "#{File.dirname(__FILE__)}/lib/blog_manager.rb"
 
