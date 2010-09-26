@@ -1,5 +1,5 @@
-require "#{File.dirname(__FILE__)}/blux_option_parser.rb"
-require "#{File.dirname(__FILE__)}/blog_manager.rb"
+require "#{File.dirname(__FILE__)}/lib/blux_option_parser.rb"
+require "#{File.dirname(__FILE__)}/lib/blog_manager.rb"
 
 def validate_command(options)
 	if (options.command != nil)

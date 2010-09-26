@@ -1,7 +1,6 @@
 plan/ideas for blux usage:
 
 blux.rb will be a dsl callable from the command line. This means everything must be done in one single command. Any output needs to be easily parsable by calling programs.
-	- maybe replace stdout with stderr for error messages? Need to investigate...
 
 command examples (all work on drafts only for now):
 	$ blux -n  (--new)  						    	--> new draft
