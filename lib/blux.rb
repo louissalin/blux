@@ -66,6 +66,18 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 				draft_mgr.set_attribute(filename, attribute, value)
 			end
 		end
+	when :out
+		draft_mgr = mgr.create_draft_manager
+		
+		check_filename(options, draft_mgr) do |filename|
+			STDOUT.puts(draft_mgr.output filename)
+		end
+	when :convert
+		draft_mgr = mgr.create_draft_manager
+
+		check_filename(options, draft_mgr) do |filename|
+			system "blux.rb --out -f #{filename} | ./textile_to_html.rb"
+		end
 	end
 end
 

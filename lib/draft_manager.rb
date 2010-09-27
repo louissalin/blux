@@ -69,6 +69,19 @@ class DraftManager
 		end
 	end
 
+	def output(filename)
+		check_filename(filename) do |draft_filename|
+			File.open(draft_filename, 'r') do |f|
+				if f.eof?
+					''
+				else
+					line = f.readline.gsub("\n", '')
+					line
+				end
+			end
+		end
+	end
+
 	def set_attribute(filename, key, val)
 		check_index(filename) do |index|
 			if check_title(filename, key, val)

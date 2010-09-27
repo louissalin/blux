@@ -27,6 +27,14 @@ class BluxOptionParser
 				options.command = :set
 			end
 
+			opts.on("-c", "--convert", "convert a draft to html") do
+				options.command = :convert
+			end
+
+			opts.on("-o", "--out", "dump the content of a draft to stdout") do
+				options.command = :out
+			end
+
 			opts.on("--latest", "apply the selected command to the latest draft") do
 				options.use_latest = true
 			end

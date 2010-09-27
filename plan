@@ -10,8 +10,9 @@ command examples (all work on drafts only for now):
 	$ blux -l (--list)							    	--> lists drafts & attributes
 	$ blux -l --with-preview							--> lists drafts, attrs, & preview
 	$ blux -l --details -f draft1.23					--> lists attributes for draft1.23
-	$ blux -c (--convert) html --latest					--> outputs html for latest draft
-	$ blux -c html --file -f draft1.23					--> outputs html for draft draft1.23
+	$ blux -o (--out) -f draft1.23						--> dumps the content of draft1.23
+	$ blux -c (--convert) --latest						--> outputs html for latest draft
+	$ blux -c -f draft1.23								--> outputs html for draft draft1.23
 	$ blux -e (--edit) --title "title 1"
 	$ blux -e --latest
 	$ blux -e -f draft1.23
