@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-require "#{File.dirname(__FILE__)}/lib/blux_option_parser.rb"
-require "#{File.dirname(__FILE__)}/lib/blog_manager.rb"
+require "#{File.dirname(__FILE__)}/blux_option_parser.rb"
+require "#{File.dirname(__FILE__)}/blog_manager.rb"
 
 def validate_command(options)
 	if (options.command != nil)
@@ -76,7 +76,7 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		draft_mgr = mgr.create_draft_manager
 
 		check_filename(options, draft_mgr) do |filename|
-			system "blux.rb --out -f #{filename} | ./textile_to_html.rb"
+			system "ruby blux.rb --out -f #{filename} | ruby textile_to_html.rb"
 		end
 	end
 end
