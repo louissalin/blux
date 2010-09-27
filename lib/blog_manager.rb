@@ -2,7 +2,7 @@ require "#{File.dirname(__FILE__)}/draft_manager"
 
 class BlogManager
 	attr_accessor :home, :blux_dir, :blux_rc, :blux_temp_dir
-	attr_accessor :launch_editor_cmd
+	attr_accessor :launch_editor_cmd, :html_converter_cmd
 	attr_accessor :draft_manager 
 
 	def initialize(options = {})
@@ -42,6 +42,10 @@ class BlogManager
 		editor_line = `grep editor: #{@blux_rc}`
 		editor_match = editor_line =~ /^editor:\s(.+)$/
 		@launch_editor_cmd = $1
+
+		converter_line = `grep html_converter: #{@blux_rc}`
+		converter_match = converter_line =~ /^html_converter:\s(.+)$/
+		@html_converter_cmd = $1
 
 		puts "editor command: #{@launch_editor_cmd}\n" if @verbose
 		validate

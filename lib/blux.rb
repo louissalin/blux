@@ -76,7 +76,7 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		draft_mgr = mgr.create_draft_manager
 
 		check_filename(options, draft_mgr) do |filename|
-			system "ruby blux.rb --out -f #{filename} | ruby textile_to_html.rb"
+			system "ruby blux.rb --out -f #{filename} | #{mgr.html_converter_cmd}"
 		end
 	end
 end

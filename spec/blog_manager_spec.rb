@@ -41,6 +41,10 @@ describe BlogManager do
 		it "should read the editor from the config file" do
 			@manager.launch_editor_cmd.should == 'gedit'
 		end
+
+		it "should read the html_converter from the config file" do
+			@manager.html_converter_cmd.should == 'ruby textile_to_html.rb'
+		end
 	end
 
 	context "starting the blog manager" do
@@ -95,7 +99,9 @@ describe BlogManager do
 	end
 
 	def create_config
-		config = "editor: gedit"
-		system "echo #{config} > #{@blux_rc}"
+		File.open(@blux_rc, 'w') do |f|
+			f.puts "editor: gedit"
+			f.puts "html_converter: ruby textile_to_html.rb"
+		end
 	end
 end

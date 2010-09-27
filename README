@@ -1,1 +1,31 @@
-Blux is an offline blog manager that will let you manage your posts offline and publish them to your favorite blog engine. There is not much right now. Patience, my friend!
+Blux is an offline blog manager that will let you manage your posts offline and publish them to your favorite blog engine. There isn't much so far, except the possibility to create and manage drafts, and convert them to html.
+
+==default config==
+Blux reads its configuration info from  ~/.bluxrc
+Here is an example of a configuration file. 
+
+editor: vim
+html_converter: ruby textile_to_html.rb
+
+
+The editor line is what you would type on the command line to launch your editor of choice. Blux will pass in a temporary file that will be copied once you are done editing.
+
+The html converter line is the command you would type to convert your draft to html. By default, blux uses textile and a converter is provided by default.
+
+
+==blux from command line==
+
+command examples (works on drafts only for now):
+	$ blux -n  (--new)  						    	--> new draft
+	$ blux -s (--set) --latest title "bla bla bla" 		--> sets title on latest draft
+	$ blux -s -f draft1.23 title "bla bla bla"	 		--> sets title on draft draft1.23
+	$ blux -s --title "old title" title "bla bla bla"	--> modifies title
+	$ blux -l (--list)							    	--> lists drafts & attributes
+	$ blux -l --with-preview							--> lists drafts, attrs, & preview
+	$ blux -l --details -f draft1.23					--> lists attributes for draft1.23
+	$ blux -o (--out) -f draft1.23						--> dumps the content of draft1.23
+	$ blux -c (--convert) --latest						--> outputs html for latest draft
+	$ blux -c -f draft1.23								--> outputs html for draft draft1.23
+	$ blux -e (--edit) --title "title 1"
+	$ blux -e --latest
+	$ blux -e -f draft1.23
