@@ -1,0 +1,19 @@
+Move the publishing to the blog manager + tests
+Move the published draft to the published folder + tests
+Allow to use the same commands (edit, publish, list, attributes) on published posts
+Add command line doc to blux.rb
+GPL
+
+0.1.0
+
+Image support (0.1.1)
+Preview feature (0.1.2)
+Blogger support (0.1.3)
+Community Server support (0.1.4)
+Timed publishing
+
+0.2.0
+
+GUI
+
+0.3.0
