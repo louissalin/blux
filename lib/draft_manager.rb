@@ -115,6 +115,13 @@ class DraftManager
 		end
 	end
 
+	def get_attribute(filename, attribute)
+		check_index(filename) do |index|
+			index[attribute]
+		end
+	end
+
+
 private
 	def check_title(filename, attr_key, attr_val)
 		return true unless attr_key.to_s == "title"

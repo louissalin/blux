@@ -98,6 +98,30 @@ describe BlogManager do
 		end
 	end
 
+	context "when publishing" do
+		before :each do
+			create_config
+			@manager.load_config
+			@manager.start
+			@manager.create_draft_manager
+		end
+
+		it "should send the proper command" do
+			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby post.rb -t no title")
+			@manager.publish 'draft1.23'
+		end
+
+		it "should send the command with the title included if it exists" do
+			class DraftManager
+				def get_attribute(filename, attribute)
+					'bla'
+				end
+			end
+			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby post.rb -t bla")
+			@manager.publish 'draft1.23'
+		end
+	end
+
 	def create_config
 		File.open(@blux_rc, 'w') do |f|
 			f.puts "editor: gedit"

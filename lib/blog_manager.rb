@@ -55,6 +55,11 @@ class BlogManager
 		@draft_manager = DraftManager.new(@launch_editor_cmd, @blux_temp_dir, @blux_draft_dir, @options)
 	end
 
+	def publish(filename)
+		title = @draft_manager.get_attribute(filename, "title") || 'no title'
+		system "ruby blux.rb --convert -f #{filename} | ruby post.rb -t #{title}"
+	end
+
 private
 	def validate
 		if (@launch_editor_cmd == nil)
