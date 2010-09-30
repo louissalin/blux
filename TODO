@@ -1,7 +1,8 @@
-Move the publishing to the blog manager + tests
+Add blog URI, username + password to config
 Move the published draft to the published folder + tests
 Allow to use the same commands (edit, publish, list, attributes) on published posts
 Add command line doc to blux.rb
+improve README
 GPL
 
 0.1.0
