@@ -83,8 +83,6 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 
 		check_filename(options, draft_mgr) do |filename|
 			mgr.publish filename
-			#title = draft_mgr.draft_index[filename]["title"] || "no title"
-			#system "ruby blux.rb --convert -f #{filename} | ruby post.rb -t #{title}"
 		end
 	end
 end
