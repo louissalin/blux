@@ -1,4 +1,4 @@
-Add blog URI, username + password to config
+Turn post.rb into object and share through module the config loading code
 Move the published draft to the published folder + tests
 Allow to use the same commands (edit, publish, list, attributes) on published posts
 Add command line doc to blux.rb
