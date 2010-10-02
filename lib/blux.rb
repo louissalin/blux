@@ -76,7 +76,7 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		draft_mgr = mgr.create_draft_manager
 
 		check_filename(options, draft_mgr) do |filename|
-			system "ruby blux.rb --out -f #{filename} | #{mgr.html_converter_cmd}"
+			system "ruby blux.rb --out -f #{filename} | #{mgr.config.html_converter_cmd}"
 		end
 	when :publish
 		draft_mgr = mgr.create_draft_manager

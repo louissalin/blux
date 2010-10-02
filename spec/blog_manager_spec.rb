@@ -68,7 +68,7 @@ describe BlogManager do
 		end
 		
 		it "should pass the editor command to the draft manager" do
-			@manager.draft_manager.launch_editor_cmd.should == @manager.launch_editor_cmd
+			@manager.draft_manager.launch_editor_cmd.should == @manager.config.launch_editor_cmd
 		end
 
 		it "should pass the tmp folder to the draft manager" do
@@ -85,7 +85,7 @@ describe BlogManager do
 		end
 
 		it "should send the proper command" do
-			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby wp_publish.rb -t no title")
+			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby wp_publish.rb -t no title --config #{@blux_rc}")
 			@manager.publish 'draft1.23'
 		end
 
@@ -95,7 +95,7 @@ describe BlogManager do
 					'bla'
 				end
 			end
-			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby wp_publish.rb -t bla")
+			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby wp_publish.rb -t bla --config #{@blux_rc}")
 			@manager.publish 'draft1.23'
 		end
 	end

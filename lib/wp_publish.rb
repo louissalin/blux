@@ -1,7 +1,4 @@
 #!/usr/bin/env ruby
-
-require "#{File.dirname(__FILE__)}/blux_config_reader"
-
 ## Copyright (c) 2007 John Mettraux
 ## Released under the MIT license
 ## http://www.opensource.org/licenses/mit-license.php
@@ -11,25 +8,10 @@ require "#{File.dirname(__FILE__)}/blux_config_reader"
 
 require 'optparse'
 require 'net/http'
-
-require 'rubygems'
 require 'atom/entry' # sudo gem install atom-tools
 require 'atom/collection'
+require "#{File.dirname(__FILE__)}/blux_config_reader"
 
-# a great thanks to the devs of all the libs used here
-#
-# some info about you and your blog
-
-config = BluxConfigurationReader.new
-config.load_config @blux_rc
-
-blog = config.blog
-authorname = config.author_name
-username = config.user_name
-password = config.password
-
-bloguri = "http://#{blog}.wordpress.com"
-base = "https://#{blog}.wordpress.com/wp-app.php"
 
 #
 # parse options
@@ -37,6 +19,7 @@ base = "https://#{blog}.wordpress.com/wp-app.php"
 tags = []
 title = nil
 type = 'html'
+bluxrc = nil
 
 opts = OptionParser.new
 opts.banner = "Usage: post.rb [options]"
@@ -68,6 +51,12 @@ opts.on(
 	end
 
 opts.on(
+	"--config {config_file}",
+	"blux config file path") do |f|
+	bluxrc = f
+	end
+
+opts.on(
 	"-h",
 	"--help",
 	"displays this help") do
@@ -81,6 +70,21 @@ opts.on(
 opts.parse ARGV
 
 raise "please specify a title for the post with the -t option" unless title
+
+# a great thanks to the devs of all the libs used here
+#
+# some info about you and your blog
+
+config = BluxConfigurationReader.new
+config.load_config bluxrc
+
+blog = config.blog
+authorname = config.author_name
+username = config.user_name
+password = config.password
+
+bloguri = "http://#{blog}.wordpress.com"
+base = "https://#{blog}.wordpress.com/wp-app.php"
 
 #
 # gather content

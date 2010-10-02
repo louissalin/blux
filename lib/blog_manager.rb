@@ -3,8 +3,8 @@ require "#{File.dirname(__FILE__)}/blux_config_reader"
 
 class BlogManager
 	attr_accessor :home, :blux_dir, :blux_rc, :blux_temp_dir
-	attr_accessor :launch_editor_cmd, :html_converter_cmd
 	attr_accessor :draft_manager 
+	attr_accessor :config
 
 	def initialize(options = {})
 		@options = options
@@ -40,11 +40,11 @@ class BlogManager
 	end
 
 	def create_draft_manager
-		@draft_manager = DraftManager.new(@launch_editor_cmd, @blux_temp_dir, @blux_draft_dir, @options)
+		@draft_manager = DraftManager.new(@config.launch_editor_cmd, @blux_temp_dir, @blux_draft_dir, @options)
 	end
 
 	def publish(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
-		system "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title}"
+		system "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title} --config #{@blux_rc}"
 	end
 end
