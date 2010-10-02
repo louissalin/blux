@@ -32,20 +32,6 @@ describe BlogManager do
 		end
 	end
 
-	context "loading the editor from the config file" do
-		before :each do
-			create_config
-			@manager.load_config
-		end
-
-		it "should read the editor from the config file" do
-			@manager.launch_editor_cmd.should == 'gedit'
-		end
-
-		it "should read the html_converter from the config file" do
-			@manager.html_converter_cmd.should == 'ruby textile_to_html.rb'
-		end
-	end
 
 	context "starting the blog manager" do
 		before :each do
@@ -107,7 +93,7 @@ describe BlogManager do
 		end
 
 		it "should send the proper command" do
-			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby post.rb -t no title")
+			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby wp_publish.rb -t no title")
 			@manager.publish 'draft1.23'
 		end
 
@@ -117,7 +103,7 @@ describe BlogManager do
 					'bla'
 				end
 			end
-			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby post.rb -t bla")
+			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby wp_publish.rb -t bla")
 			@manager.publish 'draft1.23'
 		end
 	end

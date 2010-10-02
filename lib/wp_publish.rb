@@ -3,6 +3,9 @@
 ## Copyright (c) 2007 John Mettraux
 ## Released under the MIT license
 ## http://www.opensource.org/licenses/mit-license.php
+##
+## Modifications by Louis Salin, October 2010
+## => reading blog information from the configuration file
 
 require 'optparse'
 require 'net/http'
