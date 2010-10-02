@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require "#{File.dirname(__FILE__)}/blux_config_reader"
+
 ## Copyright (c) 2007 John Mettraux
 ## Released under the MIT license
 ## http://www.opensource.org/licenses/mit-license.php
@@ -18,10 +20,13 @@ require 'atom/collection'
 #
 # some info about you and your blog
 
-blog = "louissalin"
-authorname = "Louis Salin"
-username = "louissalin"
-password = "kazam!!!"
+config = BluxConfigurationReader.new
+config.load_config @blux_rc
+
+blog = config.blog
+authorname = config.author_name
+username = config.user_name
+password = config.password
 
 bloguri = "http://#{blog}.wordpress.com"
 base = "https://#{blog}.wordpress.com/wp-app.php"
