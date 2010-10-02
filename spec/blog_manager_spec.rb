@@ -25,14 +25,6 @@ describe BlogManager do
 		end
 	end
 
-	context "loading the editor from the config file when it doesn't exist" do
-		it "should show a warning" do
-			STDERR.should_receive(:puts).with("please specify an editor in .bluxrc: editor: [your editor of choice]\n")
-			@manager.load_config
-		end
-	end
-
-
 	context "starting the blog manager" do
 		before :each do
 			@manager.start

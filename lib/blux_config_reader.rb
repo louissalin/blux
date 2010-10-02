@@ -41,5 +41,25 @@ private
 		if (@launch_editor_cmd == nil)
 			STDERR.puts "please specify an editor in .bluxrc: editor: [your editor of choice]\n"
 		end
+
+		if (@html_converter_cmd == nil)
+			STDERR.puts "please specify an html converter in .bluxrc: html_converter: [your converter command of choice]\n"
+		end
+
+		if (@blog == nil)
+			STDERR.puts "please specify your wordpress blog name in .bluxrc: blog: [your blog]\n"
+		end
+
+		if (@author_name == nil)
+			STDERR.puts "please specify an author name in .bluxrc: author_name: [your name]\n"
+		end
+
+		if (@user_name == nil)
+			STDERR.puts "please specify your wordpress user name in .bluxrc: user_name: [your user name]\n"
+		end
+
+		if (@password == nil)
+			STDERR.puts "please specify your wordpress password in .bluxrc: password: [your password]\n"
+		end
 	end
 end
