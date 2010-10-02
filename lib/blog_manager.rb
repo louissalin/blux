@@ -57,7 +57,7 @@ class BlogManager
 
 	def publish(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
-		system "ruby blux.rb --convert -f #{filename} | ruby post.rb -t #{title}"
+		system "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title}"
 	end
 
 private
