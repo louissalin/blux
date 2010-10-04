@@ -1,4 +1,4 @@
-Allow to use the same commands (edit, publish, list, attributes) on published posts
+Allow to republish a post
 Add command line doc to blux.rb
 improve README
 GPL

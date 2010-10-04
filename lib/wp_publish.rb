@@ -20,6 +20,7 @@ tags = []
 title = nil
 type = 'html'
 bluxrc = nil
+command = :post
 
 opts = OptionParser.new
 opts.banner = "Usage: post.rb [options]"
@@ -54,6 +55,12 @@ opts.on(
 	"--config {config_file}",
 	"blux config file path") do |f|
 	bluxrc = f
+	end
+
+opts.on(
+	"--update",
+	"update an existing post") do |f|
+	command = :put
 	end
 
 opts.on(
@@ -123,7 +130,10 @@ h.pass = password
 h.always_auth = :basic
 
 c = Atom::Collection.new(base + "/posts", h)
-res = c.post! entry
+if command == :post
+	res = c.post! entry
+elsif command == :put
+	res = c.put! entry
 
 puts res.read_body
 
