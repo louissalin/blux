@@ -12,7 +12,8 @@ describe DraftManager do
 		Dir.mkdir(@draft_dir) unless Dir.exists?(@draft_dir)
 		
 		def STDERR.puts(str) end
-		@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+		@manager = DraftManager.new()
+		@manager.setup('gedit', @temp_dir, @draft_dir)
 	end
 
 	after :each do
@@ -29,7 +30,9 @@ describe DraftManager do
 				f.write('{"test.sh":{"a":1,"b":2}}')
 			end
 			
-			manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			manager = DraftManager.new
+			manager.setup('gedit', @temp_dir, @draft_dir)
+
 			manager.draft_index.key?("test.sh").should == true
 			manager.draft_index["test.sh"].key?("a").should == true
 			manager.draft_index["test.sh"].key?("b").should == true
@@ -118,7 +121,8 @@ describe DraftManager do
 				f.write('{"test.sh":{}}')
 			end
 
-			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager = DraftManager.new
+			@manager.setup('gedit', @temp_dir, @draft_dir)
 			@manager.stub!(:system).and_return(nil)
 		end
 
@@ -164,7 +168,8 @@ describe DraftManager do
 			system "touch #{@draft_dir}/file1"
 			system "touch #{@draft_dir}/file2"
 
-			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager = DraftManager.new
+			@manager.setup('gedit', @temp_dir, @draft_dir)
 		end
 
 		it "should display the info about the selected draft in json format" do
@@ -187,7 +192,8 @@ describe DraftManager do
 			system "echo this is a blog > #{@draft_dir}/file2"
 			system "touch #{@draft_dir}/file3"
 
-			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager = DraftManager.new
+			@manager.setup('gedit', @temp_dir, @draft_dir)
 		end
 
 		it "should trunk the preview to 76 chars, with '...' appended at the end" do
@@ -213,7 +219,8 @@ describe DraftManager do
 			system "echo this is a blog > #{@draft_dir}/file2"
 			system "touch #{@draft_dir}/file3"
 
-			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager = DraftManager.new
+			@manager.setup('gedit', @temp_dir, @draft_dir)
 		end
 
 		it "should show the entire content of the draft" do
@@ -232,7 +239,8 @@ describe DraftManager do
 			end
 
 			system "touch #{@draft_dir}/draft.1"
-			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager = DraftManager.new
+			@manager.setup('gedit', @temp_dir, @draft_dir)
 		end
 
 		it "should add the attribute to the draft index" do
@@ -265,7 +273,8 @@ describe DraftManager do
 
 			system "touch #{@draft_dir}/draft.1"
 			system "touch #{@draft_dir}/draft.2"
-			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager = DraftManager.new
+			@manager.setup('gedit', @temp_dir, @draft_dir)
 		end
 
 		it "should output an error message if the title is not unique" do
@@ -291,7 +300,8 @@ describe DraftManager do
 			end
 
 			system "touch #{@draft_dir}/draft.1"
-			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager = DraftManager.new
+			@manager.setup('gedit', @temp_dir, @draft_dir)
 		end
 
 		it "should remove the attribute from the draft index" do
@@ -318,7 +328,9 @@ describe DraftManager do
 						 "draft.2" => {"creation_time" => "2010-10-09 15:30:12"}}.to_json)
 			end
 
-			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager = DraftManager.new
+			@manager.setup('gedit', @temp_dir, @draft_dir)
+
 			@manager.get_latest_created_draft().should == "draft.1"
 		end
 
@@ -335,7 +347,9 @@ describe DraftManager do
 						 "draft.2" => {"title" => "title2"}}.to_json)
 			end
 
-			@manager = DraftManager.new('gedit', @temp_dir, @draft_dir)
+			@manager = DraftManager.new
+			@manager.setup('gedit', @temp_dir, @draft_dir)
+			
 			@manager.get_draft_by_title("title1").should == "draft.1"
 			@manager.get_draft_by_title("title2").should == "draft.2"
 		end

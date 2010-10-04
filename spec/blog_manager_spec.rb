@@ -4,10 +4,17 @@ describe BlogManager do
 	before :each do
 		ENV['HOME'] = File.dirname(__FILE__)
 		@blux_rc = "#{File.dirname(__FILE__)}/.bluxrc"
-		@blux= "#{File.dirname(__FILE__)}/.blux"
+		@blux = "#{File.dirname(__FILE__)}/.blux"
+
+		Dir.mkdir(@blux) unless Dir.exists?(@blux)
 
 		def STDERR.puts(str) end
-		@manager = BlogManager.new()
+
+		@draft_mgr = DraftManager.new
+		@draft_mgr.stub!(:editor_cmd).and_return('gedit')
+		@draft_mgr.stub!(:setup)
+
+		@manager = BlogManager.new(@draft_mgr)
 	end
 
 	after :each do
@@ -53,26 +60,36 @@ describe BlogManager do
 		it "should create a draft folder in the .blux dir if it doesn't exist" do
 			File.exists?("#{@blux}/draft").should == true
 		end
+
+		it "should create a published post file in the .blux dir if it doesn't exist" do
+			File.exists?("#{@blux}/.published").should == true
+		end
 	end
 
-	context "creating a draft manager" do
+	context "when using the blog manager" do
+		before :each do
+			File.open("#{@blux}/.published", 'w') do |f|
+				f.write('{"draft1.23":{}}')
+			end
+
+			@manager.start
+		end
+
+		it "should load the published post file" do
+			@manager.published_posts.key?("draft1.23").should == true
+		end
+	end
+
+	context "loading the config and setting up the draft manager" do
 		before :each do
 			create_config
-			@manager.load_config
 			@manager.start
-			@manager.create_draft_manager
 		end
 
-		it "should create a draft manager" do
-			@manager.draft_manager.should_not == nil
-		end
-		
-		it "should pass the editor command to the draft manager" do
-			@manager.draft_manager.launch_editor_cmd.should == @manager.config.launch_editor_cmd
-		end
+		it "should pass the right configuration to the draft manager" do
+			@draft_mgr.should_receive(:setup).with('gedit', @manager.blux_tmp_dir, @manager.blux_draft_dir, {:verbose => false})
 
-		it "should pass the tmp folder to the draft manager" do
-			@manager.draft_manager.temp_dir.should == @manager.blux_temp_dir
+			@manager.load_config
 		end
 	end
 
@@ -81,12 +98,13 @@ describe BlogManager do
 			create_config
 			@manager.load_config
 			@manager.start
-			@manager.create_draft_manager
+
+			@manager.stub!(:system).and_return(nil)
 		end
 
 		it "should send the proper command" do
-			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby wp_publish.rb -t no title --config #{@blux_rc}")
-			@manager.publish 'draft1.23'
+			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft5.67 | ruby wp_publish.rb -t no title --config #{@blux_rc}")
+			@manager.publish 'draft5.67'
 		end
 
 		it "should send the command with the title included if it exists" do
@@ -95,8 +113,13 @@ describe BlogManager do
 					'bla'
 				end
 			end
-			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft1.23 | ruby wp_publish.rb -t bla --config #{@blux_rc}")
-			@manager.publish 'draft1.23'
+			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft5.67 | ruby wp_publish.rb -t bla --config #{@blux_rc}")
+			@manager.publish 'draft5.67'
+		end
+
+		it "should create a record of the published draft" do
+			@manager.publish 'draft5.67'
+			@manager.published_posts.key?("draft5.67").should == true
 		end
 	end
 

@@ -7,7 +7,7 @@ class DraftManager
 	attr_reader :temp_dir, :draft_dir
 	attr_reader :draft_index
 
-	def initialize(editor_cmd, temp_dir, draft_dir, options = {})
+	def setup(editor_cmd, temp_dir, draft_dir, options = {})
 		@verbose = options[:verbose] ||= false
 
 		@launch_editor_cmd = editor_cmd

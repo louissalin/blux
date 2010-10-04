@@ -36,7 +36,8 @@ end
 validate_command(BluxOptionParser.parse(ARGV)) do |options|
 	puts "#{options}" if options.verbose
 
-	mgr = BlogManager.new(:verbose => options.verbose)	
+	draft_manager = DraftManager.new()
+	mgr = BlogManager.new(draft_manager, :verbose => options.verbose)	
 	mgr.load_config
 	mgr.start
 
