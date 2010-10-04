@@ -73,6 +73,11 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 			puts "publishing" if options.verbose
 			mgr.publish filename
 		end
+	when :update
+		check_filename(options, mgr) do |filename|
+			puts "updating" if options.verbose
+			mgr.update filename
+		end
 	when :set_id
 		check_filename(options, mgr) do |filename|
 			ARGF.each do |id|

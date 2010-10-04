@@ -39,6 +39,10 @@ class BluxOptionParser
 				options.command = :publish
 			end
 
+			opts.on("-u", "--update", "update a draft") do
+				options.command = :update
+			end
+
 			opts.on("--latest", "apply the selected command to the latest draft") do
 				options.use_latest = true
 			end

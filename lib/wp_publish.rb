@@ -21,6 +21,7 @@ title = nil
 type = 'html'
 bluxrc = nil
 command = :post
+entry_id = nil
 
 opts = OptionParser.new
 opts.banner = "Usage: post.rb [options]"
@@ -58,9 +59,10 @@ opts.on(
 	end
 
 opts.on(
-	"--update",
-	"update an existing post") do |f|
+	"--update {entry_id}",
+	"update an existing post") do |id|
 	command = :put
+	entry_id = id
 	end
 
 opts.on(
@@ -132,9 +134,12 @@ h.always_auth = :basic
 c = Atom::Collection.new(base + "/posts", h)
 if command == :post
 	res = c.post! entry
+	puts Atom::Entry.parse(res.read_body).id
 elsif command == :put
+	entry.id = entry_id
+	entry.edit_url = entry_id
 	res = c.put! entry
+
+	puts res.read_body
 end
 
-#puts res.read_body
-puts Atom::Entry.parse(res.read_body).id
