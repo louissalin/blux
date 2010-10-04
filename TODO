@@ -1,4 +1,3 @@
-Move the published draft to the published folder + tests
 Allow to use the same commands (edit, publish, list, attributes) on published posts
 Add command line doc to blux.rb
 improve README

@@ -76,7 +76,7 @@ describe BlogManager do
 		end
 
 		it "should load the published post file" do
-			@manager.published_posts.key?("draft1.23").should == true
+			@manager.index.key?("draft1.23").should == true
 		end
 	end
 
@@ -87,7 +87,7 @@ describe BlogManager do
 		end
 
 		it "should pass the right configuration to the draft manager" do
-			@draft_mgr.should_receive(:setup).with('gedit', @manager.blux_tmp_dir, @manager.blux_draft_dir, {:verbose => false})
+			@draft_mgr.should_receive(:setup).with('gedit', @manager.blux_tmp_dir, @manager.draft_dir, {:verbose => false})
 
 			@manager.load_config
 		end
@@ -108,18 +108,33 @@ describe BlogManager do
 		end
 
 		it "should send the command with the title included if it exists" do
-			class DraftManager
-				def get_attribute(filename, attribute)
-					'bla'
-				end
-			end
+			@draft_mgr.stub!(:get_attribute).and_return('bla')
+
 			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft5.67 | ruby wp_publish.rb -t bla --config #{@blux_rc}")
 			@manager.publish 'draft5.67'
 		end
 
 		it "should create a record of the published draft" do
 			@manager.publish 'draft5.67'
-			@manager.published_posts.key?("draft5.67").should == true
+			@manager.index.key?("draft5.67").should == true
+		end
+
+		it "should save the record of published drafts to disk" do
+			@manager.publish 'draft5.67'
+
+			lines = ''
+			File.open("#{@blux}/.published", 'r') do |f| 
+				f.each_line {|l| lines += l}
+			end
+
+			JSON.parse(lines).key?('draft5.67').should == true
+		end
+
+		it "should add the published time to the attributes of that post" do
+			time = Time.now.to_s
+
+			@manager.publish 'draft5.67'
+			@manager.index["draft5.67"]["published_time"].to_s.should == time
 		end
 	end
 

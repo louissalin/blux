@@ -1,11 +1,14 @@
 require "#{File.dirname(__FILE__)}/draft_manager"
 require "#{File.dirname(__FILE__)}/blux_config_reader"
+require "#{File.dirname(__FILE__)}/indexer"
 
 class BlogManager
-	attr_accessor :home, :blux_dir, :blux_rc, :blux_tmp_dir, :blux_draft_dir
+	attr_accessor :home, :blux_dir, :blux_rc, :blux_tmp_dir, :draft_dir
 	attr_accessor :draft_manager 
 	attr_accessor :config
-	attr_accessor :published_posts
+	attr_accessor :index
+
+	include BluxIndexer
 
 	def initialize(draft_manager, options = {})
 		@options = options
@@ -13,7 +16,7 @@ class BlogManager
 
 		@home = ENV['HOME']
 		@blux_dir = "#{@home}/.blux"
-		@blux_draft_dir = "#{@blux_dir}/draft"
+		@draft_dir = "#{@blux_dir}/draft"
 		@blux_tmp_dir = "#{@blux_dir}/tmp"
 		@blux_rc = "#{@home}/.bluxrc"
 		@blux_published = "#{@blux_dir}/.published"
@@ -27,9 +30,9 @@ class BlogManager
 			Dir.mkdir(@blux_dir) 
 		end
 
-		unless Dir.exists?(@blux_draft_dir)
-			puts "creating #{@blux_draft_dir}\n" if @verbose
-			Dir.mkdir(@blux_draft_dir) 
+		unless Dir.exists?(@draft_dir)
+			puts "creating #{@draft_dir}\n" if @verbose
+			Dir.mkdir(@draft_dir) 
 		end
 
 		unless Dir.exists?(@blux_tmp_dir)
@@ -44,15 +47,15 @@ class BlogManager
 		@config = BluxConfigurationReader.new
 		@config.load_config @blux_rc, @verbose
 
-		@draft_manager.setup(@config.launch_editor_cmd, @blux_tmp_dir, @blux_draft_dir, @options)
-		puts @draft_manager
+		@draft_manager.setup(@config.launch_editor_cmd, @blux_tmp_dir, @draft_dir, @options)
 	end
 
 	def publish(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
 		system "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title} --config #{@blux_rc}"
 		
-		@published_posts[filename] = {}
+		@index[filename] = {"published_time" => Time.now}
+		save_published_index
 	end
 	
 	def load_published
@@ -64,6 +67,14 @@ class BlogManager
 			f.each_line {|l| str += l}
 		end
 			
-		@published_posts = str.length > 0 ? JSON.parse(str) : {}
+		@index = str.length > 0 ? JSON.parse(str) : {}
+	end
+
+private
+	def save_published_index
+		puts "saving published draft index: #{@index.to_json}\n" if @verbose
+		File.open(@blux_published, 'w') do |f| 
+			f.write(@index.to_json) if @index
+		end
 	end
 end

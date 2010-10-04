@@ -2,10 +2,14 @@ require 'tempfile'
 require 'json'
 require 'time'
 
+require "#{File.dirname(__FILE__)}/indexer"
+
 class DraftManager
 	attr_reader :launch_editor_cmd
 	attr_reader :temp_dir, :draft_dir
-	attr_reader :draft_index
+	attr_reader :index
+
+	include BluxIndexer
 
 	def setup(editor_cmd, temp_dir, draft_dir, options = {})
 		@verbose = options[:verbose] ||= false
@@ -13,9 +17,9 @@ class DraftManager
 		@launch_editor_cmd = editor_cmd
 		@temp_dir = temp_dir
 		@draft_dir = draft_dir
-		@draft_index_file = "#{@draft_dir}/.draft_index"
+		@index_file = "#{@draft_dir}/.draft_index"
 
-		system "touch #{@draft_index_file}" unless File.exists? @draft_index_file
+		system "touch #{@index_file}" unless File.exists? @index_file
 
 		load_draft_index
 	end
@@ -31,7 +35,7 @@ class DraftManager
 
 		index_key = File.basename(temp_file.path)
 		puts "adding #{index_key} to draft index\n" if @verbose
-		@draft_index[index_key] = {:creation_time => Time.now.to_s}
+		@index[index_key] = {:creation_time => Time.now.to_s}
 		save_draft_index
 	end
 
@@ -93,7 +97,7 @@ class DraftManager
 
 	def get_latest_created_draft
 		check_draft_count do
-			@draft_index.sort do |a,b| 
+			@index.sort do |a,b| 
 				Time.parse(a[1]["creation_time"]) <=> Time.parse(b[1]["creation_time"])
 			end[-1][0]
 		end
@@ -101,8 +105,8 @@ class DraftManager
 
 	def get_draft_by_title(title)
 		check_draft_count do
-			@draft_index.keys.each do |key|
-				draft_title = @draft_index[key]["title"]
+			@index.keys.each do |key|
+				draft_title = @index[key]["title"]
 				return key if draft_title == title
 			end
 		end
@@ -127,32 +131,16 @@ private
 		return true unless attr_key.to_s == "title"
 		
 		unique_title = true
-		@draft_index.keys.reject{|k| k == filename}.each do |key|
-			unique_title = false if (@draft_index[key][attr_key.to_s] == attr_val)
+		@index.keys.reject{|k| k == filename}.each do |key|
+			unique_title = false if (@index[key][attr_key.to_s] == attr_val)
 		end
 		
 		STDERR.puts "title '#{attr_val}' is not unique\n" unless unique_title 
 		unique_title
 	end
 
-	def check_index(filename)
-		check_filename(filename) do
-			yield @draft_index[filename]
-		end
-	end
-
-	def check_filename(filename)
-		draft_filename = "#{draft_dir}/#{filename}"
-
-		if (File.exists?(draft_filename))
-			yield draft_filename
-		else
-			STDERR.puts "draft filename #{filename} does not exist\n"
-		end
-	end
-
 	def check_draft_count
-		if @draft_index.keys.length > 0
+		if @index.keys.length > 0
 			yield
 		else
 			STDERR.puts "there is currently no saved draft\n"
@@ -161,17 +149,17 @@ private
 
 	def load_draft_index
 		str = ''
-		File.open(@draft_index_file, 'r') do |f| 
+		File.open(@index_file, 'r') do |f| 
 			f.each_line {|l| str += l}
 		end
 			
-		@draft_index = str.length > 0 ? JSON.parse(str) : {}
+		@index = str.length > 0 ? JSON.parse(str) : {}
 	end
 
 	def save_draft_index
-		puts "saving draft index: #{@draft_index.to_json}\n" if @verbose
-		File.open(@draft_index_file, 'w') do |f| 
-			f.write(@draft_index.to_json) if @draft_index
+		puts "saving draft index: #{@index.to_json}\n" if @verbose
+		File.open(@index_file, 'w') do |f| 
+			f.write(@index.to_json) if @index
 		end
 	end
 end
