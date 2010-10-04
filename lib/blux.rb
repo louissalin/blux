@@ -19,9 +19,9 @@ def validate_set_options(options)
 	end
 end
 
-def check_filename(options, draft_manager)
-	filename = draft_manager.get_latest_created_draft if options.use_latest
-	filename = draft_manager.get_draft_by_title(options.title) if options.use_title
+def check_filename(options, blog_manager)
+	filename = blog_manager.draft_manager.get_latest_created_draft if options.use_latest
+	filename = blog_manager.draft_manager.get_draft_by_title(options.title) if options.use_title
 	filename = options.filename || filename
 
 	puts "check_filename: #{filename}" if options.verbose
@@ -36,53 +36,41 @@ end
 validate_command(BluxOptionParser.parse(ARGV)) do |options|
 	puts "#{options}" if options.verbose
 
-	draft_manager = DraftManager.new()
+	draft_manager = DraftManager.new
 	mgr = BlogManager.new(draft_manager, :verbose => options.verbose)	
 	mgr.load_config
 	mgr.start
 
 	case options.command
 	when :new
-		draft_mgr = mgr.create_draft_manager
-		draft_mgr.create_draft
+		mgr.draft_manager.create_draft
 	when :edit
-		draft_mgr = mgr.create_draft_manager
-
-		check_filename(options, draft_mgr) do |filename|
+		check_filename(options, mgr) do |filename|
 			draft_mgr.edit_draft filename
 		end
 	when :list
-		draft_mgr = mgr.create_draft_manager
-		draft_mgr.list.each do |item|
+		mgr.draft_manager.list.each do |item|
 			break if options.filename != nil && options.filename != item
 			puts "#{item}"
 			puts "  #{draft_mgr.show_info(item)}" if options.list_details
 			puts "  #{draft_mgr.show_preview(item)}" if options.list_preview
 		end
 	when :set
-		draft_mgr = mgr.create_draft_manager
-
-		check_filename(options, draft_mgr) do |filename|
+		check_filename(options, mgr) do |filename|
 			validate_set_options(options) do |attribute, value|
 				draft_mgr.set_attribute(filename, attribute, value)
 			end
 		end
 	when :out
-		draft_mgr = mgr.create_draft_manager
-		
-		check_filename(options, draft_mgr) do |filename|
-			STDOUT.puts(draft_mgr.output filename)
+		check_filename(options, mgr) do |filename|
+			STDOUT.puts(mgr.draft_manager.output filename)
 		end
 	when :convert
-		draft_mgr = mgr.create_draft_manager
-
-		check_filename(options, draft_mgr) do |filename|
+		check_filename(options, mgr) do |filename|
 			system "ruby blux.rb --out -f #{filename} | #{mgr.config.html_converter_cmd}"
 		end
 	when :publish
-		draft_mgr = mgr.create_draft_manager
-
-		check_filename(options, draft_mgr) do |filename|
+		check_filename(options, mgr) do |filename|
 			mgr.publish filename
 		end
 	end
