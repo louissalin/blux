@@ -103,14 +103,14 @@ describe BlogManager do
 		end
 
 		it "should send the proper command" do
-			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft5.67 | ruby wp_publish.rb -t no title --config #{@blux_rc}")
+			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft5.67 | ruby wp_publish.rb -t no title --config #{@blux_rc} | ruby blux.rb --set_id -f draft5.67")
 			@manager.publish 'draft5.67'
 		end
 
 		it "should send the command with the title included if it exists" do
 			@draft_mgr.stub!(:get_attribute).and_return('bla')
 
-			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft5.67 | ruby wp_publish.rb -t bla --config #{@blux_rc}")
+			@manager.should_receive(:system).with("ruby blux.rb --convert -f draft5.67 | ruby wp_publish.rb -t bla --config #{@blux_rc} | ruby blux.rb --set_id -f draft5.67")
 			@manager.publish 'draft5.67'
 		end
 

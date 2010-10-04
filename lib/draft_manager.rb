@@ -89,6 +89,7 @@ class DraftManager
 	def set_attribute(filename, key, val)
 		check_index(filename) do |index|
 			if check_title(filename, key, val)
+				puts "setting attribute #{key} to #{val}" if @verbose
 				index[key.to_s] = val 
 				save_draft_index
 			end

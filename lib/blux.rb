@@ -32,7 +32,6 @@ def check_filename(options, blog_manager)
 	end
 end
 
-
 validate_command(BluxOptionParser.parse(ARGV)) do |options|
 	puts "#{options}" if options.verbose
 
@@ -46,7 +45,7 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		mgr.draft_manager.create_draft
 	when :edit
 		check_filename(options, mgr) do |filename|
-			draft_mgr.edit_draft filename
+			mgr.draft_manager.edit_draft filename
 		end
 	when :list
 		mgr.draft_manager.list.each do |item|
@@ -71,7 +70,14 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		end
 	when :publish
 		check_filename(options, mgr) do |filename|
+			puts "publishing" if options.verbose
 			mgr.publish filename
+		end
+	when :set_id
+		check_filename(options, mgr) do |filename|
+			ARGF.each do |id|
+				mgr.draft_manager.set_attribute(filename, 'id', id.strip)
+			end
 		end
 	end
 end

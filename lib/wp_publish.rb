@@ -134,6 +134,7 @@ if command == :post
 	res = c.post! entry
 elsif command == :put
 	res = c.put! entry
+end
 
-puts res.read_body
-
+#puts res.read_body
+puts Atom::Entry.parse(res.read_body).id

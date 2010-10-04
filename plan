@@ -20,6 +20,8 @@ command examples (all work on drafts only for now):
 publishing commands should look like this:
 	$ blux -p (--publish) --latest
 	$ blux -p -f draft1.23
+	$ blux --set_id -f draft1.23				--> sets the id of a published post 
+													(through stdin)
 
 after which the draft will be renamed to postxxx and a new list of commands should exist to manage published posts.
 

@@ -52,6 +52,10 @@ class BluxOptionParser
 				options.filename = filename
 			end
 
+			opts.on("--set_id", "sets a unique ID, normally given through a publisher") do
+				options.command = :set_id
+			end
+
 			opts.on("--with-preview", "show a preview of each draft while listing") do
 				options.list_preview = true
 			end

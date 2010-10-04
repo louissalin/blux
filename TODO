@@ -1,8 +1,13 @@
-Allow to republish a post
+Allow to edit a published post
+	- capture the ID of a published post from the returned xml
+		- pipe result into blux again
+	- reuse the id to republish
 Add command line doc to blux.rb
 improve README
 GPL
 deployment story
+
+(investigate IO.popen)
 
 0.1.0
 

@@ -52,7 +52,11 @@ class BlogManager
 
 	def publish(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
-		system "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title} --config #{@blux_rc}"
+
+		cmd = "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title} --config #{@blux_rc} | ruby blux.rb --set_id -f #{filename}"
+		cmd = cmd + " --verbose" if @verbose
+
+		system cmd
 		
 		@index[filename] = {"published_time" => Time.now}
 		save_published_index
