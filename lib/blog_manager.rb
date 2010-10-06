@@ -53,7 +53,7 @@ class BlogManager
 	def publish(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
 
-		cmd = "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title} --config #{@blux_rc} | ruby blux.rb --set_id -f #{filename}"
+		cmd = "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title} --config #{@blux_rc} | ruby blux.rb --set_edit_url -f #{filename}"
 		cmd = cmd + " --verbose" if @verbose
 
 		puts cmd if @verbose

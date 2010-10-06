@@ -78,10 +78,10 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 			puts "updating" if options.verbose
 			mgr.update filename
 		end
-	when :set_id
+	when :set_edit_url
 		check_filename(options, mgr) do |filename|
-			ARGF.each do |id|
-				mgr.draft_manager.set_attribute(filename, 'id', id.strip)
+			ARGF.each do |url|
+				mgr.draft_manager.set_attribute(filename, 'edit_url', url.strip)
 			end
 		end
 	end
