@@ -30,10 +30,23 @@ module BluxIndexer
 	def set_attribute(filename, key, val)
 		check_index(filename) do |index|
 			if check_title(filename, key, val)
-				puts "setting attribute #{key} to #{val}" if @verbose
+				puts "setting attribute #{key} to #{val} in index #{@index_file}" if @verbose
 				index[key.to_s] = val 
 				save_index
 			end
+		end
+	end
+
+	def delete_attribute(filename, attr_name)
+		check_index(filename) do |index|
+			index.delete(attr_name.to_s)
+			save_index
+		end
+	end
+
+	def get_attribute(filename, attribute)
+		check_index(filename) do |index|
+			index[attribute]
 		end
 	end
 

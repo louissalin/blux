@@ -102,17 +102,4 @@ class DraftManager
 			end
 		end
 	end
-
-	def delete_attribute(filename, attr_name)
-		check_index(filename) do |index|
-			index.delete(attr_name.to_s)
-			save_index
-		end
-	end
-
-	def get_attribute(filename, attribute)
-		check_index(filename) do |index|
-			index[attribute]
-		end
-	end
 end

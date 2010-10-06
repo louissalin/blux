@@ -60,6 +60,7 @@ class BlogManager
 		puts cmd if @verbose
 		system cmd
 		
+		load_index
 		set_attribute(filename, :published_time, Time.now)
 	end
 
