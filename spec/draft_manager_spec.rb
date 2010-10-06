@@ -335,7 +335,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if there are no drafts saved" do
-			STDERR.should_receive(:puts).with("there is currently no saved draft\n")
+			STDERR.should_receive(:puts).with("there is currently no saved index\n")
 			@manager.get_latest_created_draft
 		end
 	end
@@ -355,7 +355,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if there are no drafts saved" do
-			STDERR.should_receive(:puts).with("there is currently no saved draft\n")
+			STDERR.should_receive(:puts).with("there is currently no saved index\n")
 			@manager.get_draft_by_title("title2")
 		end
 	end

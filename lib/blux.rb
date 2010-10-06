@@ -81,7 +81,7 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 	when :set_edit_url
 		check_filename(options, mgr) do |filename|
 			ARGF.each do |url|
-				mgr.draft_manager.set_attribute(filename, 'edit_url', url.strip)
+				mgr.set_attribute(filename, 'edit_url', url.strip)
 			end
 		end
 	end

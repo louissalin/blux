@@ -21,7 +21,7 @@ class DraftManager
 
 		system "touch #{@index_file}" unless File.exists? @index_file
 
-		load_draft_index
+		load_index
 	end
 
 	def create_draft
@@ -36,7 +36,7 @@ class DraftManager
 		index_key = File.basename(temp_file.path)
 		puts "adding #{index_key} to draft index\n" if @verbose
 		@index[index_key] = {:creation_time => Time.now.to_s}
-		save_draft_index
+		save_index
 	end
 
 	def edit_draft(filename)
@@ -86,18 +86,8 @@ class DraftManager
 		end
 	end
 
-	def set_attribute(filename, key, val)
-		check_index(filename) do |index|
-			if check_title(filename, key, val)
-				puts "setting attribute #{key} to #{val}" if @verbose
-				index[key.to_s] = val 
-				save_draft_index
-			end
-		end
-	end
-
 	def get_latest_created_draft
-		check_draft_count do
+		check_count do
 			@index.sort do |a,b| 
 				Time.parse(a[1]["creation_time"]) <=> Time.parse(b[1]["creation_time"])
 			end[-1][0]
@@ -105,7 +95,7 @@ class DraftManager
 	end
 
 	def get_draft_by_title(title)
-		check_draft_count do
+		check_count do
 			@index.keys.each do |key|
 				draft_title = @index[key]["title"]
 				return key if draft_title == title
@@ -116,51 +106,13 @@ class DraftManager
 	def delete_attribute(filename, attr_name)
 		check_index(filename) do |index|
 			index.delete(attr_name.to_s)
-			save_draft_index
+			save_index
 		end
 	end
 
 	def get_attribute(filename, attribute)
 		check_index(filename) do |index|
 			index[attribute]
-		end
-	end
-
-
-private
-	def check_title(filename, attr_key, attr_val)
-		return true unless attr_key.to_s == "title"
-		
-		unique_title = true
-		@index.keys.reject{|k| k == filename}.each do |key|
-			unique_title = false if (@index[key][attr_key.to_s] == attr_val)
-		end
-		
-		STDERR.puts "title '#{attr_val}' is not unique\n" unless unique_title 
-		unique_title
-	end
-
-	def check_draft_count
-		if @index.keys.length > 0
-			yield
-		else
-			STDERR.puts "there is currently no saved draft\n"
-		end
-	end
-
-	def load_draft_index
-		str = ''
-		File.open(@index_file, 'r') do |f| 
-			f.each_line {|l| str += l}
-		end
-			
-		@index = str.length > 0 ? JSON.parse(str) : {}
-	end
-
-	def save_draft_index
-		puts "saving draft index: #{@index.to_json}\n" if @verbose
-		File.open(@index_file, 'w') do |f| 
-			f.write(@index.to_json) if @index
 		end
 	end
 end
