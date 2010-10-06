@@ -5,6 +5,8 @@ describe BlogManager do
 		ENV['HOME'] = File.dirname(__FILE__)
 		@blux_rc = "#{File.dirname(__FILE__)}/.bluxrc"
 		@blux = "#{File.dirname(__FILE__)}/.blux"
+		@blux_dir = "#{File.dirname(__FILE__)}/.blux"
+		@draft_dir = "#{@blux_dir}/draft"
 
 		Dir.mkdir(@blux) unless Dir.exists?(@blux)
 
@@ -96,10 +98,16 @@ describe BlogManager do
 	context "when publishing" do
 		before :each do
 			create_config
+
+			File.open(@manager.index_file, 'w') do |f|
+				f.write('{"draft5.67":{"a":1,"b":2}}')
+			end
+
 			@manager.load_config
 			@manager.start
-
 			@manager.stub!(:system).and_return(nil)
+
+			system "touch #{@manager.draft_dir}/draft5.67"
 		end
 
 		it "should send the proper command" do
@@ -114,16 +122,11 @@ describe BlogManager do
 			@manager.publish 'draft5.67'
 		end
 
-		it "should create a record of the published draft" do
-			@manager.publish 'draft5.67'
-			@manager.index.key?("draft5.67").should == true
-		end
-
 		it "should save the record of published drafts to disk" do
 			@manager.publish 'draft5.67'
 
 			lines = ''
-			File.open("#{@blux}/.published", 'r') do |f| 
+			File.open(@manager.index_file, 'r') do |f| 
 				f.each_line {|l| lines += l}
 			end
 

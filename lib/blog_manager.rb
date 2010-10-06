@@ -7,6 +7,7 @@ class BlogManager
 	attr_accessor :draft_manager 
 	attr_accessor :config
 	attr_accessor :index
+	attr_accessor :index_file
 
 	include BluxIndexer
 
@@ -19,7 +20,7 @@ class BlogManager
 		@draft_dir = "#{@blux_dir}/draft"
 		@blux_tmp_dir = "#{@blux_dir}/tmp"
 		@blux_rc = "#{@home}/.bluxrc"
-		@blux_published = "#{@blux_dir}/.published"
+		@index_file = "#{@blux_dir}/.published"
 
 		@draft_manager = draft_manager
 	end
@@ -40,7 +41,7 @@ class BlogManager
 			Dir.mkdir(@blux_tmp_dir) 
 		end
 
-		load_published
+		load_index
 	end
 
 	def load_config
@@ -59,42 +60,21 @@ class BlogManager
 		puts cmd if @verbose
 		system cmd
 		
-		@index[filename] = {"published_time" => Time.now}
-		save_published_index
+		set_attribute(filename, :published_time, Time.now)
 	end
 
 	def update(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
-		id = @draft_manager.get_attribute(filename, "id")
+		url = get_attribute(filename, "edit_url")
 
-		raise "couldn't find an id for the draft: #{filename}" unless id
+		raise "couldn't find an edit url for the draft: #{filename}" unless url 
 
-		cmd = "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title} --update #{id} --config #{@blux_rc}"
+		cmd = "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title} --update #{url} --config #{@blux_rc}"
 
 		puts cmd if @verbose
 		system cmd
 		
-		@index[filename] = {"published_time" => Time.now}
-		save_published_index
+		set_attribute(filename, :published_time, Time.now)
 	end
 	
-	def load_published
-		puts "creating #{@blux_published}\n" if @verbose
-		system "touch #{@blux_published}" unless File.exists? @blux_published
-
-		str = ''
-		File.open(@blux_published, 'r') do |f| 
-			f.each_line {|l| str += l}
-		end
-			
-		@index = str.length > 0 ? JSON.parse(str) : {}
-	end
-
-private
-	def save_published_index
-		puts "saving published draft index: #{@index.to_json}\n" if @verbose
-		File.open(@blux_published, 'w') do |f| 
-			f.write(@index.to_json) if @index
-		end
-	end
 end

@@ -46,6 +46,9 @@ module BluxIndexer
 	end
 
 	def load_index
+		puts "creating #{@index_file}\n" if @verbose
+		system "touch #{@index_file}" unless File.exists? @index_file
+
 		str = ''
 		File.open(@index_file, 'r') do |f| 
 			f.each_line {|l| str += l}
