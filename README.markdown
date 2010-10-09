@@ -13,10 +13,15 @@ Blux reads its configuration info from  ~/.bluxrc. The first time you run blux, 
 	password: my_password
 
 **editor:** this is the shell command that will be executed to launch your editor of choice
+
 **html_converter:** Blux will use this shell command to convert your blog draft to html. In the example above, Blux will use the textile_to_html.rb script, which is included with this application. The script will transform your post, written in the textile markup language, and convert it to html.
+
 **blog:** this is your Wordpress blog ID
+
 **author_name:** the name of the author
+
 **user_name:** your Wordpress user name that Blux will use to publish your posts
+
 **password:** your Wordpress password
 
 ## Blux from command line
