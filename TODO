@@ -1,20 +1,33 @@
-Add command line doc to blux.rb
-improve README
 GPL
-deployment story
+gem
+add version somewhere...
 
-(investigate IO.popen)
+release 0.1.0
 
-0.1.0
+investigate IO.popen
+exit gracefully without piping on errors
+add REST requests & responses to output when verbose
+pretty up the verbose mode
 
-Image support (0.1.1)
-Preview feature (0.1.2)
-Blogger support (0.1.3)
-Community Server support (0.1.4)
-Timed publishing
+0.1.1
+
+Add delete command
+
+0.1.2
+
+Image support 
+
+0.1.3
+
+Preview feature 
 
 0.2.0
 
 GUI
 
 0.3.0
+
+Timed publishing
+Manage publishing to multiple blog engines
+
+0.4.0
