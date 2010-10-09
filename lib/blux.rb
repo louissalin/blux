@@ -7,7 +7,7 @@ def validate_command(options)
 	if (options.command != nil)
 		yield options
 	else
-		STDERR << "No command specified. Possible commands: --new, --edit, --set, --list, --publish"
+		STDERR << "No command specified. Use -h for a list of possible commands\n"
 	end
 end
 

@@ -43,16 +43,16 @@ class BluxOptionParser
 				options.command = :update
 			end
 
-			opts.on("--latest", "apply the selected command to the latest draft") do
+			opts.on("--latest", "work on the latest draft") do
 				options.use_latest = true
 			end
 
-			opts.on("--title TITLE", "apply the selected command to a draft with a specific title") do |title|
+			opts.on("--title TITLE", "work on a draft with title") do |title|
 				options.use_title = true
 				options.title = title
 			end
 
-			opts.on("-f", "--file FILENAME", "apply the selected command to a specific draft file") do |filename|
+			opts.on("-f", "--file FILENAME", "work on a specific draft file") do |filename|
 				options.filename = filename
 			end
 
@@ -70,6 +70,11 @@ class BluxOptionParser
 
 			opts.on("--verbose", "verbose mode") do
 				options.verbose = true
+			end
+
+			opts.on_tail("-h", "--help", "show this message") do
+				puts opts
+				exit
 			end
 		end
 
