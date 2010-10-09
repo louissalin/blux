@@ -28,46 +28,46 @@ Blux reads its configuration info from  ~/.bluxrc. The first time you run blux, 
 
 Blux is a command line tool that currently operates without a GUI of any sort. Here are a few of the commands you can use:
 
-> 	$ blux -n  (--new)
+> 	$ blux.rb -n  (--new)
 
 this command launches your text editor. As soon as you quit the editor, it will create a draft in the Blux draft folder in ~/.blux/draft
 
-> 	$ blux -s (--set) --latest title "a title"
+> 	$ blux.rb -s (--set) --latest title "a title"
 
 this command sets a title on the latest created draft
 
-> 	$ blux -s -f draft1.23 title "a title"
+> 	$ blux.rb -s -f draft1.23 title "a title"
 
 the -f <filename> option can be used to tell Blux to operate on a specific draft by use the draft's filename (without the path)
 
-> 	$ blux -s --title "old title" title "new title"
+> 	$ blux.rb -s --title "old title" title "new title"
 
 use --title <title> to tell Blux to operate on a draft with a specific title. In this case, blux will change the title of the "old title" draft to "new title"
 
-> 	$ blux -l (--list)
+> 	$ blux.rb -l (--list)
 
 this command will list all your drafts, showing each draft by filename
 
-> 	$ blux -l --with-preview
+> 	$ blux.rb -l --with-preview
 
 use --with-preview when you want to show a small snippet of each draft during the listing
 
-> 	$ blux -l --details -f draft1.23
+> 	$ blux.rb -l --details -f draft1.23
 
 user --details to see each draft filename followed by the drafts attributes in JSON format when listing
 
-> 	$ blux -o (--out) -f draft1.23
+> 	$ blux.rb -o (--out) -f draft1.23
 
 this command will output the content of your draft to stdin
 
-> 	$ blux -c (--convert) --latest
+> 	$ blux.rb -c (--convert) --latest
 
 this command will invoke the specified converter to convert your post to html
 
-> 	$ blux -e (--edit) --title "title 1"
+> 	$ blux.rb -e (--edit) --title "title 1"
 
 use this command to edit a draft
 
-> 	$ blux -e -f draft1.23 --verbose
+> 	$ blux.rb -e -f draft1.23 --verbose
 
 when using the --verbose option, Blux will output a lot of extra information to the screen as it works
