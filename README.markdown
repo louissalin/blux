@@ -1,6 +1,11 @@
 # Blux
 Blux is an offline blog manager that lets you manage your blog posts offline and publish them to any blog engine that supports AtomPub. 
 
+## install
+gem install Blux
+
+That's it!
+
 ## configuration
 Blux reads its configuration info from  ~/.bluxrc. The first time you run blux, it will create this file for you, but will immediately complain about missing configuration items. Use the following configuration example for a Wordpress blog and edit each line as needed:
 
