@@ -76,3 +76,6 @@ use this command to edit a draft
 > 	$ blux.rb -e -f draft1.23 --verbose
 
 when using the --verbose option, Blux will output a lot of extra information to the screen as it works
+
+## community
+feel free to post your comments or questions to the Blux Google group here: blux_manager@googlegroups.com 
