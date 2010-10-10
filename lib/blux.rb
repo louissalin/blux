@@ -57,7 +57,7 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 	when :set
 		check_filename(options, mgr) do |filename|
 			validate_set_options(options) do |attribute, value|
-				draft_mgr.set_attribute(filename, attribute, value)
+				mgr.draft_manager.set_attribute(filename, attribute, value)
 			end
 		end
 	when :out

@@ -224,7 +224,7 @@ describe DraftManager do
 		end
 
 		it "should show the entire content of the draft" do
-			@manager.output('file1').should == 'this is blog with lots of letters intended to go beyond the 76 chars that will be displayed by the preview functionnality of the draft manager'
+			@manager.output('file1').should == "this is blog with lots of letters intended to go beyond the 76 chars that will be displayed by the preview functionnality of the draft manager\n"
 		end
 
 		it "should display an empty string for an empty draft" do

@@ -83,8 +83,12 @@ class DraftManager
 				if f.eof?
 					''
 				else
-					line = f.readline.gsub("\n", '')
-					line
+					text = ''
+					f.each do |l|
+						text += l
+					end
+
+					text
 				end
 			end
 		end
