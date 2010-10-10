@@ -26,17 +26,21 @@ class DraftManager
 
 	def create_draft
 		temp_file = Tempfile.new('draft', @temp_dir)
+		temp_file.close
+
 		puts "created temp file #{temp_file.path}\nlaunching editor\n" if @verbose
 
 		system "#{@launch_editor_cmd} #{temp_file.path}"
 
 		puts "editor closed. File size: #{temp_file.size}\n" if @verbose
-		system "mv #{temp_file.path} #{@draft_dir}" if temp_file.size > 0
+		if temp_file.size > 0
+			system "mv #{temp_file.path} #{@draft_dir}"
 
-		index_key = File.basename(temp_file.path)
-		puts "adding #{index_key} to draft index\n" if @verbose
-		@index[index_key] = {:creation_time => Time.now.to_s}
-		save_index
+			index_key = File.basename(temp_file.path)
+			puts "adding #{index_key} to draft index\n" if @verbose
+			@index[index_key] = {:creation_time => Time.now.to_s}
+			save_index
+		end
 	end
 
 	def edit_draft(filename)

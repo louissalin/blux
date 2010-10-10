@@ -52,7 +52,7 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 			break if options.filename != nil && options.filename != item
 			puts "#{item}"
 			puts "  #{mgr.draft_manager.show_info(item)}" if options.list_details
-			puts "  #{mgr.draft_managershow_preview(item)}" if options.list_preview
+			puts "  #{mgr.draft_manager.show_preview(item)}" if options.list_preview
 		end
 	when :set
 		check_filename(options, mgr) do |filename|
