@@ -84,7 +84,7 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		end
 	when :convert
 		check_filename(options, mgr) do |filename|
-			system "ruby blux.rb --out -f #{filename} | #{mgr.config.html_converter_cmd}"
+			system "blux --out -f #{filename} | #{mgr.config.html_converter_cmd}"
 		end
 	when :publish
 		check_filename(options, mgr) do |filename|

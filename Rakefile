@@ -2,7 +2,7 @@ require 'rubygems'
 require 'rake'
 require 'echoe'
 
-Echoe.new('Blux', '0.0.1') do |p|
+Echoe.new('Blux', '0.0.2') do |p|
 	p.description = 'An offline blog manager'
 	p.url = 'http://github.com/louissalin/blux'
 	p.author = 'Louis Salin'
