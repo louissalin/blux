@@ -18,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 
-require "#{File.dirname(__FILE__)}/blux_option_parser.rb"
-require "#{File.dirname(__FILE__)}/blog_manager.rb"
+require "#{File.dirname(__FILE__)}/../lib/blux_option_parser.rb"
+require "#{File.dirname(__FILE__)}/../lib/blog_manager.rb"
 
 def validate_command(options)
 	if (options.command != nil)

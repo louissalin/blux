@@ -1,9 +1,10 @@
+Blux.gemspec
 COPYING
 Manifest
 README.markdown
 Rakefile
+bin/blux
 lib/blog_manager.rb
-lib/blux.rb
 lib/blux_config_reader.rb
 lib/blux_option_parser.rb
 lib/draft_manager.rb
