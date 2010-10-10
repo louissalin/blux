@@ -72,7 +72,7 @@ class BlogManager
 	def publish(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
 
-		cmd = "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title} --config #{@blux_rc} | ruby blux.rb --set_edit_url -f #{filename}"
+		cmd = "blux --convert -f #{filename} | blux_wp_publish -t #{title} --config #{@blux_rc} | blux --set_edit_url -f #{filename}"
 		cmd = cmd + " --verbose" if @verbose
 
 		puts cmd if @verbose
@@ -88,7 +88,7 @@ class BlogManager
 
 		raise "couldn't find an edit url for the draft: #{filename}" unless url 
 
-		cmd = "ruby blux.rb --convert -f #{filename} | ruby wp_publish.rb -t #{title} --update #{url} --config #{@blux_rc}"
+		cmd = "blux --convert -f #{filename} | blux_wp_publish.rb -t #{title} --update #{url} --config #{@blux_rc}"
 
 		puts cmd if @verbose
 		system cmd
