@@ -19,6 +19,7 @@
 module BluxIndexer
 	def check_index(filename)
 		check_filename(filename) do
+			@index[filename] ||= {}
 			yield @index[filename]
 		end
 	end
