@@ -10,7 +10,7 @@ require 'optparse'
 require 'net/http'
 require 'atom/entry' # sudo gem install atom-tools
 require 'atom/collection'
-require "#{File.dirname(__FILE__)}/../lib/blux_config_reader"
+require "#{File.dirname(__FILE__)}/blux_config_reader"
 
 
 #
