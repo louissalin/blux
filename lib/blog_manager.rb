@@ -73,7 +73,7 @@ class BlogManager
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
 
 		convert_cmd = "blux --convert -f #{filename}"
-		publish_cmd = "../lib/wp_publish -t #{title} --config #{@blux_rc}"
+		publish_cmd = "../lib/wp_publish.rb -t #{title} --config #{@blux_rc}"
 		set_url_cmd = "blux --set_edit_url -f #{filename}"
 
 		cmd = "#{convert_cmd} | #{publish_cmd} | #{set_url_cmd}"

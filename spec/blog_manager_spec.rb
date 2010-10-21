@@ -111,14 +111,14 @@ describe BlogManager do
 		end
 
 		it "should send the proper command" do
-			@manager.should_receive(:system).with("blux --convert -f draft5.67 | blux_wp_publish -t no title --config #{@blux_rc} | blux --set_edit_url -f draft5.67")
+			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ../lib/wp_publish.rb -t no title --config #{@blux_rc} | blux --set_edit_url -f draft5.67")
 			@manager.publish 'draft5.67'
 		end
 
 		it "should send the command with the title included if it exists" do
 			@draft_mgr.stub!(:get_attribute).and_return('bla')
 
-			@manager.should_receive(:system).with("blux --convert -f draft5.67 | blux_wp_publish -t bla --config #{@blux_rc} | blux --set_edit_url -f draft5.67")
+			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ../lib/wp_publish.rb -t bla --config #{@blux_rc} | blux --set_edit_url -f draft5.67")
 			@manager.publish 'draft5.67'
 		end
 
