@@ -1,25 +1,30 @@
 investigate IO.popen
 investigate Thor
+remove publish and convert from bin dir and config. Use by default
 exit gracefully without piping on errors
 add REST requests & responses to output when verbose
 pretty up the verbose mode
 
-0.0.2
+0.0.4
 
 Add delete command
 Add tags
 
-0.0.3
+0.0.5
 
 Image support 
 
-0.0.4
+0.0.6
 
 Preview feature 
 
+0.0.7
+
+add bin/ folder in .blux where user can specify scripts (convert, publish)
+
 0.1.0
 
-GUI
+command line GUI
 
 0.2.0
 
