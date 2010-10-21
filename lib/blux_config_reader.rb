@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 class BluxConfigurationReader
-	attr_reader :launch_editor_cmd, :html_converter_cmd
+	attr_reader :launch_editor_cmd
 	attr_reader :blog, :author_name, :user_name, :password
 
 	def load_config(blux_rc, verbose = false)
@@ -29,10 +29,6 @@ class BluxConfigurationReader
 		line = `grep editor: #{blux_rc}`
 		match = line =~ /^editor:\s(.+)$/
 		@launch_editor_cmd = $1
-
-		line = `grep html_converter: #{blux_rc}`
-		match = line =~ /^html_converter:\s(.+)$/
-		@html_converter_cmd = $1
 
 		line = `grep blog: #{blux_rc}`
 		match = line =~ /^blog:\s(.+)$/
@@ -58,10 +54,6 @@ private
 	def validate
 		if (@launch_editor_cmd == nil)
 			STDERR.puts "please specify an editor in .bluxrc: editor: [your editor of choice]\n"
-		end
-
-		if (@html_converter_cmd == nil)
-			STDERR.puts "please specify an html converter in .bluxrc: html_converter: [your converter command of choice]\n"
 		end
 
 		if (@blog == nil)

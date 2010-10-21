@@ -72,10 +72,13 @@ class BlogManager
 	def publish(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
 
-		cmd = "blux --convert -f #{filename} | blux_wp_publish -t #{title} --config #{@blux_rc} | blux --set_edit_url -f #{filename}"
+		convert_cmd = "blux --convert -f #{filename}"
+		publish_cmd = "../lib/wp_publish -t #{title} --config #{@blux_rc}"
+		set_url_cmd = "blux --set_edit_url -f #{filename}"
+
+		cmd = "#{convert_cmd} | #{publish_cmd} | #{set_url_cmd}"
 		cmd = cmd + " --verbose" if @verbose
 
-		puts cmd if @verbose
 		system cmd
 		
 		load_index

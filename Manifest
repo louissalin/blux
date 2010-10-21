@@ -3,8 +3,8 @@ Manifest
 README.markdown
 Rakefile
 bin/blux
-bin/blux_textile_to_html
-bin/blux_wp_publish
+lib/textile_to_html.rb
+lib/wp_publish.rb
 lib/blog_manager.rb
 lib/blux_config_reader.rb
 lib/blux_option_parser.rb

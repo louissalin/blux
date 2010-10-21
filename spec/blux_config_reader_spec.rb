@@ -22,10 +22,6 @@ describe BluxConfigurationReader do
 			@reader.launch_editor_cmd.should == 'gedit'
 		end
 
-		it "should read the html_converter from the config file" do
-			@reader.html_converter_cmd.should == 'ruby textile_to_html.rb'
-		end
-
 		it "should read the blog from the config file" do
 			@reader.blog.should == 'myownblog'
 		end
@@ -54,7 +50,6 @@ describe BluxConfigurationReader do
 
 		it "should show a warning" do
 			STDERR.should_receive(:puts).with("please specify an editor in .bluxrc: editor: [your editor of choice]\n")
-			STDERR.should_receive(:puts).with("please specify an html converter in .bluxrc: html_converter: [your converter command of choice]\n")
 			STDERR.should_receive(:puts).with("please specify your wordpress blog name in .bluxrc: blog: [your blog]\n")
 			STDERR.should_receive(:puts).with("please specify an author name in .bluxrc: author_name: [your name]\n")
 			STDERR.should_receive(:puts).with("please specify your wordpress user name in .bluxrc: user_name: [your user name]\n")

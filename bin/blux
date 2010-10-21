@@ -84,7 +84,7 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		end
 	when :convert
 		check_filename(options, mgr) do |filename|
-			system "blux --out -f #{filename} | #{mgr.config.html_converter_cmd}"
+			system "blux --out -f #{filename} | ruby ../lib/textile_to_html.rb"
 		end
 	when :publish
 		check_filename(options, mgr) do |filename|
@@ -102,6 +102,8 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 				mgr.set_attribute(filename, 'edit_url', url.strip)
 			end
 		end
+	when :version
+		puts "0.0.4"
 	end
 end
 

@@ -90,6 +90,10 @@ class BluxOptionParser
 				options.verbose = true
 			end
 
+			opts.on("--version", "print version information") do
+				options.command = :version
+			end
+
 			opts.on_tail("-h", "--help", "show this message") do
 				puts opts
 				exit

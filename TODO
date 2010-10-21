@@ -1,5 +1,3 @@
-investigate IO.popen
-investigate Thor
 remove publish and convert from bin dir and config. Use by default
 exit gracefully without piping on errors
 add REST requests & responses to output when verbose
