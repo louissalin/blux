@@ -84,7 +84,8 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		end
 	when :convert
 		check_filename(options, mgr) do |filename|
-			system "blux --out -f #{filename} | ruby ../lib/textile_to_html.rb"
+			convert_cmd = "ruby #{File.dirname(__FILE__)}/../lib/textile_to_html.rb"
+			system "blux --out -f #{filename} | #{convert_cmd}"
 		end
 	when :publish
 		check_filename(options, mgr) do |filename|

@@ -91,7 +91,8 @@ class BlogManager
 
 		raise "couldn't find an edit url for the draft: #{filename}" unless url 
 
-		cmd = "blux --convert -f #{filename} | blux_wp_publish.rb -t #{title} --update #{url} --config #{@blux_rc}"
+		publish_cmd = "#{File.dirname(__FILE__)}/../lib/wp_publish.rb"
+		cmd = "blux --convert -f #{filename} | #{publish_cmd} -t #{title} --update #{url} --config #{@blux_rc}"
 
 		puts cmd if @verbose
 		system cmd
