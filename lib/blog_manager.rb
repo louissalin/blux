@@ -45,21 +45,19 @@ class BlogManager
 
 	def start
 		unless Dir.exists?(@blux_dir)
-			puts "creating #{@blux_dir}\n" if @verbose
 			Dir.mkdir(@blux_dir) 
 		end
 
 		unless Dir.exists?(@draft_dir)
-			puts "creating #{@draft_dir}\n" if @verbose
 			Dir.mkdir(@draft_dir) 
 		end
 
 		unless Dir.exists?(@blux_tmp_dir)
-			puts "creating #{@blux_tmp_dir}\n" if @verbose
 			Dir.mkdir(@blux_tmp_dir) 
 		end
 
 		load_index
+		print_index if @verbose
 	end
 
 	def load_config
@@ -79,10 +77,17 @@ class BlogManager
 		cmd = "#{convert_cmd} | #{publish_cmd} | #{set_url_cmd}"
 		cmd = cmd + " --verbose" if @verbose
 
-		system cmd
-		
-		load_index
-		set_attribute(filename, :published_time, Time.now)
+		if system cmd
+			load_index
+			set_attribute(filename, :published_time, Time.now)
+		else
+			msg = 'failed to publish...'
+			msg = msg + ' use the --verbose option for more information' if !@verbose
+
+			raise SystemExit, msg
+		end
+
+		print_index if @verbose
 	end
 
 	def update(filename)
@@ -94,10 +99,15 @@ class BlogManager
 		publish_cmd = "ruby #{File.dirname(__FILE__)}/wp_publish.rb"
 		cmd = "blux --convert -f #{filename} | #{publish_cmd} -t #{title} --update #{url} --config #{@blux_rc}"
 
-		puts cmd if @verbose
-		system cmd
-		
-		set_attribute(filename, :published_time, Time.now)
+		if system cmd
+			set_attribute(filename, :published_time, Time.now)
+		else
+			msg = 'failed to update...'
+			msg = msg + ' use the --verbose option for more information' if !@verbose
+
+			raise SystemExit, msg
+		end
+
+		print_index if @verbose
 	end
-	
 end

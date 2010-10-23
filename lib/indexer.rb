@@ -30,7 +30,11 @@ module BluxIndexer
 		if (File.exists?(draft_filename))
 			yield draft_filename
 		else
-			STDERR.puts "draft filename #{filename} does not exist\n"
+			puts "----"
+			puts draft_filename
+			puts "----"
+			msg = "draft filename #{filename} does not exist"
+			raise RuntimeError, msg
 		end
 	end
 
@@ -49,7 +53,6 @@ module BluxIndexer
 	def set_attribute(filename, key, val)
 		check_index(filename) do |index|
 			if check_title(filename, key, val)
-				puts "setting attribute #{key} to #{val} in index #{@index_file}" if @verbose
 				index[key.to_s] = val 
 				save_index
 			end
@@ -73,12 +76,12 @@ module BluxIndexer
 		if @index.keys.length > 0
 			yield
 		else
-			STDERR.puts "there is currently no saved index\n"
+			msg = "there is currently no saved index"
+			raise RuntimeError, msg
 		end
 	end
 
 	def load_index
-		puts "creating #{@index_file}\n" if @verbose
 		system "touch #{@index_file}" unless File.exists? @index_file
 
 		str = ''
@@ -90,9 +93,12 @@ module BluxIndexer
 	end
 
 	def save_index
-		puts "saving index: #{@index.to_json}\n" if @verbose
 		File.open(@index_file, 'w') do |f| 
 			f.write(@index.to_json) if @index
 		end
+	end
+
+	def print_index
+		puts @index.to_json if @verbose
 	end
 end

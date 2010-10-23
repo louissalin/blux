@@ -15,6 +15,7 @@ describe BlogManager do
 		@draft_mgr = DraftManager.new
 		@draft_mgr.stub!(:editor_cmd).and_return('gedit')
 		@draft_mgr.stub!(:setup)
+		@draft_mgr.stub!(:draft_dir).and_return(@draft_dir)
 
 		@manager = BlogManager.new(@draft_mgr)
 	end
@@ -26,7 +27,7 @@ describe BlogManager do
 
 	context "loading with no config file" do
 		before :each do
-			@manager.load_config
+			lambda {@manager.load_config}.should raise_error
 		end
 
 		it "should create an empty config file it doesn't exist" do
@@ -105,9 +106,10 @@ describe BlogManager do
 
 			@manager.load_config
 			@manager.start
-			@manager.stub!(:system).and_return(nil)
 
 			system "touch #{@manager.draft_dir}/draft5.67"
+
+			@manager.stub!(:system).and_return(nil)
 		end
 
 		it "should send the proper command" do
@@ -145,6 +147,11 @@ describe BlogManager do
 		File.open(@blux_rc, 'w') do |f|
 			f.puts "editor: gedit"
 			f.puts "html_converter: blux_textile_to_html"
+
+			f.puts "blog: louis"
+			f.puts "author_name: louis"
+			f.puts "user_name: louis"
+			f.puts "password: password"
 		end
 	end
 end

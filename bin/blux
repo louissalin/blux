@@ -25,7 +25,8 @@ def validate_command(options)
 	if (options.command != nil)
 		yield options
 	else
-		STDERR << "No command specified. Use -h for a list of possible commands\n"
+		msg = "No command specified. Use -h for a list of possible commands"
+		raise RuntimeError, msg
 	end
 end
 
@@ -33,7 +34,8 @@ def validate_set_options(options)
 	if options.attributes.length.modulo(2) == 0
 		yield options.attributes[0], options.attributes[1]
 	else
-		STDERR << "Attribute error: you must specify an attribute name and a value."
+		msg = "Attribute error: you must specify an attribute name and a value."
+		raise RuntimeError, msg
 	end
 end
 
@@ -46,7 +48,9 @@ def check_filename(options, blog_manager)
 	if filename != nil
 		yield filename
 	else
-		STDERR << "Please specify the draft file you want to work with. If you want to work with the latest created/edited draft, use the --latest option. You can also tell blux to get a draft with a specific title with --title."
+		msg = "Please specify the draft file you want to work with. If you want to work with the latest created/edited draft, use the --latest option. You can also tell blux to get a draft with a specific title with --title."
+
+		raise RuntimeError, msg
 	end
 end
 

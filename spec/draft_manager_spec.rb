@@ -10,7 +10,7 @@ describe DraftManager do
 		Dir.mkdir(@blux_dir) unless Dir.exists?(@blux_dir)
 		Dir.mkdir(@temp_dir) unless Dir.exists?(@temp_dir)
 		Dir.mkdir(@draft_dir) unless Dir.exists?(@draft_dir)
-		
+
 		def STDERR.puts(str) end
 		@manager = DraftManager.new()
 		@manager.setup('gedit', @temp_dir, @draft_dir)

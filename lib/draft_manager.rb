@@ -37,27 +37,43 @@ class DraftManager
 		@draft_dir = draft_dir
 		@index_file = "#{@draft_dir}/.draft_index"
 
-		system "touch #{@index_file}" unless File.exists? @index_file
+		value = true
+		value = system "touch #{@index_file}" unless File.exists? @index_file
 
-		load_index
+		if value
+			load_index
+			print_index if @verbose
+		else
+			msg = 'could not create the draft index file'
+			raise RuntimeError, msg
+		end
 	end
 
 	def create_draft
 		temp_file = Tempfile.new('draft', @temp_dir)
 		temp_file.close
 
-		puts "created temp file #{temp_file.path}\nlaunching editor\n" if @verbose
+		if system "#{@launch_editor_cmd} #{temp_file.path}"
+			puts "editor closed. File size: #{temp_file.size}\n" if @verbose
+			if temp_file.size > 0
+				move_temp_file temp_file.path
+			end
+		else
+			msg = "couldn't launch editor with command #{@launch_editor_cmd}"
+			raise RuntimeError, msg
+		end
 
-		system "#{@launch_editor_cmd} #{temp_file.path}"
-
-		puts "editor closed. File size: #{temp_file.size}\n" if @verbose
-		if temp_file.size > 0
-			system "mv #{temp_file.path} #{@draft_dir}"
-
-			index_key = File.basename(temp_file.path)
-			puts "adding #{index_key} to draft index\n" if @verbose
+		print_index if @verbose
+	end
+	
+	def move_temp_file(tempfile)
+		if system "mv #{tempfile} #{@draft_dir}"
+			index_key = File.basename(tempfile)
 			@index[index_key] = {:creation_time => Time.now.to_s}
 			save_index
+		else
+			msg = "failed to move the temp file to the draft folder"
+			raise RuntimeError, msg
 		end
 	end
 
@@ -67,9 +83,15 @@ class DraftManager
 		check_filename(filename) do  |draft_filename|
 			puts "editing: #{@launch_editor_cmd} #{draft_filename}" if @verbose
 
-			system "#{@launch_editor_cmd} #{draft_filename}"
-			set_attribute(filename, "edited_time", Time.now.to_s)
+			if system "#{@launch_editor_cmd} #{draft_filename}"
+				set_attribute(filename, "edited_time", Time.now.to_s)
+			else
+				msg = "couldn't launch editor with command #{@launch_editor_cmd}"
+				raise RuntimeError, msg
+			end
 		end
+
+		print_index if @verbose
 	end
 
 	def list

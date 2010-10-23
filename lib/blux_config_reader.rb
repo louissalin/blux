@@ -22,7 +22,6 @@ class BluxConfigurationReader
 
 	def load_config(blux_rc, verbose = false)
 		unless File.exists? blux_rc
-			puts "creating #{blux_rc}\n" if verbose
 			system "touch #{blux_rc}" 
 		end
 
@@ -46,30 +45,34 @@ class BluxConfigurationReader
 		match = line =~ /^password:\s(.+)$/
 		@password = $1
 
-		puts "editor command: #{@launch_editor_cmd}\n" if verbose
 		validate
 	end
 
 private
 	def validate
 		if (@launch_editor_cmd == nil)
-			STDERR.puts "please specify an editor in .bluxrc: editor: [your editor of choice]\n"
+			msg = "please specify an editor in .bluxrc: editor: [your editor of choice]"
+			raise RuntimeError, msg
 		end
 
 		if (@blog == nil)
-			STDERR.puts "please specify your wordpress blog name in .bluxrc: blog: [your blog]\n"
+			msg = "please specify your wordpress blog name in .bluxrc: blog: [your blog]"
+			raise RuntimeError, msg
 		end
 
 		if (@author_name == nil)
-			STDERR.puts "please specify an author name in .bluxrc: author_name: [your name]\n"
+			msg = "please specify an author name in .bluxrc: author_name: [your name]"
+			raise RuntimeError, msg
 		end
 
 		if (@user_name == nil)
-			STDERR.puts "please specify your wordpress user name in .bluxrc: user_name: [your user name]\n"
+			msg = "please specify your wordpress user name in .bluxrc: user_name: [your user name]"
+			raise RuntimeError, msg
 		end
 
 		if (@password == nil)
-			STDERR.puts "please specify your wordpress password in .bluxrc: password: [your password]\n"
+			msg = "please specify your wordpress password in .bluxrc: password: [your password]"
+			raise RuntimeError, msg
 		end
 	end
 end

@@ -1,6 +1,8 @@
 exit gracefully without piping on errors
-add REST requests & responses to output when verbose
 pretty up the verbose mode
+	- remove output when adding/removing attributes
+	- add REST responses as output
+	- add REST requests as output
 
 0.0.4
 
