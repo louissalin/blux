@@ -55,60 +55,63 @@ def check_filename(options, blog_manager)
 end
 
 validate_command(BluxOptionParser.parse(ARGV)) do |options|
-	puts "#{options}" if options.verbose
+	begin
+		draft_manager = DraftManager.new
+		mgr = BlogManager.new(draft_manager, :verbose => options.verbose)	
+		mgr.load_config
+		mgr.start
 
-	draft_manager = DraftManager.new
-	mgr = BlogManager.new(draft_manager, :verbose => options.verbose)	
-	mgr.load_config
-	mgr.start
-
-	case options.command
-	when :new
-		mgr.draft_manager.create_draft
-	when :edit
-		check_filename(options, mgr) do |filename|
-			mgr.draft_manager.edit_draft filename
-		end
-	when :list
-		mgr.draft_manager.list.each do |item|
-			break if options.filename != nil && options.filename != item
-			puts "#{item}"
-			puts "  #{mgr.draft_manager.show_info(item)}" if options.list_details
-			puts "  #{mgr.draft_manager.show_preview(item)}" if options.list_preview
-		end
-	when :set
-		check_filename(options, mgr) do |filename|
-			validate_set_options(options) do |attribute, value|
-				mgr.draft_manager.set_attribute(filename, attribute, value)
+		case options.command
+		when :new
+			mgr.draft_manager.create_draft
+		when :edit
+			check_filename(options, mgr) do |filename|
+				mgr.draft_manager.edit_draft filename
 			end
-		end
-	when :out
-		check_filename(options, mgr) do |filename|
-			STDOUT.puts(mgr.draft_manager.output filename)
-		end
-	when :convert
-		check_filename(options, mgr) do |filename|
-			convert_cmd = "ruby #{File.dirname(__FILE__)}/../lib/textile_to_html.rb"
-			system "blux --out -f #{filename} | #{convert_cmd}"
-		end
-	when :publish
-		check_filename(options, mgr) do |filename|
-			puts "publishing" if options.verbose
-			mgr.publish filename
-		end
-	when :update
-		check_filename(options, mgr) do |filename|
-			puts "updating" if options.verbose
-			mgr.update filename
-		end
-	when :set_edit_url
-		check_filename(options, mgr) do |filename|
-			ARGF.each do |url|
-				mgr.set_attribute(filename, 'edit_url', url.strip)
+		when :list
+			mgr.draft_manager.list.each do |item|
+				break if options.filename != nil && options.filename != item
+				puts "#{item}"
+				puts "  #{mgr.draft_manager.show_info(item)}" if options.list_details
+				puts "  #{mgr.draft_manager.show_preview(item)}" if options.list_preview
 			end
+		when :set
+			check_filename(options, mgr) do |filename|
+				validate_set_options(options) do |attribute, value|
+					mgr.draft_manager.set_attribute(filename, attribute, value)
+				end
+			end
+		when :out
+			check_filename(options, mgr) do |filename|
+				STDOUT.puts(mgr.draft_manager.output filename)
+			end
+		when :convert
+			check_filename(options, mgr) do |filename|
+				convert_cmd = "ruby #{File.dirname(__FILE__)}/../lib/textile_to_html.rb"
+				system "blux --out -f #{filename} | #{convert_cmd}"
+			end
+		when :publish
+			check_filename(options, mgr) do |filename|
+				puts "publishing" if options.verbose
+				mgr.publish filename
+			end
+		when :update
+			check_filename(options, mgr) do |filename|
+				puts "updating" if options.verbose
+				mgr.update filename
+			end
+		when :set_edit_url
+			check_filename(options, mgr) do |filename|
+				ARGF.each do |url|
+					mgr.set_attribute(filename, 'edit_url', url.strip)
+				end
+			end
+		when :version
+			puts "0.0.4"
 		end
-	when :version
-		puts "0.0.4"
+	rescue 
+		STDERR << "fatal error: #{$!}"
+		exit 1
 	end
 end
 
