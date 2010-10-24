@@ -56,8 +56,8 @@ def check_filename(options, blog_manager)
 	end
 end
 
-validate_command(BluxOptionParser.parse(ARGV)) do |options|
-	begin
+begin
+	validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		draft_manager = DraftManager.new
 		mgr = BlogManager.new(draft_manager, :verbose => options.verbose)	
 		mgr.load_config
@@ -111,9 +111,9 @@ validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		when :version
 			puts "0.0.4"
 		end
-	rescue 
-		STDERR << "fatal error: #{$!}"
-		exit 1
 	end
+rescue 
+	STDERR << "fatal error: #{$!}"
+	exit 1
 end
 
