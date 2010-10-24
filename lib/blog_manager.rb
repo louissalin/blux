@@ -57,6 +57,7 @@ class BlogManager
 		end
 
 		load_index
+		puts "blog index:\n" if @verbose
 		print_index if @verbose
 	end
 
@@ -81,12 +82,13 @@ class BlogManager
 			load_index
 			set_attribute(filename, :published_time, Time.now)
 		else
-			msg = 'failed to publish...'
+			msg = "failed to publish...\n"
 			msg = msg + ' use the --verbose option for more information' if !@verbose
 
 			raise SystemExit, msg
 		end
 
+		puts "blog index:\n" if @verbose
 		print_index if @verbose
 	end
 
@@ -102,12 +104,13 @@ class BlogManager
 		if system cmd
 			set_attribute(filename, :published_time, Time.now)
 		else
-			msg = 'failed to update...'
+			msg = "failed to update...\n"
 			msg = msg + ' use the --verbose option for more information' if !@verbose
 
 			raise SystemExit, msg
 		end
 
+		puts "blog index:\n" if @verbose
 		print_index if @verbose
 	end
 end

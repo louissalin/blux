@@ -55,7 +55,6 @@ class DraftManager
 		temp_file.close
 
 		if system "#{@launch_editor_cmd} #{temp_file.path}"
-			puts "editor closed. File size: #{temp_file.size}\n" if @verbose
 			if temp_file.size > 0
 				move_temp_file temp_file.path
 			end
@@ -79,11 +78,7 @@ class DraftManager
 	end
 
 	def edit_draft(filename)
-		puts "editing draft #{filename}" if @verbose
-
 		check_filename(filename) do  |draft_filename|
-			puts "editing: #{@launch_editor_cmd} #{draft_filename}" if @verbose
-
 			if system "#{@launch_editor_cmd} #{draft_filename}"
 				set_attribute(filename, "edited_time", Time.now.to_s)
 			else

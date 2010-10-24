@@ -43,7 +43,7 @@ module BluxIndexer
 			unique_title = false if (@index[key][attr_key.to_s] == attr_val)
 		end
 		
-		STDERR.puts "title '#{attr_val}' is not unique\n" unless unique_title 
+		STDERR << "warning: title '#{attr_val}' is not unique\n" unless unique_title 
 		unique_title
 	end
 
@@ -96,6 +96,6 @@ module BluxIndexer
 	end
 
 	def print_index
-		puts @index.to_json if @verbose
+		puts @index.to_json + "\n" if @verbose
 	end
 end
