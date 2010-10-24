@@ -74,5 +74,17 @@ use this command to edit a draft
 
 when using the --verbose option, Blux will output a lot of extra information to the screen as it works
 
+>	$ blux -p (--publish) [--latest, --title <a title>, --file <filename>]
+
+this command will publish your draft. It will publish either the latest draft, or a draft with a specific title, or a draft with a specific filename, as specified in the command.
+
+>	$ blux -u (--update) [--latest, --title <a title>, --file <filename>]
+
+this command will update an exisiting published blog post. It will update either the latest draft, or a draft with a specific title, or a draft with a specific filename, as specified in the command.
+
+>	$ blux -d (--delete) [--latest, --title <a title>, --file <filename>]
+
+this command will delete a published blog post and mark the associated draft as deleted. The draft will still exist, but Blux will not take it into consideration anymore.
+
 ## community
 feel free to post your comments or questions to the Blux Google group here: blux_manager@googlegroups.com 
