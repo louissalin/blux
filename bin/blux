@@ -48,7 +48,9 @@ def check_filename(options, blog_manager)
 	if filename != nil
 		yield filename
 	else
-		msg = "Please specify the draft file you want to work with. If you want to work with the latest created/edited draft, use the --latest option. You can also tell blux to get a draft with a specific title with --title."
+		msg = "Please specify the draft file you want to work with.\n"
+		msg = msg + "  Try using the --latest option to use the latest draft.\n"
+		msg = msg + "  Or try to get a draft with a specific title with the --title option.\n"
 
 		raise RuntimeError, msg
 	end
