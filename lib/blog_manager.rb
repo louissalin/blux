@@ -125,7 +125,7 @@ class BlogManager
 			delete_index(filename)
 			@draft_manager.delete_draft(filename)
 		else
-			msg = "failed to update...\n"
+			msg = "failed to delete...\n"
 			msg = msg + ' use the --verbose option for more information' if !@verbose
 
 			raise SystemExit, msg

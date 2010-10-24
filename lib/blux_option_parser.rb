@@ -61,6 +61,10 @@ class BluxOptionParser
 				options.command = :update
 			end
 
+			opts.on("-d", "--delete", "mark a draft as deleted") do
+				options.command = :delete
+			end
+
 			opts.on("--latest", "work on the latest draft") do
 				options.use_latest = true
 			end

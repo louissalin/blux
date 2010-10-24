@@ -12,8 +12,6 @@ require 'atom/entry' # sudo gem install atom-tools
 require 'atom/collection'
 require "#{File.dirname(__FILE__)}/blux_config_reader"
 
-
-#
 # parse options
 
 tags = []
@@ -62,6 +60,13 @@ opts.on(
 	"--update {entry_id}",
 	"update an existing post") do |id|
 	command = :put
+	entry_id = id
+	end
+
+opts.on(
+	"--delete {entry_id}",
+	"delete an existing post") do |id|
+	command = :delete
 	entry_id = id
 	end
 
@@ -132,7 +137,8 @@ h.pass = password
 h.always_auth = :basic
 
 c = Atom::Collection.new(base + "/posts", h)
-if command == :post
+case(command)
+when :post
 	res = c.post! entry
 	puts "--entry--"
 	puts entry
@@ -142,8 +148,11 @@ if command == :post
 
 	puts "--url--"
 	puts Atom::Entry.parse(res.read_body).edit_url
-elsif command == :put
+when :put
 	entry.edit_url = entry_id
 	res = c.put! entry
+when :delete
+	entry.edit_url = entry_id
+	res = c.delete! entry
 end
 

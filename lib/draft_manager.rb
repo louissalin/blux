@@ -92,6 +92,7 @@ class DraftManager
 
 	def delete_draft(filename)
 		set_attribute(filename, "deleted", Time.now.to_s)
+		print_index if @verbose
 	end
 
 	def list

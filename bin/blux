@@ -103,6 +103,11 @@ begin
 				puts "updating" if options.verbose
 				mgr.update filename
 			end
+		when :delete
+			check_filename(options, mgr) do |filename|
+				puts "deleting" if options.verbose
+				mgr.delete filename
+			end
 		when :set_edit_url
 			check_filename(options, mgr) do |filename|
 				switch = nil
