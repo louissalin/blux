@@ -77,6 +77,10 @@ module BluxIndexer
 			raise RuntimeError, msg
 		end
 	end
+	
+	def delete_index(filename)
+		save_index if @index.delete filename
+	end
 
 	def load_index
 		system "touch #{@index_file}" unless File.exists? @index_file

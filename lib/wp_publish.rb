@@ -83,7 +83,6 @@ opts.on(
 
 opts.parse ARGV
 
-raise "please specify a title for the post with the -t option" unless title
 
 # a great thanks to the devs of all the libs used here
 #
@@ -104,10 +103,12 @@ base = "https://#{blog}.wordpress.com/wp-app.php"
 # gather content
 
 content = ""
-loop do
-	line = STDIN.gets
-	break unless line
-	content += line
+if command != :delete
+	loop do
+		line = STDIN.gets
+		break unless line
+		content += line
+	end
 end
 
 # create entry
@@ -139,6 +140,8 @@ h.always_auth = :basic
 c = Atom::Collection.new(base + "/posts", h)
 case(command)
 when :post
+	raise "please specify a title for the post with the -t option" unless title
+
 	res = c.post! entry
 	puts "--entry--"
 	puts entry
