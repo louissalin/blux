@@ -133,9 +133,11 @@ begin
 				end
 
 				entry_text = entry.join
+				puts "entry:" if options.verbose
 				puts entry_text if options.verbose
 
 				response_text = response.join
+				puts "response:" if options.verbose
 				puts response_text if options.verbose
 				
 				mgr.set_attribute(filename, 'edit_url', url.strip)
