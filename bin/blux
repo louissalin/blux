@@ -50,7 +50,7 @@ def check_filename(options, blog_manager)
 	else
 		msg = "Please specify the draft file you want to work with.\n"
 		msg = msg + "  Try using the --latest option to use the latest draft.\n"
-		msg = msg + "  Or try to get a draft with a specific title with the --title option.\n"
+		msg = msg + "  Or try to get a draft with a specific title with the --title option."
 
 		raise RuntimeError, msg
 	end
@@ -113,7 +113,7 @@ begin
 		end
 	end
 rescue 
-	STDERR << "fatal error: #{$!}"
+	STDERR << "fatal error: #{$!}\n"
 	exit 1
 end
 
