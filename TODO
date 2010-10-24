@@ -4,23 +4,33 @@ Add timeout error message (couldn't connect...)
 
 0.0.5
 
-Image support 
+Image support:
+	-use FSpot
+	-upload images as atom entries
 
 0.0.6
 
 Preview feature 
+	-start in same process (2 windows open at same time)
+	-start in separate process (need a 2nd command prompt, or background task)
 
 0.0.7
 
-add bin/ folder in .blux where user can specify scripts (convert, publish)
+add script/ folder in .blux where user can specify scripts (convert, publish)
+add pre and post convertion scripts
+add image resize pre script (optional)
 
-0.1.0
+0.0.8
+
+Mac support
+	- make sure it works
+	- add support for iPhoto
 
 command line GUI
 
-0.2.0
+0.1.0
 
 Timed publishing
 Manage publishing to multiple blog engines
 
-0.3.0
+0.2.0
