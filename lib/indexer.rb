@@ -44,7 +44,7 @@ module BluxIndexer
 		end
 		
 		STDERR << "warning: title '#{attr_val}' is not unique\n" unless unique_title 
-		unique_title
+		true
 	end
 
 	def set_attribute(filename, key, val)

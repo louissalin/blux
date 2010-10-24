@@ -51,27 +51,27 @@ class BluxConfigurationReader
 private
 	def validate
 		if (@launch_editor_cmd == nil)
-			msg = "please specify an editor in .bluxrc: editor: [your editor of choice]"
+			msg = "please specify an editor in .bluxrc:\n  editor: [your editor of choice]"
 			raise RuntimeError, msg
 		end
 
 		if (@blog == nil)
-			msg = "please specify your wordpress blog name in .bluxrc: blog: [your blog]"
+			msg = "please specify your wordpress blog name in .bluxrc:\n  blog: [your blog]"
 			raise RuntimeError, msg
 		end
 
 		if (@author_name == nil)
-			msg = "please specify an author name in .bluxrc: author_name: [your name]"
+			msg = "please specify an author name in .bluxrc:\n  author_name: [your name]"
 			raise RuntimeError, msg
 		end
 
 		if (@user_name == nil)
-			msg = "please specify your wordpress user name in .bluxrc: user_name: [your user name]"
+			msg = "please specify your wordpress user name in .bluxrc:\n  user_name: [your user name]"
 			raise RuntimeError, msg
 		end
 
 		if (@password == nil)
-			msg = "please specify your wordpress password in .bluxrc: password: [your password]"
+			msg = "please specify your wordpress password in .bluxrc:\n  password: [your password]"
 			raise RuntimeError, msg
 		end
 	end

@@ -47,7 +47,7 @@ describe BluxConfigurationReader do
 
 		it "should raise an exception when the editor is missing" do
 			create_empty_config
-			lambda {@reader.load_config @blux_rc}.should raise_error("please specify an editor in .bluxrc: editor: [your editor of choice]")
+			lambda {@reader.load_config @blux_rc}.should raise_error("please specify an editor in .bluxrc:\n  editor: [your editor of choice]")
 		end
 
 		it "should raise an exception when the blog name is missing" do
@@ -57,7 +57,7 @@ describe BluxConfigurationReader do
 					 "password: pass123"]
 			
 			create_config_with lines
-			lambda {@reader.load_config @blux_rc}.should raise_error("please specify your wordpress blog name in .bluxrc: blog: [your blog]")
+			lambda {@reader.load_config @blux_rc}.should raise_error("please specify your wordpress blog name in .bluxrc:\n  blog: [your blog]")
 		end
 
 		it "should raise an exception when the author name is missing" do
@@ -67,7 +67,7 @@ describe BluxConfigurationReader do
 					 "password: pass123"]
 			
 			create_config_with lines
-			lambda {@reader.load_config @blux_rc}.should raise_error("please specify an author name in .bluxrc: author_name: [your name]")
+			lambda {@reader.load_config @blux_rc}.should raise_error("please specify an author name in .bluxrc:\n  author_name: [your name]")
 		end
 
 		it "should raise an exception when the user name is missing" do
@@ -77,7 +77,7 @@ describe BluxConfigurationReader do
 					 "password: pass123"]
 
 			create_config_with lines
-			lambda {@reader.load_config @blux_rc}.should raise_error("please specify your wordpress user name in .bluxrc: user_name: [your user name]")
+			lambda {@reader.load_config @blux_rc}.should raise_error("please specify your wordpress user name in .bluxrc:\n  user_name: [your user name]")
 		end
 
 		it "should raise an exception when the password is missing" do
@@ -87,7 +87,7 @@ describe BluxConfigurationReader do
 					 "user_name: this_user"]
 
 			create_config_with lines
-			lambda {@reader.load_config @blux_rc}.should raise_error("please specify your wordpress password in .bluxrc: password: [your password]")
+			lambda {@reader.load_config @blux_rc}.should raise_error("please specify your wordpress password in .bluxrc:\n  password: [your password]")
 		end
 	end
 

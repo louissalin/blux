@@ -274,19 +274,19 @@ describe DraftManager do
 			@manager.setup('gedit', @temp_dir, @draft_dir)
 		end
 
-		it "should output an error message if the title is not unique" do
+		it "should output an warning message if the title is not unique" do
 			@manager.set_attribute('draft.1', "title", 'title')
 
-			STDERR.should_receive(:puts).with("title 'title' is not unique\n")
+			STDERR.should_receive(:<<).with("warning: title 'title' is not unique\n")
 			@manager.set_attribute('draft.2', "title", 'title')
 		end
 
-		it "should not change the value of the previous title" do
+		it "should still change the value of the previous title" do
 			@manager.set_attribute('draft.1', 'title', 'title')
 			@manager.set_attribute('draft.2', 'title', 'title2')
 			@manager.set_attribute('draft.2', 'title', 'title')
 
-			@manager.index['draft.2']["title"].should == 'title2'
+			@manager.index['draft.2']["title"].should == 'title'
 		end
 	end
 
