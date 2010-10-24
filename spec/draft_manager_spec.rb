@@ -47,7 +47,7 @@ describe DraftManager do
 
 	context "when creating a new draft" do
 		before :each do
-			@manager.stub!(:system).and_return(nil)
+			@manager.stub!(:system).and_return(true)
 		end
 
 		after :each do
@@ -91,7 +91,7 @@ describe DraftManager do
 
 	context "when saving a new draft" do
 		before :each do
-			@manager.stub!(:system).and_return(nil)
+			@manager.stub!(:system).and_return(true)
 
 			class Tempfile
 				def size() 123 end
@@ -123,7 +123,7 @@ describe DraftManager do
 
 			@manager = DraftManager.new
 			@manager.setup('gedit', @temp_dir, @draft_dir)
-			@manager.stub!(:system).and_return(nil)
+			@manager.stub!(:system).and_return(true)
 		end
 
 		it "should call the editor command" do
@@ -134,8 +134,7 @@ describe DraftManager do
 		end
 
 		it "should show an error if the file doesn't exist" do
-			STDERR.should_receive(:puts).with("draft filename asdf.asf does not exist\n")
-			@manager.edit_draft('asdf.asf')
+			lambda {@manager.edit_draft('asdf.asf')}.should raise_error("draft filename asdf.asf does not exist")
 		end
 
 		it "should add the edited time to the attributes of that draft" do
@@ -177,8 +176,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if the file does not exist" do
-			STDERR.should_receive(:puts).with("draft filename asdf.asf does not exist\n")
-			@manager.edit_draft('asdf.asf')
+			lambda {@manager.edit_draft('asdf.asf')}.should raise_error("draft filename asdf.asf does not exist")
 		end
 	end
 
@@ -255,8 +253,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if the file does not exist" do
-			STDERR.should_receive(:puts).with("draft filename asdf.asf does not exist\n")
-			@manager.set_attribute('asdf.asf', "attr", "456")
+			lambda {@manager.set_attribute('asdf.asf', "attr", "456")}.should raise_error("draft filename asdf.asf does not exist")
 		end
 
 		it "should save the draft index to disk" do
@@ -310,8 +307,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if the file does not exist" do
-			STDERR.should_receive(:puts).with("draft filename asdf.asf does not exist\n")
-			@manager.delete_attribute('asdf.asf', :attr)
+			lambda {@manager.delete_attribute('asdf.asf', :attr)}.should raise_error("draft filename asdf.asf does not exist")
 		end
 
 		it "should save the draft index to disk" do
@@ -335,8 +331,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if there are no drafts saved" do
-			STDERR.should_receive(:puts).with("there is currently no saved index\n")
-			@manager.get_latest_created_draft
+			lambda {@manager.get_latest_created_draft}.should raise_error("there is currently no saved index")
 		end
 	end
 
@@ -355,8 +350,7 @@ describe DraftManager do
 		end
 
 		it "should output an error message if there are no drafts saved" do
-			STDERR.should_receive(:puts).with("there is currently no saved index\n")
-			@manager.get_draft_by_title("title2")
+			lambda {@manager.get_draft_by_title("title2")}.should raise_error("there is currently no saved index")
 		end
 	end
 end

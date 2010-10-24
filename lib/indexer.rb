@@ -25,14 +25,11 @@ module BluxIndexer
 	end
 
 	def check_filename(filename)
-		draft_filename = "#{@draft_dir}/#{filename}"
+		draft_filename = "#{self.draft_dir}/#{filename}"
 
 		if (File.exists?(draft_filename))
 			yield draft_filename
 		else
-			puts "----"
-			puts draft_filename
-			puts "----"
 			msg = "draft filename #{filename} does not exist"
 			raise RuntimeError, msg
 		end

@@ -26,6 +26,7 @@ class DraftManager
 	attr_reader :launch_editor_cmd
 	attr_reader :temp_dir, :draft_dir
 	attr_reader :index
+	attr_reader :index_file
 
 	include BluxIndexer
 

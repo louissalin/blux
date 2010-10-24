@@ -9,13 +9,13 @@ describe BlogManager do
 		@draft_dir = "#{@blux_dir}/draft"
 
 		Dir.mkdir(@blux) unless Dir.exists?(@blux)
+		Dir.mkdir(@draft_dir) unless Dir.exists?(@draft_dir)
 
 		def STDERR.puts(str) end
 
 		@draft_mgr = DraftManager.new
 		@draft_mgr.stub!(:editor_cmd).and_return('gedit')
 		@draft_mgr.stub!(:setup)
-		@draft_mgr.stub!(:draft_dir).and_return(@draft_dir)
 
 		@manager = BlogManager.new(@draft_mgr)
 	end
@@ -104,16 +104,18 @@ describe BlogManager do
 				f.write('{"draft5.67":{"a":1,"b":2}}')
 			end
 
+			@draft_mgr.stub!(:get_attribute).and_return("title")
+
 			@manager.load_config
 			@manager.start
 
 			system "touch #{@manager.draft_dir}/draft5.67"
 
-			@manager.stub!(:system).and_return(nil)
+			@manager.stub!(:system).and_return(true)
 		end
 
 		it "should send the proper command" do
-			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/wp_publish.rb -t no title --config #{@blux_rc} | blux --set_edit_url -f draft5.67")
+			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/wp_publish.rb -t title --config #{@blux_rc} | blux --set_edit_url -f draft5.67")
 			@manager.publish 'draft5.67'
 		end
 
