@@ -134,6 +134,13 @@ h.always_auth = :basic
 c = Atom::Collection.new(base + "/posts", h)
 if command == :post
 	res = c.post! entry
+	puts "--entry--"
+	puts entry
+
+	puts "--response--"
+	puts res 
+
+	puts "--url--"
 	puts Atom::Entry.parse(res.read_body).edit_url
 elsif command == :put
 	entry.edit_url = entry_id

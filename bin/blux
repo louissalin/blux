@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'atom/entry' # sudo gem install atom-tools
 require "#{File.dirname(__FILE__)}/../lib/blux_option_parser.rb"
 require "#{File.dirname(__FILE__)}/../lib/blog_manager.rb"
 
@@ -104,9 +105,40 @@ begin
 			end
 		when :set_edit_url
 			check_filename(options, mgr) do |filename|
-				ARGF.each do |url|
-					mgr.set_attribute(filename, 'edit_url', url.strip)
+				switch = nil
+				entry = Array.new
+				response = Array.new
+				url = ""
+
+				ARGF.each do |line| 
+					if line == "--entry--\n"
+						switch = :entry
+						next
+					elsif line == "--response--\n"
+						switch = :response
+						next
+					elsif line == "--url--\n"
+						switch = :url
+						next
+					end
+						
+					case (switch)
+					when :entry
+						entry << line
+					when :response
+						response << line
+					when :url
+						url = line
+					end
 				end
+
+				entry_text = entry.join
+				puts entry_text if options.verbose
+
+				response_text = response.join
+				puts response_text if options.verbose
+				
+				mgr.set_attribute(filename, 'edit_url', url.strip)
 			end
 		when :version
 			puts "0.0.4"

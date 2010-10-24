@@ -1,13 +1,13 @@
-exit gracefully without piping on errors
 pretty up the verbose mode
-	- remove output when adding/removing attributes
 	- add REST responses as output
 	- add REST requests as output
+fix title issue when publishing
 
 0.0.4
 
 Add delete command
 Add tags
+Add timeout error message (couldn't connect...)
 
 0.0.5
 
