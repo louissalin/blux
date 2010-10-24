@@ -145,6 +145,46 @@ describe BlogManager do
 		end
 	end
 
+	context "when deleting" do
+		before :each do
+			create_config
+
+			File.open(@manager.index_file, 'w') do |f|
+				f.write('{"draft5.67":{"edit_url":"http://blablabla.com/asf/1"}}')
+			end
+
+			@manager.load_config
+			@manager.start
+
+			system "touch #{@manager.draft_dir}/draft5.67"
+
+			@manager.stub!(:system).and_return(true)
+			@draft_mgr.stub!(:delete_draft)
+		end
+
+		it "should send the proper command" do
+			@manager.should_receive(:system).with("ruby #{File.dirname(__FILE__)[0..-6]}/lib/wp_publish.rb --delete http://blablabla.com/asf/1 --config #{@blux_rc}")
+			@manager.delete 'draft5.67'
+		end
+
+		it "should delete the record from the published drafts to disk" do
+			lines = ''
+			File.open(@manager.index_file, 'r') do |f| 
+				f.each_line {|l| lines += l}
+			end
+			JSON.parse(lines).key?('draft5.67').should == true
+
+			@manager.delete 'draft5.67'
+
+			lines = ''
+			File.open(@manager.index_file, 'r') do |f| 
+				f.each_line {|l| lines += l}
+			end
+
+			JSON.parse(lines).key?('draft5.67').should == false
+		end
+	end
+
 	def create_config
 		File.open(@blux_rc, 'w') do |f|
 			f.puts "editor: gedit"
