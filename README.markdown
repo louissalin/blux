@@ -10,7 +10,6 @@ That's it!
 Blux reads its configuration info from  ~/.bluxrc. The first time you run blux, it will create this file for you, but will immediately complain about missing configuration items. Use the following configuration example for a Wordpress blog and edit each line as needed:
 
 	editor: vim
-	html_converter: blux_textile_to_html
 	
 	blog: myWordpressBlog
 	author_name: Mr. Author
@@ -18,8 +17,6 @@ Blux reads its configuration info from  ~/.bluxrc. The first time you run blux, 
 	password: my_password
 
 **editor:** this is the shell command that will be executed to launch your editor of choice
-
-**html_converter:** Blux will use this shell command to convert your blog draft to html. In the example above, Blux will use the blux_textile_to_html script, which is included with this application. The script will transform your post, written in the textile markup language, and convert it to html.
 
 **blog:** this is your Wordpress blog ID
 
