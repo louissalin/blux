@@ -337,6 +337,20 @@ describe DraftManager do
 		it "should output an error message if there are no drafts saved" do
 			lambda {@manager.get_latest_created_draft}.should raise_error("there is currently no saved index")
 		end
+
+		it "should not take deleted drafts into account" do
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write({"draft.1" => {"creation_time" => "2010-10-11 15:30:12",
+									   "deleted" => "2010-10-15 00:00:00"},
+						 "draft.2" => {"creation_time" => "2010-10-10 15:30:12"},
+						 "draft.3" => {"creation_time" => "2010-10-09 15:30:12"}}.to_json)
+			end
+
+			@manager = DraftManager.new
+			@manager.setup('gedit', @temp_dir, @draft_dir)
+
+			@manager.get_latest_created_draft().should == "draft.2"
+		end
 	end
 
 	context "when requesting a draft by title" do

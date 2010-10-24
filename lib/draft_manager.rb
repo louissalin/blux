@@ -143,7 +143,9 @@ class DraftManager
 
 	def get_latest_created_draft
 		check_count do
-			@index.sort do |a,b| 
+			@index.reject do |key, val|
+				val["deleted"] != nil
+			end.sort do |a,b| 
 				Time.parse(a[1]["creation_time"]) <=> Time.parse(b[1]["creation_time"])
 			end[-1][0]
 		end
