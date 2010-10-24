@@ -148,13 +148,15 @@ describe DraftManager do
 
 	context "when listing drafts" do
 		before :each do
-			system "touch #{@draft_dir}/1"
-			system "touch #{@draft_dir}/2"
-			system "touch #{@draft_dir}/3"
+			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
+				f.write('{"1":{},"2":{},"3":{}}')
+			end
+
+			@manager.load_index
 		end
 
 		it "should list all the draft filenames, one per line" do
-			@manager.list.should == ["1", "2", "3"]
+			@manager.list.entries.should == ["1", "2", "3"]
 		end
 	end
 
@@ -277,11 +279,13 @@ describe DraftManager do
 		it "should output an warning message if the title is not unique" do
 			@manager.set_attribute('draft.1', "title", 'title')
 
+			STDERR.stub!(:<<)
 			STDERR.should_receive(:<<).with("warning: title 'title' is not unique\n")
 			@manager.set_attribute('draft.2', "title", 'title')
 		end
 
 		it "should still change the value of the previous title" do
+			STDERR.stub!(:<<)
 			@manager.set_attribute('draft.1', 'title', 'title')
 			@manager.set_attribute('draft.2', 'title', 'title2')
 			@manager.set_attribute('draft.2', 'title', 'title')

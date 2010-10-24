@@ -90,8 +90,18 @@ class DraftManager
 		print_index if @verbose
 	end
 
+	def delete_draft(filename)
+		set_attribute(filename, "deleted", Time.now.to_s)
+	end
+
 	def list
-		Dir.entries(@draft_dir).reject {|i| i[0] == '.'}
+		block = Enumerator.new do |g|
+			@index.keys.each do |k|
+				g << k if @index[k]["deleted"] == nil
+			end
+		end
+
+		block
 	end
 
 	def show_info(filename)

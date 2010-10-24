@@ -113,4 +113,25 @@ class BlogManager
 		puts "blog index:\n" if @verbose
 		print_index if @verbose
 	end
+
+	def delete(filename)
+		url = get_attribute(filename, "edit_url")
+		raise "couldn't find an edit url for the draft: #{filename}" unless url 
+
+		publish_cmd = "ruby #{File.dirname(__FILE__)}/wp_publish.rb"
+		cmd = "#{publish_cmd} --delete #{url} --config #{@blux_rc}"
+
+		if system cmd
+			delete_index(filename)
+			@draft_manager.delete_draft(filename)
+		else
+			msg = "failed to update...\n"
+			msg = msg + ' use the --verbose option for more information' if !@verbose
+
+			raise SystemExit, msg
+		end
+
+		puts "blog index:\n" if @verbose
+		print_index if @verbose
+	end
 end
