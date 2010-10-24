@@ -148,7 +148,7 @@ begin
 				mgr.set_attribute(filename, 'edit_url', url.strip)
 			end
 		when :version
-			puts "0.0.4"
+			puts "0.0.5"
 		end
 	end
 rescue 
