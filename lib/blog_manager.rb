@@ -72,7 +72,7 @@ class BlogManager
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
 
 		convert_cmd = "blux --convert -f #{filename}"
-		publish_cmd = "ruby #{File.dirname(__FILE__)}/wp_publish.rb -t \"#{title}\" --config #{@blux_rc}"
+		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb -t \"#{title}\" --config #{@blux_rc}"
 		set_url_cmd = "blux --set_edit_url -f #{filename}"
 
 		cmd = "#{convert_cmd} | #{publish_cmd} | #{set_url_cmd}"
@@ -98,7 +98,7 @@ class BlogManager
 
 		raise "couldn't find an edit url for the draft: #{filename}" unless url 
 
-		publish_cmd = "ruby #{File.dirname(__FILE__)}/wp_publish.rb"
+		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb"
 		cmd = "blux --convert -f #{filename} | #{publish_cmd} -t \"#{title}\" --update #{url} --config #{@blux_rc}"
 
 		if system cmd
@@ -118,7 +118,7 @@ class BlogManager
 		url = get_attribute(filename, "edit_url")
 		raise "couldn't find an edit url for the draft: #{filename}" unless url 
 
-		publish_cmd = "ruby #{File.dirname(__FILE__)}/wp_publish.rb"
+		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb"
 		cmd = "#{publish_cmd} --delete #{url} --config #{@blux_rc}"
 
 		if system cmd
