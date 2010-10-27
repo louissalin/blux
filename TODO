@@ -1,4 +1,3 @@
-Refactor wp_publish into classes/strategies...
 Add tags
 Add timeout error message (couldn't connect...)
 
