@@ -101,6 +101,7 @@ class BlogManager
 		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb"
 		post_cmd = "blux --post-cmd"
 		cmd = "blux --convert -f #{filename} | #{publish_cmd} -t \"#{title}\" --update #{url} --config #{@blux_rc} | #{post_cmd}"
+		cmd = cmd + " --verbose" if @verbose
 
 		if system cmd
 			set_attribute(filename, :published_time, Time.now)
@@ -122,6 +123,7 @@ class BlogManager
 		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb"
 		post_cmd = "blux --post-cmd"
 		cmd = "#{publish_cmd} --delete #{url} --config #{@blux_rc} | #{post_cmd}"
+		cmd = cmd + " --verbose" if @verbose
 
 		if system cmd
 			delete_index(filename)
