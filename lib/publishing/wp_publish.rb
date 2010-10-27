@@ -15,19 +15,26 @@
 require 'net/http'
 require 'atom/entry' # sudo gem install atom-tools
 require 'atom/collection'
-require "#{File.dirname(__FILE__)}/../blux_config_reader"
-require "#{File.dirname(__FILE__)}/wp_options"
+require File.join(File.expand_path(File.dirname(__FILE__)), "..", "blux_config_reader")
+require File.join(File.expand_path(File.dirname(__FILE__)), "wp_options")
 
 # a great thanks to the devs of all the libs used here
 # some info about you and your blog
 
-def delete(entry_id)
+def delete(options, base, username, password)
 	entry = Atom::Entry.new
 	entry.updated!
-	entry.edit_url = entry_id
+	entry.edit_url = options.entry_id
+
+	h = Atom::HTTP.new
+	h.user = username
+	h.pass = password
+	h.always_auth = :basic
 
 	c = Atom::Collection.new(base + "/posts", h)
 	res = c.delete! entry
+
+	return entry, res
 end
 
 def get_content
@@ -74,7 +81,7 @@ def publish_or_update(command, options, username, password, base, bloguri, autho
 	if command == :post
 		res = c.post! entry
 	elsif command == :put
-		entry.edit_url = entry_id
+		entry.edit_url = options.entry_id
 		res = c.put! entry
 	end
 
@@ -94,9 +101,9 @@ WPOptionParser.parse(ARGV) do |options|
 	base = "https://#{blog}/wp-app.php"
 
 	case(options.command)
-	when :post, :put
-		entry, res = publish_or_update(options.command, options, username, password, 
-									   		  		    base, bloguri, authorname)
+	when :post
+		entry, res = publish_or_update(:post, options, username, password, 
+									   		  base, bloguri, authorname)
 		puts "--entry--"
 		puts entry
 
@@ -105,7 +112,21 @@ WPOptionParser.parse(ARGV) do |options|
 
 		puts "--url--"
 		puts Atom::Entry.parse(res.read_body).edit_url
+	when :put
+		entry, res = publish_or_update(:put, options, username, password, 
+									   	     base, bloguri, authorname)
+		puts "--entry--"
+		puts entry
+
+		puts "--response--"
+		puts res 
 	when :delete
-		delete options.entry_id
+		entry, res = delete(options, base, username, password)
+
+		puts "--entry--"
+		puts entry
+
+		puts "--response--"
+		puts res 
 	end
 end

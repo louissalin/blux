@@ -71,6 +71,6 @@ class WPOptionParser
 		end
 
 		opts.parse!(args)
-		options
+		yield options
 	end
 end
