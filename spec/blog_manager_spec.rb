@@ -163,7 +163,7 @@ describe BlogManager do
 		end
 
 		it "should send the proper command" do
-			@manager.should_receive(:system).with("ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb --delete http://blablabla.com/asf/1 --config #{@blux_rc}")
+			@manager.should_receive(:system).with("ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb --delete http://blablabla.com/asf/1 --config #{@blux_rc} | blux --post-cmd")
 			@manager.delete 'draft5.67'
 		end
 

@@ -82,6 +82,10 @@ class BluxOptionParser
 				options.command = :set_edit_url
 			end
 
+			opts.on("--post-cmd", "shows post publishing info: request & response") do
+				options.command = :show_post_info
+			end
+
 			opts.on("--with-preview", "show a preview of each draft while listing") do
 				options.list_preview = true
 			end

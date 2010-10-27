@@ -57,6 +57,43 @@ def check_filename(options, blog_manager)
 	end
 end
 
+def show_post_info(options)
+	switch = nil
+	entry = Array.new
+	response = Array.new
+	url = ""
+
+	ARGF.each do |line| 
+		if line == "--entry--\n"
+			switch = :entry
+			next
+		elsif line == "--response--\n"
+			switch = :response
+			next
+		elsif line == "--url--\n"
+			switch = :url
+			next
+		end
+
+		case (switch)
+		when :entry
+			entry << line
+		when :response
+			response << line
+		when :url
+			url = line
+		end
+	end
+
+	entry_text = entry.join
+	puts "entry:" if options.verbose
+	puts entry_text if options.verbose
+
+	response_text = response.join
+	puts "response:" if options.verbose
+	puts response_text if options.verbose
+end
+
 begin
 	validate_command(BluxOptionParser.parse(ARGV)) do |options|
 		draft_manager = DraftManager.new
@@ -108,43 +145,11 @@ begin
 				puts "deleting" if options.verbose
 				mgr.delete filename
 			end
+		when :show_post_info
+			show_post_info(options)
 		when :set_edit_url
 			check_filename(options, mgr) do |filename|
-				switch = nil
-				entry = Array.new
-				response = Array.new
-				url = ""
-
-				ARGF.each do |line| 
-					if line == "--entry--\n"
-						switch = :entry
-						next
-					elsif line == "--response--\n"
-						switch = :response
-						next
-					elsif line == "--url--\n"
-						switch = :url
-						next
-					end
-						
-					case (switch)
-					when :entry
-						entry << line
-					when :response
-						response << line
-					when :url
-						url = line
-					end
-				end
-
-				entry_text = entry.join
-				puts "entry:" if options.verbose
-				puts entry_text if options.verbose
-
-				response_text = response.join
-				puts "response:" if options.verbose
-				puts response_text if options.verbose
-				
+				show_post_info(options)
 				mgr.set_attribute(filename, 'edit_url', url.strip)
 			end
 		when :version
