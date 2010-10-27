@@ -125,6 +125,7 @@ class DraftManager
 	end
 
 	def output(filename)
+		ensure_not_deleted filename
 		check_filename(filename) do |draft_filename|
 			File.open(draft_filename, 'r') do |f|
 				if f.eof?

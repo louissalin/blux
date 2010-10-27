@@ -212,7 +212,9 @@ describe DraftManager do
 	context "when outputing a draft" do
 		before :each do
 			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
-				f.write('{"file1":{"a":1,"b":2},"file2":{"a":1,"b":2}, "file3":{}}')
+				f.write('{"file1":{"a":1,"b":2},
+						  "file2":{"a":1,"deleted":"2010-10-15 00:00:00"}, 
+						  "file3":{}}')
 			end
 
 			system "echo this is blog with lots of letters intended to go beyond the 76 chars that will be displayed by the preview functionnality of the draft manager > #{@draft_dir}/file1"
@@ -229,6 +231,10 @@ describe DraftManager do
 
 		it "should display an empty string for an empty draft" do
 			@manager.output('file3').should == ''
+		end
+
+		it "should raise an exception if the draft has been deleted" do
+			lambda {@manager.output('file2')}.should raise_error("draft filename file2 has been deleted")
 		end
 	end
 
