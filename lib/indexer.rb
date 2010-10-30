@@ -35,30 +35,54 @@ module BluxIndexer
 		end
 	end
 
-	def check_title(filename, attr_key, attr_val)
-		return true unless attr_key.to_s == "title"
-		
-		unique_title = true
-		@index.keys.reject{|k| k == filename}.each do |key|
-			unique_title = false if (@index[key][attr_key.to_s] == attr_val)
-		end
-		
-		STDERR << "warning: title '#{attr_val}' is not unique\n" unless unique_title 
-		true
-	end
-
 	def set_attribute(filename, key, val)
 		check_index(filename) do |index|
-			if check_title(filename, key, val)
+			case key
+			when "title"
+				unique_title = true
+				@index.keys.reject{|k| k == filename}.each do |other_key|
+					unique_title = false if (@index[other_key.to_s][key] == val)
+				end
+
+				STDERR << "warning: title '#{val}' is not unique\n" unless unique_title 
+
 				index[key.to_s] = val 
-				save_index
+			when "tags"
+				values = Array.new
+				values << index[key.to_s] unless index[key.to_s] == nil
+				values << val
+
+				index[key.to_s] = values.join(',')
+			else
+				index[key.to_s] = val 
 			end
+
+			save_index
 		end
 	end
 
 	def delete_attribute(filename, attr_name)
 		check_index(filename) do |index|
-			index.delete(attr_name.to_s)
+			case attr_name
+			when "tags"
+				if block_given?
+					tags = yield 
+					tags_to_remove = tags.split(',')
+
+					values = index[attr_name.to_s].split(',')
+
+					new_values = values.reject{|i| tags_to_remove.include?(i)}.join(',')
+					
+					if new_values.length > 0
+						index[attr_name.to_s] = new_values
+					else
+						index.delete(attr_name.to_s)
+					end
+				end
+			else
+				index.delete(attr_name.to_s)
+			end
+
 			save_index
 		end
 	end
