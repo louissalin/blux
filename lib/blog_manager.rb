@@ -70,11 +70,11 @@ class BlogManager
 
 	def publish(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
-		tags = @draft_manager.get_attribute(filename, "tags")
+		categories = @draft_manager.get_attribute(filename, "categories")
 
 		convert_cmd = "blux --convert -f #{filename}"
-		tags_cmd = tags ? "-c \"#{tags}\"" : ""
-		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb -t \"#{title}\" --config #{@blux_rc} #{tags_cmd}"
+		categories_cmd = categories ? "-c \"#{categories}\"" : ""
+		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb -t \"#{title}\" --config #{@blux_rc} #{categories_cmd}"
 		set_url_cmd = "blux --set_edit_url -f #{filename}"
 
 		cmd = "#{convert_cmd} | #{publish_cmd} | #{set_url_cmd}"
@@ -96,13 +96,15 @@ class BlogManager
 
 	def update(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
+		categories = @draft_manager.get_attribute(filename, "categories")
 		url = get_attribute(filename, "edit_url")
 
 		raise "couldn't find an edit url for the draft: #{filename}" unless url 
 
 		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb"
+		categories_cmd = categories ? "-c \"#{categories}\"" : ""
 		post_cmd = "blux --post-cmd"
-		cmd = "blux --convert -f #{filename} | #{publish_cmd} -t \"#{title}\" --update #{url} --config #{@blux_rc} | #{post_cmd}"
+		cmd = "blux --convert -f #{filename} | #{publish_cmd} -t \"#{title}\" --update #{url} --config #{@blux_rc} #{categories_cmd} | #{post_cmd}"
 		cmd = cmd + " --verbose" if @verbose
 
 		if system cmd
