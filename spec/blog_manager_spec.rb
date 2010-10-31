@@ -119,9 +119,9 @@ describe BlogManager do
 			@manager.publish 'draft5.67'
 		end
 
-		it "should send the proper command with tags if there are any" do
+		it "should send the proper command with categories if there are any" do
 			@draft_mgr.stub!(:get_attribute).with("draft5.67", "title").and_return("title")
-			@draft_mgr.stub!(:get_attribute).with("draft5.67", "tags").and_return("tag1,tag2")
+			@draft_mgr.stub!(:get_attribute).with("draft5.67", "categories").and_return("tag1,tag2")
 
 			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"title\" --config #{@blux_rc} -c \"tag1,tag2\" | blux --set_edit_url -f draft5.67")
 			@manager.publish 'draft5.67'
