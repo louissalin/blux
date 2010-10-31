@@ -19,6 +19,7 @@
 require "#{File.dirname(__FILE__)}/draft_manager"
 require "#{File.dirname(__FILE__)}/blux_config_reader"
 require "#{File.dirname(__FILE__)}/indexer"
+require 'timeout'
 
 class BlogManager
 	attr_accessor :home, :blux_dir, :blux_rc, :blux_tmp_dir, :draft_dir
@@ -80,7 +81,8 @@ class BlogManager
 		cmd = "#{convert_cmd} | #{publish_cmd} | #{set_url_cmd}"
 		cmd = cmd + " --verbose" if @verbose
 
-		if system cmd
+		status = Timeout::timeout(10) { system cmd }
+		if status
 			load_index
 			set_attribute(filename, :published_time, Time.now)
 		else
@@ -107,7 +109,8 @@ class BlogManager
 		cmd = "blux --convert -f #{filename} | #{publish_cmd} -t \"#{title}\" --update #{url} --config #{@blux_rc} #{categories_cmd} | #{post_cmd}"
 		cmd = cmd + " --verbose" if @verbose
 
-		if system cmd
+		status = Timeout::timeout(10) { system cmd }
+		if status
 			set_attribute(filename, :published_time, Time.now)
 		else
 			msg = "failed to update...\n"

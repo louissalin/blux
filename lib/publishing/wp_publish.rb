@@ -88,45 +88,50 @@ def publish_or_update(command, options, username, password, base, bloguri, autho
 	return entry, res
 end
 
-WPOptionParser.parse(ARGV) do |options|
-	config = BluxConfigurationReader.new
-	config.load_config options.bluxrc
+begin
+	WPOptionParser.parse(ARGV) do |options|
+		config = BluxConfigurationReader.new
+		config.load_config options.bluxrc
 
-	blog = config.blog
-	authorname = config.author_name
-	username = config.user_name
-	password = config.password
+		blog = config.blog
+		authorname = config.author_name
+		username = config.user_name
+		password = config.password
 
-	bloguri = "http://#{blog}"
-	base = "https://#{blog}/wp-app.php"
+		bloguri = "http://#{blog}"
+		base = "https://#{blog}/wp-app.php"
 
-	case(options.command)
-	when :post
-		entry, res = publish_or_update(:post, options, username, password, 
-									   		  base, bloguri, authorname)
-		puts "--entry--"
-		puts entry
+		case(options.command)
+		when :post
+			entry, res = publish_or_update(:post, options, username, password, 
+										   base, bloguri, authorname)
+			puts "--entry--"
+			puts entry
 
-		puts "--response--"
-		puts res 
+			puts "--response--"
+			puts res 
 
-		puts "--url--"
-		puts Atom::Entry.parse(res.read_body).edit_url
-	when :put
-		entry, res = publish_or_update(:put, options, username, password, 
-									   	     base, bloguri, authorname)
-		puts "--entry--"
-		puts entry
+			puts "--url--"
+			puts Atom::Entry.parse(res.read_body).edit_url
+		when :put
+			entry, res = publish_or_update(:put, options, username, password, 
+										   base, bloguri, authorname)
+			puts "--entry--"
+			puts entry
 
-		puts "--response--"
-		puts res 
-	when :delete
-		entry, res = delete(options, base, username, password)
+			puts "--response--"
+			puts res 
+		when :delete
+			entry, res = delete(options, base, username, password)
 
-		puts "--entry--"
-		puts entry
+			puts "--entry--"
+			puts entry
 
-		puts "--response--"
-		puts res 
+			puts "--response--"
+			puts res 
+		end
 	end
+rescue
+	STDERR << "publishing error: #{$!}\n"
+	raise SystemExit
 end
