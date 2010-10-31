@@ -104,8 +104,6 @@ describe BlogManager do
 				f.write('{"draft5.67":{"a":1,"b":2}}')
 			end
 
-			@draft_mgr.stub!(:get_attribute).and_return("title")
-
 			@manager.load_config
 			@manager.start
 
@@ -115,18 +113,29 @@ describe BlogManager do
 		end
 
 		it "should send the proper command" do
-			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"title\" --config #{@blux_rc} | blux --set_edit_url -f draft5.67")
+			@draft_mgr.stub!(:get_attribute).and_return("title")
+
+			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"title\" --config #{@blux_rc} -c \"title\" | blux --set_edit_url -f draft5.67")
+			@manager.publish 'draft5.67'
+		end
+
+		it "should send the proper command with tags if there are any" do
+			@draft_mgr.stub!(:get_attribute).with("draft5.67", "title").and_return("title")
+			@draft_mgr.stub!(:get_attribute).with("draft5.67", "tags").and_return("tag1,tag2")
+
+			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"title\" --config #{@blux_rc} -c \"tag1,tag2\" | blux --set_edit_url -f draft5.67")
 			@manager.publish 'draft5.67'
 		end
 
 		it "should send the command with the title included if it exists" do
 			@draft_mgr.stub!(:get_attribute).and_return('bla')
 
-			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"bla\" --config #{@blux_rc} | blux --set_edit_url -f draft5.67")
+			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"bla\" --config #{@blux_rc} -c \"bla\" | blux --set_edit_url -f draft5.67")
 			@manager.publish 'draft5.67'
 		end
 
 		it "should save the record of published drafts to disk" do
+			@draft_mgr.stub!(:get_attribute).and_return("title")
 			@manager.publish 'draft5.67'
 
 			lines = ''
@@ -138,6 +147,8 @@ describe BlogManager do
 		end
 
 		it "should add the published time to the attributes of that post" do
+			@draft_mgr.stub!(:get_attribute).and_return("title")
+
 			time = Time.now.to_s
 
 			@manager.publish 'draft5.67'

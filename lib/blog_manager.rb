@@ -70,9 +70,11 @@ class BlogManager
 
 	def publish(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
+		tags = @draft_manager.get_attribute(filename, "tags")
 
 		convert_cmd = "blux --convert -f #{filename}"
-		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb -t \"#{title}\" --config #{@blux_rc}"
+		tags_cmd = tags ? "-c \"#{tags}\"" : ""
+		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb -t \"#{title}\" --config #{@blux_rc} #{tags_cmd}"
 		set_url_cmd = "blux --set_edit_url -f #{filename}"
 
 		cmd = "#{convert_cmd} | #{publish_cmd} | #{set_url_cmd}"
