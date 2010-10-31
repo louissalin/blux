@@ -44,6 +44,11 @@ class BluxOptionParser
 			opts.on("-s", "--set", "set an attribute on a draft") do
 				options.command = :set
 			end
+			
+			opts.on("--unset ATTR", "delete an attribute on a draft") do |attr|
+				options.command = :unset
+				options.attribute = attr
+			end
 
 			opts.on("-c", "--convert", "convert a draft to html") do
 				options.command = :convert

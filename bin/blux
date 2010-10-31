@@ -117,6 +117,10 @@ begin
 					mgr.draft_manager.set_attribute(filename, attribute, value)
 				end
 			end
+		when :unset
+			check_filename(options, mgr) do |filename|
+				mgr.draft_manager.delete_attribute(filename, options.attribute)
+			end
 		when :out
 			check_filename(options, mgr) do |filename|
 				STDOUT.puts(mgr.draft_manager.output filename)

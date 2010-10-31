@@ -312,21 +312,21 @@ describe DraftManager do
 		end
 
 		it "should add a new tags attribute" do
-			@manager.set_attribute('draft.1', 'tags', "a tag")
-			@manager.index['draft.1']['tags'].should == 'a tag'
+			@manager.set_attribute('draft.1', 'categories', "a tag")
+			@manager.index['draft.1']['categories'].should == 'a tag'
 		end
 
 		it "should add to an existing tag attribute if it already exists" do
-			@manager.set_attribute('draft.1', 'tags', "a tag")
-			@manager.set_attribute('draft.1', 'tags', "another tag")
-			@manager.index['draft.1']['tags'].should == 'a tag,another tag'
+			@manager.set_attribute('draft.1', 'categories', "a tag")
+			@manager.set_attribute('draft.1', 'categories', "another tag")
+			@manager.index['draft.1']['categories'].should == 'a tag,another tag'
 		end
 	end
 
 	context "when deleting a tag" do
 		before :each do
 			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
-				f.write('{"draft.1":{"tags":"tag1,tag2,tag3"}}')
+				f.write('{"draft.1":{"categories":"tag1,tag2,tag3"}}')
 			end
 
 			system "touch #{@draft_dir}/draft.1"
@@ -335,27 +335,27 @@ describe DraftManager do
 		end
 
 		it "should remove the attribute from the draft index" do
-			@manager.delete_attribute('draft.1', "tags") do
+			@manager.delete_attribute('draft.1', "categories") do
 				'tag2'
 			end
 			
-			@manager.index['draft.1']["tags"].should == 'tag1,tag3' 
+			@manager.index['draft.1']["categories"].should == 'tag1,tag3' 
 		end
 
 		it "should not do anything if the tag does not exist" do
-			@manager.delete_attribute('draft.1', "tags") do
+			@manager.delete_attribute('draft.1', "categories") do
 				'tag5'
 			end
 			
-			@manager.index['draft.1']["tags"].should == 'tag1,tag2,tag3' 
+			@manager.index['draft.1']["categories"].should == 'tag1,tag2,tag3' 
 		end
 
 		it "should remove the attribute if there are no tags left" do
-			@manager.delete_attribute('draft.1', "tags") do
+			@manager.delete_attribute('draft.1', "categories") do
 				'tag1,tag2,tag3'
 			end
 			
-			@manager.index['draft.1']["tags"].should == nil 
+			@manager.index['draft.1']["categories"].should == nil 
 		end
 	end
 

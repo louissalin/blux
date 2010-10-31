@@ -47,7 +47,7 @@ module BluxIndexer
 				STDERR << "warning: title '#{val}' is not unique\n" unless unique_title 
 
 				index[key.to_s] = val 
-			when "tags"
+			when "categories"
 				values = Array.new
 				values << index[key.to_s] unless index[key.to_s] == nil
 				values << val
@@ -64,20 +64,22 @@ module BluxIndexer
 	def delete_attribute(filename, attr_name)
 		check_index(filename) do |index|
 			case attr_name
-			when "tags"
+			when "categories"
 				if block_given?
-					tags = yield 
-					tags_to_remove = tags.split(',')
+					categories = yield 
+					categories_to_remove = categories.split(',')
 
 					values = index[attr_name.to_s].split(',')
 
-					new_values = values.reject{|i| tags_to_remove.include?(i)}.join(',')
+					new_values = values.reject{|i| categories_to_remove.include?(i)}.join(',')
 					
 					if new_values.length > 0
 						index[attr_name.to_s] = new_values
 					else
 						index.delete(attr_name.to_s)
 					end
+				else
+					index.delete(attr_name.to_s)
 				end
 			else
 				index.delete(attr_name.to_s)
