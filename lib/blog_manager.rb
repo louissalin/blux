@@ -81,19 +81,10 @@ class BlogManager
 		cmd = "#{convert_cmd} | #{publish_cmd} | #{set_url_cmd}"
 		cmd = cmd + " --verbose" if @verbose
 
-		status = Timeout::timeout(10) { system cmd }
-		if status
+		send_publish_command(cmd, filename, "failed to publish...") do
 			load_index
 			set_attribute(filename, :published_time, Time.now)
-		else
-			msg = "failed to publish...\n"
-			msg = msg + ' use the --verbose option for more information' if !@verbose
-
-			raise SystemExit, msg
 		end
-
-		puts "blog index:\n" if @verbose
-		print_index if @verbose
 	end
 
 	def update(filename)
@@ -109,18 +100,9 @@ class BlogManager
 		cmd = "blux --convert -f #{filename} | #{publish_cmd} -t \"#{title}\" --update #{url} --config #{@blux_rc} #{categories_cmd} | #{post_cmd}"
 		cmd = cmd + " --verbose" if @verbose
 
-		status = Timeout::timeout(10) { system cmd }
-		if status
+		send_publish_command(cmd, filename, "failed to update...") do
 			set_attribute(filename, :published_time, Time.now)
-		else
-			msg = "failed to update...\n"
-			msg = msg + ' use the --verbose option for more information' if !@verbose
-
-			raise SystemExit, msg
 		end
-
-		puts "blog index:\n" if @verbose
-		print_index if @verbose
 	end
 
 	def delete(filename)
@@ -132,11 +114,20 @@ class BlogManager
 		cmd = "#{publish_cmd} --delete #{url} --config #{@blux_rc} | #{post_cmd}"
 		cmd = cmd + " --verbose" if @verbose
 
-		if system cmd
+		send_publish_command(cmd, filename, "failed to delete...") do
 			delete_index(filename)
 			@draft_manager.delete_draft(filename)
+		end
+	end
+
+private
+
+	def send_publish_command(cmd, filename, error_msg)
+		status = Timeout::timeout(10) { system cmd }
+		if status
+			yield
 		else
-			msg = "failed to delete...\n"
+			msg = "#{error_msg}\n"
 			msg = msg + ' use the --verbose option for more information' if !@verbose
 
 			raise SystemExit, msg

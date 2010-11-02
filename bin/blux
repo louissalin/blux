@@ -87,6 +87,10 @@ def build_post_info(options)
 
 	entry_text = entry.join
 	response_text = response.join
+
+	msg = "Error communicating with the publishing script. Exiting..."
+	raise RuntimeError, msg if response.length == 0
+	
 	return entry, response, url
 end
 

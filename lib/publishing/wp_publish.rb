@@ -133,5 +133,4 @@ begin
 	end
 rescue
 	STDERR << "publishing error: #{$!}\n"
-	raise SystemExit
 end
