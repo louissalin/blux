@@ -1,7 +1,3 @@
-Shouldn't publish a published post a 2nd time
-
-0.0.5
-
 Preview feature 
 	-start in same process (2 windows open at same time)
 	-start in separate process (need a 2nd command prompt, or background task)
