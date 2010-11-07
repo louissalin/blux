@@ -77,7 +77,7 @@ class BlogManager
 		cmd = cmd + " --verbose" if @verbose
 
 		send_publish_command(cmd, filename, "failed to publish...") do
-			@draft_manager.set_attribute(filename, :published_time, Time.now)
+			@draft_manager.set_attribute(filename, "published_time", Time.now)
 		end
 	end
 
@@ -95,7 +95,7 @@ class BlogManager
 		cmd = cmd + " --verbose" if @verbose
 
 		send_publish_command(cmd, filename, "failed to update...") do
-			@draft_manager.set_attribute(filename, :published_time, Time.now)
+			@draft_manager.set_attribute(filename, "published_time", Time.now)
 		end
 	end
 
@@ -116,7 +116,7 @@ class BlogManager
 private
 
 	def published?(filename)
-		@draft_manager.get_attribute(filename, :published_time) != nil
+		@draft_manager.get_attribute(filename, "published_time") != nil
 	end
 
 	def send_publish_command(cmd, filename, error_msg)
