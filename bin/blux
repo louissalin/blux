@@ -165,7 +165,7 @@ begin
 				puts "response:" if options.verbose
 				puts response if options.verbose
 
-				mgr.set_attribute(filename, 'edit_url', url.strip)
+				mgr.draft_manager.set_attribute(filename, 'edit_url', url.strip)
 			end
 		when :version
 			puts "0.0.5"

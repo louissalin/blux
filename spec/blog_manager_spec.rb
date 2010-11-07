@@ -63,24 +63,6 @@ describe BlogManager do
 		it "should create a draft folder in the .blux dir if it doesn't exist" do
 			File.exists?("#{@blux}/draft").should == true
 		end
-
-		it "should create a published post file in the .blux dir if it doesn't exist" do
-			File.exists?("#{@blux}/.published").should == true
-		end
-	end
-
-	context "when using the blog manager" do
-		before :each do
-			File.open("#{@blux}/.published", 'w') do |f|
-				f.write('{"draft1.23":{}}')
-			end
-
-			@manager.start
-		end
-
-		it "should load the published post file" do
-			@manager.index.key?("draft1.23").should == true
-		end
 	end
 
 	context "loading the config and setting up the draft manager" do
@@ -100,10 +82,6 @@ describe BlogManager do
 		before :each do
 			create_config
 
-			File.open(@manager.index_file, 'w') do |f|
-				f.write('{"draft5.67":{"a":1,"b":2}}')
-			end
-
 			@manager.load_config
 			@manager.start
 
@@ -114,6 +92,8 @@ describe BlogManager do
 
 		it "should send the proper command" do
 			@draft_mgr.stub!(:get_attribute).and_return("title")
+			@draft_mgr.stub!(:get_attribute).with("draft5.67", :published_time).and_return(nil)
+			@draft_mgr.stub!(:set_attribute)
 
 			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"title\" --config #{@blux_rc} -c \"title\" | blux --set_edit_url -f draft5.67")
 			@manager.publish 'draft5.67'
@@ -122,6 +102,8 @@ describe BlogManager do
 		it "should send the proper command with categories if there are any" do
 			@draft_mgr.stub!(:get_attribute).with("draft5.67", "title").and_return("title")
 			@draft_mgr.stub!(:get_attribute).with("draft5.67", "categories").and_return("tag1,tag2")
+			@draft_mgr.stub!(:get_attribute).with("draft5.67", :published_time).and_return(nil)
+			@draft_mgr.stub!(:set_attribute)
 
 			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"title\" --config #{@blux_rc} -c \"tag1,tag2\" | blux --set_edit_url -f draft5.67")
 			@manager.publish 'draft5.67'
@@ -129,6 +111,8 @@ describe BlogManager do
 
 		it "should send the command with the title included if it exists" do
 			@draft_mgr.stub!(:get_attribute).and_return('bla')
+			@draft_mgr.stub!(:get_attribute).with("draft5.67", :published_time).and_return(nil)
+			@draft_mgr.stub!(:set_attribute)
 
 			@manager.should_receive(:system).with("blux --convert -f draft5.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"bla\" --config #{@blux_rc} -c \"bla\" | blux --set_edit_url -f draft5.67")
 			@manager.publish 'draft5.67'
@@ -136,33 +120,25 @@ describe BlogManager do
 
 		it "should save the record of published drafts to disk" do
 			@draft_mgr.stub!(:get_attribute).and_return("title")
+			@draft_mgr.stub!(:get_attribute).and_return(nil)
+			Time.stub!(:now).and_return('000')
+			@draft_mgr.should_receive(:set_attribute).with('draft5.67', :published_time, '000')
+
 			@manager.publish 'draft5.67'
-
-			lines = ''
-			File.open(@manager.index_file, 'r') do |f| 
-				f.each_line {|l| lines += l}
-			end
-
-			JSON.parse(lines).key?('draft5.67').should == true
 		end
 
-		it "should add the published time to the attributes of that post" do
-			@draft_mgr.stub!(:get_attribute).and_return("title")
+		it "should not allow to publish a draft twice" do
+			@draft_mgr.stub!(:get_attribute).and_return('bla')
+			@draft_mgr.stub!(:get_attribute).with("draft5.67", :published_time).and_return('123')
+			@draft_mgr.stub!(:set_attribute)
 
-			time = Time.now.to_s
-
-			@manager.publish 'draft5.67'
-			@manager.index["draft5.67"]["published_time"].to_s.should == time
+			lambda {@manager.publish 'draft5.67'}.should raise_error("this draft has already been published")
 		end
 	end
 
 	context "when deleting" do
 		before :each do
 			create_config
-
-			File.open(@manager.index_file, 'w') do |f|
-				f.write('{"draft5.67":{"edit_url":"http://blablabla.com/asf/1"}}')
-			end
 
 			@manager.load_config
 			@manager.start
@@ -171,28 +147,12 @@ describe BlogManager do
 
 			@manager.stub!(:system).and_return(true)
 			@draft_mgr.stub!(:delete_draft)
+			@draft_mgr.stub!(:get_attribute).and_return('http://blablabla.com/asf/1')
 		end
 
 		it "should send the proper command" do
 			@manager.should_receive(:system).with("ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb --delete http://blablabla.com/asf/1 --config #{@blux_rc} | blux --post-cmd")
 			@manager.delete 'draft5.67'
-		end
-
-		it "should delete the record from the published drafts to disk" do
-			lines = ''
-			File.open(@manager.index_file, 'r') do |f| 
-				f.each_line {|l| lines += l}
-			end
-			JSON.parse(lines).key?('draft5.67').should == true
-
-			@manager.delete 'draft5.67'
-
-			lines = ''
-			File.open(@manager.index_file, 'r') do |f| 
-				f.each_line {|l| lines += l}
-			end
-
-			JSON.parse(lines).key?('draft5.67').should == false
 		end
 	end
 

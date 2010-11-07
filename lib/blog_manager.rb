@@ -25,8 +25,6 @@ class BlogManager
 	attr_accessor :home, :blux_dir, :blux_rc, :blux_tmp_dir, :draft_dir
 	attr_accessor :draft_manager 
 	attr_accessor :config
-	attr_accessor :index
-	attr_accessor :index_file
 
 	include BluxIndexer
 
@@ -39,7 +37,6 @@ class BlogManager
 		@draft_dir = "#{@blux_dir}/draft"
 		@blux_tmp_dir = "#{@blux_dir}/tmp"
 		@blux_rc = "#{@home}/.bluxrc"
-		@index_file = "#{@blux_dir}/.published"
 
 		@draft_manager = draft_manager
 	end
@@ -56,10 +53,6 @@ class BlogManager
 		unless Dir.exists?(@blux_tmp_dir)
 			Dir.mkdir(@blux_tmp_dir) 
 		end
-
-		load_index
-		puts "blog index:\n" if @verbose
-		print_index if @verbose
 	end
 
 	def load_config
@@ -70,6 +63,8 @@ class BlogManager
 	end
 
 	def publish(filename)
+		raise "this draft has already been published" if published?(filename)
+
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
 		categories = @draft_manager.get_attribute(filename, "categories")
 
@@ -82,15 +77,14 @@ class BlogManager
 		cmd = cmd + " --verbose" if @verbose
 
 		send_publish_command(cmd, filename, "failed to publish...") do
-			load_index
-			set_attribute(filename, :published_time, Time.now)
+			@draft_manager.set_attribute(filename, :published_time, Time.now)
 		end
 	end
 
 	def update(filename)
 		title = @draft_manager.get_attribute(filename, "title") || 'no title'
 		categories = @draft_manager.get_attribute(filename, "categories")
-		url = get_attribute(filename, "edit_url")
+		url = @draft_manager.get_attribute(filename, "edit_url")
 
 		raise "couldn't find an edit url for the draft: #{filename}" unless url 
 
@@ -101,12 +95,12 @@ class BlogManager
 		cmd = cmd + " --verbose" if @verbose
 
 		send_publish_command(cmd, filename, "failed to update...") do
-			set_attribute(filename, :published_time, Time.now)
+			@draft_manager.set_attribute(filename, :published_time, Time.now)
 		end
 	end
 
 	def delete(filename)
-		url = get_attribute(filename, "edit_url")
+		url = @draft_manager.get_attribute(filename, "edit_url")
 		raise "couldn't find an edit url for the draft: #{filename}" unless url 
 
 		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb"
@@ -115,12 +109,15 @@ class BlogManager
 		cmd = cmd + " --verbose" if @verbose
 
 		send_publish_command(cmd, filename, "failed to delete...") do
-			delete_index(filename)
 			@draft_manager.delete_draft(filename)
 		end
 	end
 
 private
+
+	def published?(filename)
+		@draft_manager.get_attribute(filename, :published_time) != nil
+	end
 
 	def send_publish_command(cmd, filename, error_msg)
 		status = Timeout::timeout(10) { system cmd }
@@ -132,8 +129,5 @@ private
 
 			raise SystemExit, msg
 		end
-
-		puts "blog index:\n" if @verbose
-		print_index if @verbose
 	end
 end
