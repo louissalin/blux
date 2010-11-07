@@ -179,7 +179,7 @@ begin
 				mgr.draft_manager.set_attribute(filename, 'edit_url', url.strip)
 			end
 		when :version
-			puts "0.0.5"
+			puts "0.0.6"
 		end
 	end
 rescue 
