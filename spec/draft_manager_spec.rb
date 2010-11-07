@@ -22,10 +22,13 @@ describe DraftManager do
 
 	context "when using a new manager" do
 		it "should have an empty draft index" do
-			@manager.index.keys.length.should == 0
+			index = @manager.load_index
+			index.keys.length.should == 0
 		end
 
 		it "should load the draft index from disk" do
+			File.stub!(:exists?).and_return(true)
+
 			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
 				f.write('{"test.sh":{"a":1,"b":2}}')
 			end
@@ -33,9 +36,8 @@ describe DraftManager do
 			manager = DraftManager.new
 			manager.setup('gedit', @temp_dir, @draft_dir)
 
-			manager.index.key?("test.sh").should == true
-			manager.index["test.sh"].key?("a").should == true
-			manager.index["test.sh"].key?("b").should == true
+			@manager.get_attribute('test.sh', "a").should == 1
+			@manager.get_attribute('test.sh', "b").should == 2
 		end
 	end
 
@@ -78,6 +80,8 @@ describe DraftManager do
 		end
 
 		it "should copy the temp file in the draft folder if it has data" do
+			File.stub!(:exists?).and_return(true)
+
 			class Tempfile
 				def size() 123 end
 				def path() 'test/test.sh' end
@@ -92,6 +96,7 @@ describe DraftManager do
 	context "when saving a new draft" do
 		before :each do
 			@manager.stub!(:system).and_return(true)
+			File.stub!(:exists?).and_return(true)
 
 			class Tempfile
 				def size() 123 end
@@ -111,7 +116,7 @@ describe DraftManager do
 		it "should add the creation time to the attributes of that draft" do
 			time = Time.now.to_s
 			@manager.create_draft
-			@manager.index["test.sh"][:creation_time].to_s.should == time
+			@manager.get_attribute('test.sh', "creation_time").to_s.should == time
 		end
 	end
 
@@ -142,7 +147,7 @@ describe DraftManager do
 			time = Time.now.to_s
 
 			@manager.edit_draft('test.sh')
-			@manager.index["test.sh"]["edited_time"].to_s.should == time
+			@manager.get_attribute('test.sh', "edited_time").to_s.should == time
 		end
 	end
 
@@ -151,8 +156,6 @@ describe DraftManager do
 			File.open("#{@draft_dir}/.draft_index", 'w') do |f|
 				f.write('{"1":{},"2":{},"3":{}}')
 			end
-
-			@manager.load_index
 		end
 
 		it "should list all the draft filenames, one per line" do
@@ -251,13 +254,13 @@ describe DraftManager do
 
 		it "should add the attribute to the draft index" do
 			@manager.set_attribute('draft.1', "attr", "123")
-			@manager.index['draft.1']["attr"].should == "123"
+			@manager.get_attribute('draft.1', "attr").should == "123"
 		end
 
 		it "should overwrite the value if the attribute already exists" do
 			@manager.set_attribute('draft.1', "attr", "123")
 			@manager.set_attribute('draft.1', "attr", "456")
-			@manager.index['draft.1']["attr"].should == "456"
+			@manager.get_attribute('draft.1', "attr").should == "456"
 		end
 
 		it "should output an error message if the file does not exist" do
@@ -265,6 +268,7 @@ describe DraftManager do
 		end
 
 		it "should save the draft index to disk" do
+			File.should_receive(:open).with("#{@draft_dir}/.draft_index", 'r')
 			File.should_receive(:open).with("#{@draft_dir}/.draft_index", 'w')
 			@manager.set_attribute('draft.1', "attr", "123")
 		end
@@ -296,7 +300,7 @@ describe DraftManager do
 			@manager.set_attribute('draft.2', 'title', 'title2')
 			@manager.set_attribute('draft.2', 'title', 'title')
 
-			@manager.index['draft.2']["title"].should == 'title'
+			@manager.get_attribute('draft.2', "title").should == "title"
 		end
 	end
 
@@ -313,13 +317,13 @@ describe DraftManager do
 
 		it "should add a new tags attribute" do
 			@manager.set_attribute('draft.1', 'categories', "a tag")
-			@manager.index['draft.1']['categories'].should == 'a tag'
+			@manager.get_attribute('draft.1', "categories").should == "a tag"
 		end
 
 		it "should add to an existing tag attribute if it already exists" do
 			@manager.set_attribute('draft.1', 'categories', "a tag")
 			@manager.set_attribute('draft.1', 'categories', "another tag")
-			@manager.index['draft.1']['categories'].should == 'a tag,another tag'
+			@manager.get_attribute('draft.1', "categories").should == "a tag,another tag"
 		end
 	end
 
@@ -339,7 +343,7 @@ describe DraftManager do
 				'tag2'
 			end
 			
-			@manager.index['draft.1']["categories"].should == 'tag1,tag3' 
+			@manager.get_attribute('draft.1', "categories").should == "tag1,tag3"
 		end
 
 		it "should not do anything if the tag does not exist" do
@@ -347,7 +351,7 @@ describe DraftManager do
 				'tag5'
 			end
 			
-			@manager.index['draft.1']["categories"].should == 'tag1,tag2,tag3' 
+			@manager.get_attribute('draft.1', "categories").should == "tag1,tag2,tag3"
 		end
 
 		it "should remove the attribute if there are no tags left" do
@@ -355,7 +359,7 @@ describe DraftManager do
 				'tag1,tag2,tag3'
 			end
 			
-			@manager.index['draft.1']["categories"].should == nil 
+			@manager.get_attribute('draft.1', "categories").should == nil
 		end
 	end
 
@@ -372,7 +376,7 @@ describe DraftManager do
 
 		it "should remove the attribute from the draft index" do
 			@manager.delete_attribute('draft.1', :a)
-			@manager.index['draft.1']["a"].should == nil 
+			@manager.get_attribute('draft.1', "a").should == nil
 		end
 
 		it "should output an error message if the file does not exist" do

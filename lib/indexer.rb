@@ -19,8 +19,9 @@
 module BluxIndexer
 	def check_index(filename)
 		check_filename(filename) do
-			@index[filename] ||= {}
-			yield @index[filename]
+			full_index = load_index
+			full_index[filename] ||= {}
+			yield full_index, full_index[filename]
 		end
 	end
 	
@@ -36,12 +37,12 @@ module BluxIndexer
 	end
 
 	def set_attribute(filename, key, val)
-		check_index(filename) do |index|
+		check_index(filename) do |full_index, index|
 			case key
 			when "title"
 				unique_title = true
-				@index.keys.reject{|k| k == filename}.each do |other_key|
-					unique_title = false if (@index[other_key.to_s][key] == val)
+				full_index.keys.reject{|k| k == filename}.each do |other_key|
+					unique_title = false if (full_index[other_key.to_s][key] == val)
 				end
 
 				STDERR << "warning: title '#{val}' is not unique\n" unless unique_title 
@@ -57,12 +58,12 @@ module BluxIndexer
 				index[key.to_s] = val 
 			end
 
-			save_index
+			save_index(full_index)
 		end
 	end
 
 	def delete_attribute(filename, attr_name)
-		check_index(filename) do |index|
+		check_index(filename) do |full_index, index|
 			case attr_name
 			when "categories"
 				if block_given?
@@ -85,18 +86,19 @@ module BluxIndexer
 				index.delete(attr_name.to_s)
 			end
 
-			save_index
+			save_index(full_index)
 		end
 	end
 
 	def get_attribute(filename, attribute)
-		check_index(filename) do |index|
+		check_index(filename) do |full_index, index|
 			index[attribute]
 		end
 	end
 
 	def check_count
-		if @index.keys.length > 0
+		index = load_index
+		if index.keys.length > 0
 			yield
 		else
 			msg = "there is currently no saved index"
@@ -105,7 +107,8 @@ module BluxIndexer
 	end
 	
 	def delete_index(filename)
-		save_index if @index.delete filename
+		index = load_index
+		save_index if index.delete filename
 	end
 
 	def load_index
@@ -116,21 +119,22 @@ module BluxIndexer
 			f.each_line {|l| str += l}
 		end
 			
-		@index = str.length > 0 ? JSON.parse(str) : {}
+		return str.length > 0 ? JSON.parse(str) : {}
 	end
 
-	def save_index
+	def save_index(index)
 		File.open(@index_file, 'w') do |f| 
-			f.write(@index.to_json) if @index
+			f.write(index.to_json) if index
 		end
 	end
 
 	def print_index
-		puts @index.to_json + "\n" if @verbose
+		index = load_index
+		puts index.to_json + "\n" if @verbose
 	end
 
 	def ensure_not_deleted(filename) 
-		check_index(filename) do |index|
+		check_index(filename) do |full_index, index|
 			msg = "draft filename #{filename} has been deleted"
 			raise RuntimeError, msg if index["deleted"] 
 		end

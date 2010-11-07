@@ -151,19 +151,30 @@ begin
 			end
 		when :show_post_info
 			entry, response, url = build_post_info(options)
-			puts "entry:" if options.verbose
-			puts entry if options.verbose
+				if options.verbose
+					puts "entry:" 
+					puts entry 
 
-			puts "response:" if options.verbose
-			puts response if options.verbose
+					puts "response:" 
+					puts response 
+
+					puts "edit url:" 
+					puts url 
+				end
 		when :set_edit_url
 			check_filename(options, mgr) do |filename|
 				entry, response, url = build_post_info(options)
-				puts "entry:" if options.verbose
-				puts entry if options.verbose
 
-				puts "response:" if options.verbose
-				puts response if options.verbose
+				if options.verbose
+					puts "entry:" 
+					puts entry 
+
+					puts "response:" 
+					puts response 
+
+					puts "edit url:" 
+					puts url 
+				end
 
 				mgr.draft_manager.set_attribute(filename, 'edit_url', url.strip)
 			end

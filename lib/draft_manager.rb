@@ -25,7 +25,6 @@ require "#{File.dirname(__FILE__)}/indexer"
 class DraftManager
 	attr_reader :launch_editor_cmd
 	attr_reader :temp_dir, :draft_dir
-	attr_reader :index
 	attr_reader :index_file
 
 	include BluxIndexer
@@ -42,7 +41,6 @@ class DraftManager
 		value = system "touch #{@index_file}" unless File.exists? @index_file
 
 		if value
-			load_index
 			print_index if @verbose
 		else
 			msg = 'could not create the draft index file'
@@ -69,8 +67,7 @@ class DraftManager
 	def move_temp_file(tempfile)
 		if system "mv #{tempfile} #{@draft_dir}"
 			index_key = File.basename(tempfile)
-			@index[index_key] = {:creation_time => Time.now.to_s}
-			save_index
+			set_attribute(index_key, "creation_time", Time.now.to_s)
 		else
 			msg = "failed to move the temp file to the draft folder"
 			raise RuntimeError, msg
@@ -97,8 +94,9 @@ class DraftManager
 
 	def list
 		block = Enumerator.new do |g|
-			@index.keys.each do |k|
-				g << k if @index[k]["deleted"] == nil
+			index = load_index
+			index.keys.each do |k|
+				g << k if index[k]["deleted"] == nil
 			end
 		end
 
@@ -106,7 +104,7 @@ class DraftManager
 	end
 
 	def show_info(filename)
-		check_index(filename) do |index|
+		check_index(filename) do |full_index, index|
 			index.to_json
 		end
 	end
@@ -144,7 +142,8 @@ class DraftManager
 
 	def get_latest_created_draft
 		check_count do
-			@index.reject do |key, val|
+			index = load_index
+			index.reject do |key, val|
 				val["deleted"] != nil
 			end.sort do |a,b| 
 				Time.parse(a[1]["creation_time"]) <=> Time.parse(b[1]["creation_time"])
@@ -154,8 +153,9 @@ class DraftManager
 
 	def get_draft_by_title(title)
 		check_count do
-			@index.keys.each do |key|
-				draft_title = @index[key]["title"]
+			index = load_index
+			index.keys.each do |key|
+				draft_title = index[key]["title"]
 				return key if draft_title == title
 			end
 		end
