@@ -23,9 +23,15 @@ require "#{File.dirname(__FILE__)}/indexer"
 
 class Post
 	attr_accessor :filename
-	attr_accessor :creation_time
+	attr_reader :creation_time
 
-	def initialize(filename)
+	def initialize(filename, manager)
 		@filename = filename
+		@manager = manager
+	end
+
+	def creation_time=(time)
+		@creation_time = time
+		@manager.set_attribute(@filename, 'creation_time', time.to_s)
 	end
 end

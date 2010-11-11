@@ -58,7 +58,7 @@ class DraftManager
 				move_temp_file temp_file.path
 				filename = File.basename(temp_file.path)
 
-				post = Post.new(filename)
+				post = Post.new(filename, self)
 				post.creation_time = Time.now.to_s
 			end
 		else
