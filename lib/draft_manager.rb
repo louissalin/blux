@@ -21,11 +21,11 @@ require 'json'
 require 'time'
 
 require "#{File.dirname(__FILE__)}/indexer"
+require "#{File.dirname(__FILE__)}/post"
 
 class DraftManager
 	attr_reader :launch_editor_cmd
 	attr_reader :temp_dir, :draft_dir
-	attr_reader :index_file
 
 	include BluxIndexer
 
@@ -48,13 +48,18 @@ class DraftManager
 		end
 	end
 
-	def create_draft
+	def create_post
 		temp_file = Tempfile.new('draft', @temp_dir)
 		temp_file.close
 
+		post = nil
 		if system "#{@launch_editor_cmd} #{temp_file.path}"
 			if temp_file.size > 0
 				move_temp_file temp_file.path
+				filename = File.basename(temp_file.path)
+
+				post = Post.new(filename)
+				post.creation_time = Time.now.to_s
 			end
 		else
 			msg = "couldn't launch editor with command #{@launch_editor_cmd}"
@@ -62,13 +67,11 @@ class DraftManager
 		end
 
 		print_index if @verbose
+		post
 	end
 	
 	def move_temp_file(tempfile)
-		if system "mv #{tempfile} #{@draft_dir}"
-			index_key = File.basename(tempfile)
-			set_attribute(index_key, "creation_time", Time.now.to_s)
-		else
+		unless system "mv #{tempfile} #{@draft_dir}"
 			msg = "failed to move the temp file to the draft folder"
 			raise RuntimeError, msg
 		end

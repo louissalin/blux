@@ -62,7 +62,7 @@ describe DraftManager do
 			end
 
 			@manager.should_receive(:system).with('gedit test/test.sh')
-			@manager.create_draft
+			@manager.create_post
 		end
 
 		it "should not copy the temp file in the draft folder if it has no data" do
@@ -75,7 +75,7 @@ describe DraftManager do
 				"#{@temp_dir}/test"
 			end
 
-			@manager.create_draft
+			@manager.create_post
 			Dir.entries(@draft_dir).length.should == 3 # . and .. and .index
 		end
 
@@ -89,7 +89,18 @@ describe DraftManager do
 
 			@manager.should_receive(:system).with('gedit test/test.sh').ordered
 			@manager.should_receive(:system).with("mv test/test.sh #{@draft_dir}").ordered
-			@manager.create_draft
+			@manager.create_post
+		end
+
+		it "should create a post object with the filename set" do
+			File.stub!(:exists?).and_return(true)
+
+			class Tempfile
+				def path() 'test/test.sh' end
+			end
+
+			post = @manager.create_post
+			post.filename.should == 'test.sh'
 		end
 	end
 
@@ -109,14 +120,14 @@ describe DraftManager do
 		end
 
 		it "should save the draft index to disk" do
-			@manager.create_draft
+			@manager.create_post
 			File.exists?("#{@draft_dir}/.draft_index").should == true
 		end
 
 		it "should add the creation time to the attributes of that draft" do
 			time = Time.now.to_s
-			@manager.create_draft
-			@manager.get_attribute('test.sh', "creation_time").to_s.should == time
+			post = @manager.create_post
+			post.creation_time.to_s.should == time
 		end
 	end
 
