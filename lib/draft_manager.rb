@@ -59,7 +59,7 @@ class DraftManager
 				filename = File.basename(temp_file.path)
 
 				post = Post.new(filename, self)
-				post.creation_time = Time.now.to_s
+				post.creation_time = Time.now
 			end
 		else
 			msg = "couldn't launch editor with command #{@launch_editor_cmd}"
