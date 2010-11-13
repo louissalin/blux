@@ -16,22 +16,47 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
-require 'json'
 require 'time'
-
-require "#{File.dirname(__FILE__)}/indexer"
 
 class Post
 	attr_accessor :filename
-	attr_reader :creation_time
+	attr_reader :creation_time, :published_time, :title
 
 	def initialize(filename, manager)
 		@filename = filename
 		@manager = manager
+
+		@categories = []
 	end
 
 	def creation_time=(time)
 		@creation_time = time
 		@manager.set_attribute(@filename, 'creation_time', time.to_s)
+	end
+
+	def published_time=(time)
+		@published_time = time
+		@manager.set_attribute(@filename, 'published_time', time.to_s)
+	end
+
+	def title=(title)
+		@title = title
+		@manager.set_attribute(@filename, 'title', title)
+	end
+
+	def categories
+		@categories.join(',')
+	end
+
+	def add_category(category)
+		if @categories.include?(category) == false
+			@categories << category
+			@manager.set_attribute(@filename, 'categories', categories)
+		end
+	end
+
+	def delete_category(category)
+		@categories.reject! {|c| c == category}
+		@manager.set_attribute(@filename, 'categories', categories)
 	end
 end
