@@ -240,15 +240,13 @@ describe PostManager do
 		end
 
 		it "should show the entire content of the post" do
-			@manager.output('file1').should == "this is blog with lots of letters intended to go beyond the 76 chars that will be displayed by the preview functionnality of the post manager\n"
+			post = @manager.get_post('file1')
+			post.text.should == "this is blog with lots of letters intended to go beyond the 76 chars that will be displayed by the preview functionnality of the post manager\n"
 		end
 
 		it "should display an empty string for an empty post" do
-			@manager.output('file3').should == ''
-		end
-
-		it "should raise an exception if the post has been deleted" do
-			lambda {@manager.output('file2')}.should raise_error("post filename file2 has been deleted")
+			post = @manager.get_post('file3')
+			post.text.should == ''
 		end
 	end
 
@@ -314,6 +312,8 @@ describe PostManager do
 
 	context "when requesting the latest created post" do
 		it "should return the latest post filename" do
+			system "touch #{@post_dir}/post.1"
+
 			File.open("#{@post_dir}/.post_index", 'w') do |f|
 				f.write({"post.1" => {"creation_time" => "2010-10-10 15:30:12"},
 						 "post.2" => {"creation_time" => "2010-10-09 15:30:12"}}.to_json)
@@ -322,7 +322,8 @@ describe PostManager do
 			@manager = PostManager.new
 			@manager.setup('gedit', @temp_dir, @post_dir)
 
-			@manager.get_latest_created_post().should == "post.1"
+			post = @manager.get_latest_created_post
+			post.filename.should == "post.1"
 		end
 
 		it "should output an error message if there are no post saved" do
@@ -330,9 +331,12 @@ describe PostManager do
 		end
 
 		it "should not take deleted post into account" do
+			system "touch #{@post_dir}/post.1"
+			system "touch #{@post_dir}/post.2"
+
 			File.open("#{@post_dir}/.post_index", 'w') do |f|
 				f.write({"post.1" => {"creation_time" => "2010-10-11 15:30:12",
-									   "deleted" => "2010-10-15 00:00:00"},
+									   "deleted_time" => "2010-10-15 00:00:00"},
 						 "post.2" => {"creation_time" => "2010-10-10 15:30:12"},
 						 "post.3" => {"creation_time" => "2010-10-09 15:30:12"}}.to_json)
 			end
@@ -340,12 +344,16 @@ describe PostManager do
 			@manager = PostManager.new
 			@manager.setup('gedit', @temp_dir, @post_dir)
 
-			@manager.get_latest_created_post().should == "post.2"
+			post = @manager.get_latest_created_post
+			post.filename.should == "post.2"
 		end
 	end
 
 	context "when requesting a post by title" do
 		it "should return the the proper filename" do
+			system "touch #{@post_dir}/post.1"
+			system "touch #{@post_dir}/post.2"
+
 			File.open("#{@post_dir}/.post_index", 'w') do |f|
 				f.write({"post.1" => {"title" => "title1"},
 						 "post.2" => {"title" => "title2"}}.to_json)
@@ -354,8 +362,11 @@ describe PostManager do
 			@manager = PostManager.new
 			@manager.setup('gedit', @temp_dir, @post_dir)
 			
-			@manager.get_post_by_title("title1").should == "post.1"
-			@manager.get_post_by_title("title2").should == "post.2"
+			post1 = @manager.get_post_by_title("title1")
+			post2 = @manager.get_post_by_title("title2")
+
+			post1.filename.should == "post.1"
+			post2.filename.should == "post.2"
 		end
 
 		it "should output an error message if there are no post saved" do
@@ -365,7 +376,7 @@ describe PostManager do
 
 	context "when accessing a post" do
 		before(:each) do
-			system "touch #{@post_dir}/post.23"
+			system "echo bla bla bla > #{@post_dir}/post.23"
 
 			@time = "2010-10-09 00:00:00"
 			@time2 = "2011-10-09 00:00:00"
@@ -402,6 +413,26 @@ describe PostManager do
 
 		it "should load the categories" do
 			@post.categories.should == 'cat1,cat2'
+		end
+
+		it "should load the text" do
+			@post.text.should == "bla bla bla\n"
+		end
+	end
+
+	context "when accessing a deleted post" do
+		before(:each) do
+			system "echo bla bla bla > #{@post_dir}/post.23"
+
+			File.open("#{@post_dir}/.post_index", 'w') do |f|
+				f.write({"post.23" => {"title" => "title1",
+									   "categories" => "cat1,cat2",
+									   "deleted_time" => "2010-10-15 00:00:00"}}.to_json)
+			end
+		end
+
+		it "should raise an exception" do
+			lambda {@manager.get_post('post.23')}.should raise_error("post filename post.23 has been deleted")
 		end
 	end
 end

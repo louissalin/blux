@@ -127,7 +127,8 @@ begin
 			end
 		when :out
 			check_filename(options, mgr) do |filename|
-				STDOUT.puts(mgr.draft_manager.output filename)
+				post = mgr.post_manager.get_post filename
+				STDOUT.puts(post.text)
 			end
 		when :convert
 			check_filename(options, mgr) do |filename|

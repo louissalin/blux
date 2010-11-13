@@ -71,9 +71,10 @@ class PostManager
 	end
 
 	def get_post(filename)
-		check_index(filename) do |index, properties|
-			post = Post.new(filename, self, properties)
-		end
+		post = load_post(filename)
+		ensure_not_deleted(post)
+
+		post
 	end
 	
 	def move_temp_file(tempfile)
@@ -97,7 +98,7 @@ class PostManager
 	end
 
 	def delete_post(filename)
-		set_attribute(filename, "deleted", Time.now.to_s)
+		set_attribute(filename, "deleted_time", Time.now.to_s)
 		print_index if @verbose
 	end
 
@@ -105,7 +106,7 @@ class PostManager
 		block = Enumerator.new do |g|
 			index = load_index
 			index.keys.each do |k|
-				g << k if index[k]["deleted"] == nil
+				g << k if index[k]["deleted_time"] == nil
 			end
 		end
 
@@ -131,8 +132,35 @@ class PostManager
 		end
 	end
 
+	def get_latest_created_post
+		check_count do
+			index = load_index
+			non_deleted_posts = index.reject do |key, val|
+									val["deleted_time"] != nil
+								end
+
+			sorted = non_deleted_posts.sort do |a,b| 
+						 Time.parse(a[1]["creation_time"]) <=> Time.parse(b[1]["creation_time"])
+					 end[-1]
+
+			latest = sorted[0]
+			get_post(latest)
+		end
+	end
+
+	def get_post_by_title(title)
+		check_count do
+			index = load_index
+			index.keys.each do |key|
+				post_title = index[key]["title"]
+				return get_post(key) if post_title == title
+			end
+		end
+	end
+
+	private
+
 	def output(filename)
-		ensure_not_deleted filename
 		check_filename(filename) do |post_filename|
 			File.open(post_filename, 'r') do |f|
 				if f.eof?
@@ -149,24 +177,16 @@ class PostManager
 		end
 	end
 
-	def get_latest_created_post
-		check_count do
-			index = load_index
-			index.reject do |key, val|
-				val["deleted"] != nil
-			end.sort do |a,b| 
-				Time.parse(a[1]["creation_time"]) <=> Time.parse(b[1]["creation_time"])
-			end[-1][0]
-		end
+	def ensure_not_deleted(post) 
+		msg = "post filename #{post.filename} has been deleted"
+		raise RuntimeError, msg if post.deleted?
 	end
 
-	def get_post_by_title(title)
-		check_count do
-			index = load_index
-			index.keys.each do |key|
-				post_title = index[key]["title"]
-				return key if post_title == title
-			end
+	def load_post(filename)
+		check_index(filename) do |index, properties|
+			post = Post.new(filename, self, properties)
+			post.text = output(filename)
+			post
 		end
 	end
 end

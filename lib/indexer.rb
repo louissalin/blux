@@ -93,10 +93,4 @@ module BluxIndexer
 		puts index.to_json + "\n" if @verbose
 	end
 
-	def ensure_not_deleted(filename) 
-		check_index(filename) do |full_index, index|
-			msg = "post filename #{filename} has been deleted"
-			raise RuntimeError, msg if index["deleted"] 
-		end
-	end
 end

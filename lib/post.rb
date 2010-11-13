@@ -19,8 +19,8 @@
 require 'time'
 
 class Post
-	attr_accessor :filename
-	attr_reader :creation_time, :published_time, :title
+	attr_accessor :text
+	attr_reader :filename, :creation_time, :published_time, :title, :text, :deleted_time
 
 	def initialize(filename, manager, properties = {})
 		@filename = filename
@@ -33,6 +33,7 @@ class Post
 		end
 
 		@creation_time = Time.parse(properties['creation_time']) if properties['creation_time']
+		@deleted_time = Time.parse(properties['deleted_time']) if properties['deleted_time']
 		@published_time = Time.parse(properties['published_time']) if properties['published_time']
 		@title = properties['title']
 	end
@@ -66,5 +67,9 @@ class Post
 	def delete_category(category)
 		@categories.reject! {|c| c == category}
 		@manager.set_attribute(@filename, 'categories', categories)
+	end
+
+	def deleted?
+		@deleted_time != nil
 	end
 end
