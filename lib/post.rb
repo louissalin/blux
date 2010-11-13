@@ -22,35 +22,41 @@ class Post
 	attr_accessor :text
 	attr_reader :filename, :creation_time, :published_time, :title, :text, :deleted_time
 
+	CREATION_TIME = 'creation_time'
+	DELETED_TIME = 'deleted_time'
+	PUBLISHED_TIME = 'published_time'
+	TITLE = 'title'
+	CATEGORIES = 'categories'
+
 	def initialize(filename, manager, properties = {})
 		@filename = filename
 		@manager = manager
 
 		@categories = []
-		cats = properties['categories']
+		cats = properties[CATEGORIES]
 		if (cats)
 			@categories = cats.split(',')
 		end
 
-		@creation_time = Time.parse(properties['creation_time']) if properties['creation_time']
-		@deleted_time = Time.parse(properties['deleted_time']) if properties['deleted_time']
-		@published_time = Time.parse(properties['published_time']) if properties['published_time']
-		@title = properties['title']
+		@creation_time = Time.parse(properties[CREATION_TIME]) if properties[CREATION_TIME]
+		@deleted_time = Time.parse(properties[DELETED_TIME]) if properties[DELETED_TIME]
+		@published_time = Time.parse(properties[PUBLISHED_TIME]) if properties[PUBLISHED_TIME]
+		@title = properties[TITLE]
 	end
 
 	def creation_time=(time)
 		@creation_time = time
-		@manager.set_attribute(@filename, 'creation_time', time.to_s)
+		@manager.set_attribute(@filename, CREATION_TIME, time.to_s)
 	end
 
 	def published_time=(time)
 		@published_time = time
-		@manager.set_attribute(@filename, 'published_time', time.to_s)
+		@manager.set_attribute(@filename, PUBLISHED_TIME, time.to_s)
 	end
 
 	def title=(title)
 		@title = title
-		@manager.set_attribute(@filename, 'title', title)
+		@manager.set_attribute(@filename, TITLE, title)
 	end
 
 	def categories
@@ -60,13 +66,13 @@ class Post
 	def add_category(category)
 		if @categories.include?(category) == false
 			@categories << category
-			@manager.set_attribute(@filename, 'categories', categories)
+			@manager.set_attribute(@filename, CATEGORIES, categories)
 		end
 	end
 
 	def delete_category(category)
 		@categories.reject! {|c| c == category}
-		@manager.set_attribute(@filename, 'categories', categories)
+		@manager.set_attribute(@filename, CATEGORIES, categories)
 	end
 
 	def deleted?

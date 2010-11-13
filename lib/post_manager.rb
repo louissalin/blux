@@ -98,7 +98,7 @@ class PostManager
 	end
 
 	def delete_post(filename)
-		set_attribute(filename, "deleted_time", Time.now.to_s)
+		set_attribute(filename, Post::DELETED_TIME, Time.now.to_s)
 		print_index if @verbose
 	end
 
@@ -106,7 +106,7 @@ class PostManager
 		block = Enumerator.new do |g|
 			index = load_index
 			index.keys.each do |k|
-				g << k if index[k]["deleted_time"] == nil
+				g << k if index[k][Post::DELETED_TIME] == nil
 			end
 		end
 
@@ -136,11 +136,11 @@ class PostManager
 		check_count do
 			index = load_index
 			non_deleted_posts = index.reject do |key, val|
-									val["deleted_time"] != nil
+									val[Post::DELETED_TIME] != nil
 								end
 
 			sorted = non_deleted_posts.sort do |a,b| 
-						 Time.parse(a[1]["creation_time"]) <=> Time.parse(b[1]["creation_time"])
+						 Time.parse(a[1][Post::CREATION_TIME]) <=> Time.parse(b[1][Post::CREATION_TIME])
 					 end[-1]
 
 			latest = sorted[0]
@@ -152,7 +152,7 @@ class PostManager
 		check_count do
 			index = load_index
 			index.keys.each do |key|
-				post_title = index[key]["title"]
+				post_title = index[key][Post::TITLE]
 				return get_post(key) if post_title == title
 			end
 		end
