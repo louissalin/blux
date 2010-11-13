@@ -22,11 +22,19 @@ class Post
 	attr_accessor :filename
 	attr_reader :creation_time, :published_time, :title
 
-	def initialize(filename, manager)
+	def initialize(filename, manager, properties = {})
 		@filename = filename
 		@manager = manager
 
 		@categories = []
+		cats = properties['categories']
+		if (cats)
+			@categories = cats.split(',')
+		end
+
+		@creation_time = Time.parse(properties['creation_time']) if properties['creation_time']
+		@published_time = Time.parse(properties['published_time']) if properties['published_time']
+		@title = properties['title']
 	end
 
 	def creation_time=(time)

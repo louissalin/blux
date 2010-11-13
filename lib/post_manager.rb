@@ -71,8 +71,8 @@ class PostManager
 	end
 
 	def get_post(filename)
-		check_filename(filename) do
-			return Post.new(filename, self)
+		check_index(filename) do |index, properties|
+			post = Post.new(filename, self, properties)
 		end
 	end
 	

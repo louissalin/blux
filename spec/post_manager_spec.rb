@@ -364,18 +364,44 @@ describe PostManager do
 	end
 
 	context "when accessing a post" do
-		it "should return the right post" do
+		before(:each) do
 			system "touch #{@post_dir}/post.23"
+
+			@time = "2010-10-09 00:00:00"
+			@time2 = "2011-10-09 00:00:00"
 			File.open("#{@post_dir}/.post_index", 'w') do |f|
-				f.write({"post.23" => {"title" => "title1"}}).to_json
+				f.write({"post.23" => {"title" => "title1",
+									   "creation_time" => @time,
+									   "published_time" => @time2,
+									   "categories" => "cat1,cat2"},
+						 "post.45" => {}}.to_json)
 			end
 
-			post = @manager.get_post('post.23')
-			post.filename.should == 'post.23'
+			@post = @manager.get_post('post.23')
+		end
+
+		it "should return the right post" do
+			@post.filename.should == 'post.23'
 		end
 
 		it "should raise an exception if the post does not exist" do
 			lambda {@manager.get_post('123.45')}.should raise_error("post filename 123.45 does not exist")
+		end
+
+		it "should load the creation_time attribute" do
+			@post.creation_time.should == Time.parse(@time)
+		end
+
+		it "should load the published_time attribute" do
+			@post.published_time.should == Time.parse(@time2)
+		end
+
+		it "should load the title attribute" do
+			@post.title.should == 'title1'
+		end
+
+		it "should load the categories" do
+			@post.categories.should == 'cat1,cat2'
 		end
 	end
 end
