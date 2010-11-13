@@ -26,12 +26,12 @@ module BluxIndexer
 	end
 	
 	def check_filename(filename)
-		draft_filename = "#{self.draft_dir}/#{filename}"
+		post_filename = "#{self.post_dir}/#{filename}"
 
-		if (File.exists?(draft_filename))
-			yield draft_filename
+		if (File.exists?(post_filename))
+			yield post_filename
 		else
-			msg = "draft filename #{filename} does not exist"
+			msg = "post filename #{filename} does not exist"
 			raise RuntimeError, msg
 		end
 	end
@@ -135,7 +135,7 @@ module BluxIndexer
 
 	def ensure_not_deleted(filename) 
 		check_index(filename) do |full_index, index|
-			msg = "draft filename #{filename} has been deleted"
+			msg = "post filename #{filename} has been deleted"
 			raise RuntimeError, msg if index["deleted"] 
 		end
 	end

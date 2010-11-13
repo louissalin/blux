@@ -7,10 +7,10 @@ lib/textile_to_html.rb
 lib/blog_manager.rb
 lib/blux_config_reader.rb
 lib/blux_option_parser.rb
-lib/draft_manager.rb
+lib/post_manager.rb
 lib/indexer.rb
 lib/publishing/wp_publish.rb
 lib/publishing/wp_options.rb
 spec/blog_manager_spec.rb
 spec/blux_config_reader_spec.rb
-spec/draft_manager_spec.rb
+spec/post_manager_spec.rb

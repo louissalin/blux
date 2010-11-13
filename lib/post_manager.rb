@@ -23,19 +23,19 @@ require 'time'
 require "#{File.dirname(__FILE__)}/indexer"
 require "#{File.dirname(__FILE__)}/post"
 
-class DraftManager
+class PostManager
 	attr_reader :launch_editor_cmd
-	attr_reader :temp_dir, :draft_dir
+	attr_reader :temp_dir, :post_dir
 
 	include BluxIndexer
 
-	def setup(editor_cmd, temp_dir, draft_dir, options = {})
+	def setup(editor_cmd, temp_dir, post_dir, options = {})
 		@verbose = options[:verbose] ||= false
 
 		@launch_editor_cmd = editor_cmd
 		@temp_dir = temp_dir
-		@draft_dir = draft_dir
-		@index_file = "#{@draft_dir}/.draft_index"
+		@post_dir = post_dir
+		@index_file = "#{@post_dir}/.post_index"
 
 		value = true
 		value = system "touch #{@index_file}" unless File.exists? @index_file
@@ -43,13 +43,13 @@ class DraftManager
 		if value
 			print_index if @verbose
 		else
-			msg = 'could not create the draft index file'
+			msg = 'could not create the post index file'
 			raise RuntimeError, msg
 		end
 	end
 
 	def create_post
-		temp_file = Tempfile.new('draft', @temp_dir)
+		temp_file = Tempfile.new('post', @temp_dir)
 		temp_file.close
 
 		post = nil
@@ -69,17 +69,23 @@ class DraftManager
 		print_index if @verbose
 		post
 	end
+
+	def get_post(filename)
+		check_filename(filename) do
+			return Post.new(filename, self)
+		end
+	end
 	
 	def move_temp_file(tempfile)
-		unless system "mv #{tempfile} #{@draft_dir}"
-			msg = "failed to move the temp file to the draft folder"
+		unless system "mv #{tempfile} #{@post_dir}"
+			msg = "failed to move the temp file to the post folder"
 			raise RuntimeError, msg
 		end
 	end
 
-	def edit_draft(filename)
-		check_filename(filename) do  |draft_filename|
-			if system "#{@launch_editor_cmd} #{draft_filename}"
+	def edit_post(filename)
+		check_filename(filename) do  |post_filename|
+			if system "#{@launch_editor_cmd} #{post_filename}"
 				set_attribute(filename, "edited_time", Time.now.to_s)
 			else
 				msg = "couldn't launch editor with command #{@launch_editor_cmd}"
@@ -90,7 +96,7 @@ class DraftManager
 		print_index if @verbose
 	end
 
-	def delete_draft(filename)
+	def delete_post(filename)
 		set_attribute(filename, "deleted", Time.now.to_s)
 		print_index if @verbose
 	end
@@ -113,8 +119,8 @@ class DraftManager
 	end
 
 	def show_preview(filename)
-		check_filename(filename) do |draft_filename|
-			File.open(draft_filename, 'r') do |f|
+		check_filename(filename) do |post_filename|
+			File.open(post_filename, 'r') do |f|
 				if f.eof?
 					''
 				else
@@ -127,8 +133,8 @@ class DraftManager
 
 	def output(filename)
 		ensure_not_deleted filename
-		check_filename(filename) do |draft_filename|
-			File.open(draft_filename, 'r') do |f|
+		check_filename(filename) do |post_filename|
+			File.open(post_filename, 'r') do |f|
 				if f.eof?
 					''
 				else
@@ -143,7 +149,7 @@ class DraftManager
 		end
 	end
 
-	def get_latest_created_draft
+	def get_latest_created_post
 		check_count do
 			index = load_index
 			index.reject do |key, val|
@@ -154,12 +160,12 @@ class DraftManager
 		end
 	end
 
-	def get_draft_by_title(title)
+	def get_post_by_title(title)
 		check_count do
 			index = load_index
 			index.keys.each do |key|
-				draft_title = index[key]["title"]
-				return key if draft_title == title
+				post_title = index[key]["title"]
+				return key if post_title == title
 			end
 		end
 	end

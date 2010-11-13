@@ -1,10 +1,10 @@
 require 'post.rb'
-require "draft_manager.rb"
+require "post_manager.rb"
 
 describe Post do
 	context "when setting the creation_time" do
 		before(:all) do
-			@manager = DraftManager.new
+			@manager = PostManager.new
 			@manager.stub!(:set_attribute)
 
 			@post = Post.new('draft1.23', @manager)
