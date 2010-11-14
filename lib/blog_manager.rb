@@ -62,11 +62,12 @@ class BlogManager
 		@post_manager.setup(@config.launch_editor_cmd, @blux_tmp_dir, @post_dir, @options)
 	end
 
-	def publish(filename)
-		raise "this post has already been published" if published?(filename)
+	def publish(post)
+		raise "this post has already been published" if post.published?
 
-		title = @post_manager.get_attribute(filename, "title") || 'no title'
-		categories = @post_manager.get_attribute(filename, "categories")
+		filename = post.filename
+		title = post.title
+		categories = post.categories
 
 		convert_cmd = "blux --convert -f #{filename}"
 		categories_cmd = categories ? "-c \"#{categories}\"" : ""
@@ -81,10 +82,11 @@ class BlogManager
 		end
 	end
 
-	def update(filename)
-		title = @post_manager.get_attribute(filename, "title") || 'no title'
-		categories = @post_manager.get_attribute(filename, "categories")
-		url = @post_manager.get_attribute(filename, "edit_url")
+	def update(post)
+		filename = post.filename
+		title = post.title
+		categories = post.categories
+		url = post.edit_url
 
 		raise "couldn't find an edit url for the post: #{filename}" unless url 
 
@@ -99,8 +101,10 @@ class BlogManager
 		end
 	end
 
-	def delete(filename)
-		url = @post_manager.get_attribute(filename, "edit_url")
+	def delete(post)
+		filename = post.filename
+		url = post.edit_url
+
 		raise "couldn't find an edit url for the post: #{filename}" unless url 
 
 		publish_cmd = "ruby #{File.dirname(__FILE__)}/publishing/wp_publish.rb"
@@ -114,11 +118,6 @@ class BlogManager
 	end
 
 private
-
-	def published?(filename)
-		@post_manager.get_attribute(filename, "published_time") != nil
-	end
-
 	def send_publish_command(cmd, filename, error_msg)
 		status = Timeout::timeout(10) { system cmd }
 		if status

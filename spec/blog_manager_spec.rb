@@ -88,51 +88,52 @@ describe BlogManager do
 			system "touch #{@manager.post_dir}/post.67"
 
 			@manager.stub!(:system).and_return(true)
+
+			@post = Post.new('post.67', @post_mgr)
+			@post.stub!(:edit_url).and_return('http://blablabla.com/asf/1')
 		end
 
 		it "should send the proper command" do
-			@post_mgr.stub!(:get_attribute).and_return("title")
-			@post_mgr.stub!(:get_attribute).with("post.67", "published_time").and_return(nil)
+			@post.stub!(:published?).and_return(false)
+			@post.stub!(:title).and_return('title')
+			@post.stub!(:categories).and_return('title')
 			@post_mgr.stub!(:set_attribute)
 
 			@manager.should_receive(:system).with("blux --convert -f post.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"title\" --config #{@blux_rc} -c \"title\" | blux --set_edit_url -f post.67")
-			@manager.publish 'post.67'
+			@manager.publish @post
 		end
 
 		it "should send the proper command with categories if there are any" do
-			@post_mgr.stub!(:get_attribute).with("post.67", "title").and_return("title")
-			@post_mgr.stub!(:get_attribute).with("post.67", "categories").and_return("tag1,tag2")
-			@post_mgr.stub!(:get_attribute).with("post.67", "published_time").and_return(nil)
+			@post.stub!(:published?).and_return(false)
+			@post.stub!(:title).and_return('title')
+			@post.stub!(:categories).and_return('tag1,tag2')
 			@post_mgr.stub!(:set_attribute)
 
 			@manager.should_receive(:system).with("blux --convert -f post.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"title\" --config #{@blux_rc} -c \"tag1,tag2\" | blux --set_edit_url -f post.67")
-			@manager.publish 'post.67'
+			@manager.publish @post
 		end
 
 		it "should send the command with the title included if it exists" do
-			@post_mgr.stub!(:get_attribute).and_return('bla')
-			@post_mgr.stub!(:get_attribute).with("post.67", "published_time").and_return(nil)
+			@post.stub!(:published?).and_return(false)
+			@post.stub!(:title).and_return('bla')
+			@post.stub!(:categories).and_return('bla')
 			@post_mgr.stub!(:set_attribute)
 
 			@manager.should_receive(:system).with("blux --convert -f post.67 | ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb -t \"bla\" --config #{@blux_rc} -c \"bla\" | blux --set_edit_url -f post.67")
-			@manager.publish 'post.67'
+			@manager.publish @post
 		end
 
 		it "should save the record of published posts to disk" do
-			@post_mgr.stub!(:get_attribute).and_return("title")
-			@post_mgr.stub!(:get_attribute).and_return(nil)
 			Time.stub!(:now).and_return('000')
+			@post.stub!(:published?).and_return(false)
 			@post_mgr.should_receive(:set_attribute).with('post.67', "published_time", '000')
 
-			@manager.publish 'post.67'
+			@manager.publish @post
 		end
 
 		it "should not allow to publish a post twice" do
-			@post_mgr.stub!(:get_attribute).and_return('bla')
-			@post_mgr.stub!(:get_attribute).with("post.67", "published_time").and_return('123')
-			@post_mgr.stub!(:set_attribute)
-
-			lambda {@manager.publish 'post.67'}.should raise_error("this post has already been published")
+			@post.stub!(:published?).and_return(true)
+			lambda {@manager.publish @post}.should raise_error("this post has already been published")
 		end
 	end
 
@@ -147,12 +148,14 @@ describe BlogManager do
 
 			@manager.stub!(:system).and_return(true)
 			@post_mgr.stub!(:delete_post)
-			@post_mgr.stub!(:get_attribute).and_return('http://blablabla.com/asf/1')
+
+			@post = Post.new('post.67', @post_mgr)
+			@post.stub!(:edit_url).and_return('http://blablabla.com/asf/1')
 		end
 
 		it "should send the proper command" do
 			@manager.should_receive(:system).with("ruby #{File.dirname(__FILE__)[0..-6]}/lib/publishing/wp_publish.rb --delete http://blablabla.com/asf/1 --config #{@blux_rc} | blux --post-cmd")
-			@manager.delete 'post.67'
+			@manager.delete @post
 		end
 	end
 

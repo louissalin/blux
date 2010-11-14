@@ -134,17 +134,17 @@ begin
 		when :publish
 			get_post_by_filename(options, mgr) do |post|
 				puts "publishing" if options.verbose
-				post.publish
+				mgr.publish post
 			end
 		when :update
 			get_post_by_filename(options, mgr) do |post|
 				puts "updating" if options.verbose
-				post.update
+				mgr.update post
 			end
 		when :delete
 			get_post_by_filename(options, mgr) do |post|
 				puts "deleting" if options.verbose
-				post.delete
+				mgr.delete post
 			end
 		when :show_post_info
 			entry, response, url = build_post_info(options)

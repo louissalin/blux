@@ -97,15 +97,7 @@ class Post
 		@manager.edit_post @filename
 	end
 
-	def publish
-		@manager.publish @filename
-	end
-
-	def update
-		@manager.update @filename
-	end
-
-	def delete
-		@manager.delete @filename
+	def published?
+		@published_time != nil
 	end
 end
