@@ -380,10 +380,13 @@ describe PostManager do
 
 			@time = "2010-10-09 00:00:00"
 			@time2 = "2011-10-09 00:00:00"
+			@time3 = "2012-10-09 00:00:00"
 			File.open("#{@post_dir}/.post_index", 'w') do |f|
 				f.write({"post.23" => {"title" => "title1",
 									   "creation_time" => @time,
 									   "published_time" => @time2,
+									   "edited_time" => @time3,
+									   "edit_url" => 'http://some_url',
 									   "categories" => "cat1,cat2"},
 						 "post.45" => {}}.to_json)
 			end
@@ -407,12 +410,20 @@ describe PostManager do
 			@post.published_time.should == Time.parse(@time2)
 		end
 
+		it "should load the edited_time attribute" do
+			@post.edited_time.should == Time.parse(@time3)
+		end
+
 		it "should load the title attribute" do
 			@post.title.should == 'title1'
 		end
 
 		it "should load the categories" do
 			@post.categories.should == 'cat1,cat2'
+		end
+
+		it "should load the edit url" do
+			@post.edit_url.should == 'http://some_url'
 		end
 
 		it "should load the text" do

@@ -46,6 +46,7 @@ class Post
 		@published_time = Time.parse(properties[PUBLISHED_TIME]) if properties[PUBLISHED_TIME]
 		@edited_time = Time.parse(properties[EDITED_TIME]) if properties[EDITED_TIME]
 		@title = properties[TITLE]
+		@edit_url = properties[EDIT_URL]
 	end
 
 	def creation_time=(time)
