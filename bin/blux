@@ -43,7 +43,7 @@ end
 def get_post_by_filename(options, blog_manager)
 	post = blog_manager.post_manager.get_latest_created_post if options.use_latest
 	post = blog_manager.post_manager.get_post_by_title(options.title) if options.use_title
-	post = blog_manager.get_post options.filename if options.filename
+	post = blog_manager.post_manager.get_post options.filename if options.filename
 
 	if post != nil
 		yield post
