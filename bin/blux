@@ -40,18 +40,17 @@ def validate_set_options(options)
 	end
 end
 
-def check_filename(options, blog_manager)
-	filename = blog_manager.draft_manager.get_latest_created_draft if options.use_latest
-	filename = blog_manager.draft_manager.get_draft_by_title(options.title) if options.use_title
-	filename = options.filename || filename
+def get_post_by_filename(options, blog_manager)
+	post = blog_manager.post_manager.get_latest_created_post if options.use_latest
+	post = blog_manager.post_manager.get_post_by_title(options.title) if options.use_title
+	post = blog_manager.get_post options.filename if options.filename
 
-	puts "check_filename: #{filename}" if options.verbose
-	if filename != nil
-		yield filename
+	if post != nil
+		yield post
 	else
-		msg = "Please specify the draft file you want to work with.\n"
-		msg = msg + "  Try using the --latest option to use the latest draft.\n"
-		msg = msg + "  Or try to get a draft with a specific title with the --title option."
+		msg = "Please specify the post file you want to work with.\n"
+		msg = msg + "  Try using the --latest option to use the latest post.\n"
+		msg = msg + "  Or try to get a post with a specific title with the --title option."
 
 		raise RuntimeError, msg
 	end
@@ -96,59 +95,56 @@ end
 
 begin
 	validate_command(BluxOptionParser.parse(ARGV)) do |options|
-		draft_manager = DraftManager.new
-		mgr = BlogManager.new(draft_manager, :verbose => options.verbose)	
-		mgr.load_config
+		post_manager = PostManager.new
+		mgr = BlogManager.new(post_manager, :verbose => options.verbose)	
 		mgr.start
+		mgr.load_config
 
 		case options.command
 		when :new
-			mgr.draft_manager.create_draft
+			mgr.post_manager.create_post
 		when :edit
-			check_filename(options, mgr) do |filename|
-				mgr.draft_manager.edit_draft filename
-			end
+			get_post_by_filename(options, mgr) {|post| post.edit}
 		when :list
-			mgr.draft_manager.list.each do |item|
+			mgr.post_manager.list.each do |item|
 				break if options.filename != nil && options.filename != item
 				puts "#{item}"
-				puts "  #{mgr.draft_manager.show_info(item)}" if options.list_details
-				puts "  #{mgr.draft_manager.show_preview(item)}" if options.list_preview
+				puts "  #{mgr.post_manager.show_info(item)}" if options.list_details
+				puts "  #{mgr.post_manager.show_preview(item)}" if options.list_preview
 			end
 		when :set
-			check_filename(options, mgr) do |filename|
+			get_post_by_filename(options, mgr) do |post|
 				validate_set_options(options) do |attribute, value|
-					mgr.draft_manager.set_attribute(filename, attribute, value)
+					mgr.post_manager.set_attribute(post.filename, attribute, value)
 				end
 			end
 		when :unset
-			check_filename(options, mgr) do |filename|
-				mgr.draft_manager.delete_attribute(filename, options.attribute)
+			get_post_by_filename(options, mgr) do |post|
+				mgr.post_manager.delete_attribute(post.filename, options.attribute)
 			end
 		when :out
-			check_filename(options, mgr) do |filename|
-				post = mgr.post_manager.get_post filename
+			get_post_by_filename(options, mgr) do |post|
 				STDOUT.puts(post.text)
 			end
 		when :convert
-			check_filename(options, mgr) do |filename|
+			get_post_by_filename(options, mgr) do |post|
 				convert_cmd = "ruby #{File.dirname(__FILE__)}/../lib/textile_to_html.rb"
-				system "blux --out -f #{filename} | #{convert_cmd}"
+				system "blux --out -f #{post.filename} | #{convert_cmd}"
 			end
 		when :publish
-			check_filename(options, mgr) do |filename|
+			get_post_by_filename(options, mgr) do |post|
 				puts "publishing" if options.verbose
-				mgr.publish filename
+				post.publish
 			end
 		when :update
-			check_filename(options, mgr) do |filename|
+			get_post_by_filename(options, mgr) do |post|
 				puts "updating" if options.verbose
-				mgr.update filename
+				post.update
 			end
 		when :delete
-			check_filename(options, mgr) do |filename|
+			get_post_by_filename(options, mgr) do |post|
 				puts "deleting" if options.verbose
-				mgr.delete filename
+				post.delete
 			end
 		when :show_post_info
 			entry, response, url = build_post_info(options)
@@ -163,7 +159,7 @@ begin
 					puts url 
 				end
 		when :set_edit_url
-			check_filename(options, mgr) do |filename|
+			get_post_by_filename(options, mgr) do |post|
 				entry, response, url = build_post_info(options)
 
 				if options.verbose
@@ -177,7 +173,7 @@ begin
 					puts url 
 				end
 
-				mgr.draft_manager.set_attribute(filename, 'edit_url', url.strip)
+				post.edit_url = url.strip
 			end
 		when :version
 			puts "0.0.6"

@@ -9,6 +9,7 @@ lib/blux_config_reader.rb
 lib/blux_option_parser.rb
 lib/post_manager.rb
 lib/indexer.rb
+lib/post.rb
 lib/publishing/wp_publish.rb
 lib/publishing/wp_options.rb
 spec/blog_manager_spec.rb

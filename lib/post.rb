@@ -20,11 +20,14 @@ require 'time'
 
 class Post
 	attr_accessor :text
-	attr_reader :filename, :creation_time, :published_time, :title, :text, :deleted_time
+	attr_reader :filename, :creation_time, :edited_time, :published_time
+	attr_reader :title, :text, :deleted_time, :edit_url
 
 	CREATION_TIME = 'creation_time'
 	DELETED_TIME = 'deleted_time'
 	PUBLISHED_TIME = 'published_time'
+	EDITED_TIME = 'edited_time'
+	EDIT_URL = 'edit_url'
 	TITLE = 'title'
 	CATEGORIES = 'categories'
 
@@ -41,6 +44,7 @@ class Post
 		@creation_time = Time.parse(properties[CREATION_TIME]) if properties[CREATION_TIME]
 		@deleted_time = Time.parse(properties[DELETED_TIME]) if properties[DELETED_TIME]
 		@published_time = Time.parse(properties[PUBLISHED_TIME]) if properties[PUBLISHED_TIME]
+		@edited_time = Time.parse(properties[EDITED_TIME]) if properties[EDITED_TIME]
 		@title = properties[TITLE]
 	end
 
@@ -54,9 +58,19 @@ class Post
 		@manager.set_attribute(@filename, PUBLISHED_TIME, time.to_s)
 	end
 
+	def edited_time=(time)
+		@edited_time = time
+		@manager.set_attribute(@filename, EDITED_TIME, time.to_s)
+	end
+
 	def title=(title)
 		@title = title
 		@manager.set_attribute(@filename, TITLE, title)
+	end
+
+	def edit_url=(edit_url)
+		@edit_url = edit_url
+		@manager.set_attribute(@filename, EDIT_URL, edit_url)
 	end
 
 	def categories
@@ -77,5 +91,21 @@ class Post
 
 	def deleted?
 		@deleted_time != nil
+	end
+
+	def edit
+		@manager.edit_post @filename
+	end
+
+	def publish
+		@manager.publish @filename
+	end
+
+	def update
+		@manager.update @filename
+	end
+
+	def delete
+		@manager.delete @filename
 	end
 end

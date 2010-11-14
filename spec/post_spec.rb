@@ -30,6 +30,20 @@ describe Post do
 		end
 	end
 
+	context "when setting the edited_time" do
+		before(:all) do
+			@manager = PostManager.new
+			@manager.stub!(:set_attribute)
+
+			@post = Post.new('draft1.23', @manager)
+		end
+
+		it "should set the attribute in the post manager" do
+			@manager.should_receive(:set_attribute).with('draft1.23', 'edited_time', Time.now.to_s)
+			@post.edited_time = Time.now
+		end
+	end
+
 	context "when setting the title" do
 		before(:all) do
 			@manager = PostManager.new
@@ -41,6 +55,20 @@ describe Post do
 		it "should set the attribute in the post manager" do
 			@manager.should_receive(:set_attribute).with('draft1.23', 'title', 'new title')
 			@post.title = 'new title'
+		end
+	end
+
+	context "when setting the edit_url" do
+		before(:all) do
+			@manager = PostManager.new
+			@manager.stub!(:set_attribute)
+
+			@post = Post.new('draft1.23', @manager)
+		end
+
+		it "should set the attribute in the post manager" do
+			@manager.should_receive(:set_attribute).with('draft1.23', 'edit_url', 'http://some_url/')
+			@post.edit_url = 'http://some_url/'
 		end
 	end
 
