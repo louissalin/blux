@@ -1,26 +1,22 @@
-Preview feature 
-	-start in same process (2 windows open at same time)
-	-start in separate process (need a 2nd command prompt, or background task)
-
-0.0.6
-
-Image support:
-	-use FSpot
+Basic image support:
 	-maintain an image index (image manager)
-	-upload images as atom entries
+		key: post, image number (sequence in the text -- 1, 2, 3, etc, as it appears)
+		value: path/to/file
+		- import images
+	-add images in text with [img]
+	-when publishing/updating
+		1- upload images as atom entries if path/to/file hasn't been uploaded yet
+		2- replace [img] in the text with image URI
+		3- publish or update
 
 0.0.7
 
 add script/ folder in .blux where user can specify scripts (convert, publish)
 add pre and post convertion scripts
-add image resize pre script (optional)
 
 0.0.8
 
-Mac support
-	- make sure it works
-	- add support for iPhoto
-
+replace shell commands with ruby code
 command line GUI
 
 0.1.0
