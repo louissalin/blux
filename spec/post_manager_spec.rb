@@ -68,6 +68,8 @@ describe PostManager do
 			@manager.create_post
 			Dir.entries(@post_dir).length.should == 3 # . and .. and .index
 			Dir.entries(@post_dir).each {|e| puts e}
+
+			raise "error"
 		end
 
 		it "should create a post object with the filename set" do
