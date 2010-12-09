@@ -12,6 +12,7 @@ lib/indexer.rb
 lib/post.rb
 lib/publishing/wp_publish.rb
 lib/publishing/wp_options.rb
+lib/scripts/links_to_textile.rb
 spec/blog_manager_spec.rb
 spec/blux_config_reader_spec.rb
 spec/post_manager_spec.rb

@@ -56,10 +56,6 @@ describe BlogManager do
 			File.exists?(@blux).should == true
 		end
 
-		it "should create a .tmp folder in the .blux dir if it doesn't exist" do
-			File.exists?("#{@blux}/tmp").should == true
-		end
-
 		it "should create a post folder in the .blux dir if it doesn't exist" do
 			File.exists?("#{@blux}/post").should == true
 		end
@@ -72,7 +68,7 @@ describe BlogManager do
 		end
 
 		it "should pass the right configuration to the post manager" do
-			@post_mgr.should_receive(:setup).with('gedit', @manager.blux_tmp_dir, @manager.post_dir, {:verbose => false})
+			@post_mgr.should_receive(:setup).with('gedit', @manager.post_dir, {:verbose => false})
 
 			@manager.load_config
 		end

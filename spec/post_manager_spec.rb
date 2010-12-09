@@ -1,19 +1,18 @@
 require 'post_manager.rb'
 require 'tempfile'
+require 'spec'
 
 describe PostManager do
 	before :each do
 		@blux_dir = "#{File.dirname(__FILE__)}/.blux"
-		@temp_dir = "#{@blux_dir}/tmp"
 		@post_dir = "#{@blux_dir}/post"
 
 		Dir.mkdir(@blux_dir) unless Dir.exists?(@blux_dir)
-		Dir.mkdir(@temp_dir) unless Dir.exists?(@temp_dir)
 		Dir.mkdir(@post_dir) unless Dir.exists?(@post_dir)
 
 		def STDERR.puts(str) end
 		@manager = PostManager.new()
-		@manager.setup('gedit', @temp_dir, @post_dir)
+		@manager.setup('gedit', @post_dir)
 	end
 
 	after :each do
@@ -34,7 +33,7 @@ describe PostManager do
 			end
 			
 			manager = PostManager.new
-			manager.setup('gedit', @temp_dir, @post_dir)
+			manager.setup('gedit', @post_dir)
 
 			@manager.get_attribute('test.sh', "a").should == 1
 			@manager.get_attribute('test.sh', "b").should == 2
@@ -65,31 +64,10 @@ describe PostManager do
 			@manager.create_post
 		end
 
-		it "should not copy the temp file in the post folder if it has no data" do
-			tempfile = mock("Tempfile")
-			def tempfile.initialize(basename, path)
-				system "touch #{@temp_dir}/test"
-			end
-
-			def tempfile.path
-				"#{@temp_dir}/test"
-			end
-
+		it "should insert the end post line on the third line" do
 			@manager.create_post
 			Dir.entries(@post_dir).length.should == 3 # . and .. and .index
-		end
-
-		it "should copy the temp file in the post folder if it has data" do
-			File.stub!(:exists?).and_return(true)
-
-			class Tempfile
-				def size() 123 end
-				def path() 'test/test.sh' end
-			end
-
-			@manager.should_receive(:system).with('gedit test/test.sh').ordered
-			@manager.should_receive(:system).with("mv test/test.sh #{@post_dir}").ordered
-			@manager.create_post
+			Dir.entries(@post_dir).each {|e| puts e}
 		end
 
 		it "should create a post object with the filename set" do
@@ -138,7 +116,7 @@ describe PostManager do
 			end
 
 			@manager = PostManager.new
-			@manager.setup('gedit', @temp_dir, @post_dir)
+			@manager.setup('gedit', @post_dir)
 			@manager.stub!(:system).and_return(true)
 		end
 
@@ -184,7 +162,7 @@ describe PostManager do
 			system "touch #{@post_dir}/file2"
 
 			@manager = PostManager.new
-			@manager.setup('gedit', @temp_dir, @post_dir)
+			@manager.setup('gedit', @post_dir)
 		end
 
 		it "should display the info about the selected post in json format" do
@@ -207,7 +185,7 @@ describe PostManager do
 			system "touch #{@post_dir}/file3"
 
 			@manager = PostManager.new
-			@manager.setup('gedit', @temp_dir, @post_dir)
+			@manager.setup('gedit', @post_dir)
 		end
 
 		it "should trunk the preview to 76 chars, with '...' appended at the end" do
@@ -236,7 +214,7 @@ describe PostManager do
 			system "touch #{@post_dir}/file3"
 
 			@manager = PostManager.new
-			@manager.setup('gedit', @temp_dir, @post_dir)
+			@manager.setup('gedit', @post_dir)
 		end
 
 		it "should show the entire content of the post" do
@@ -258,7 +236,7 @@ describe PostManager do
 
 			system "touch #{@post_dir}/post.1"
 			@manager = PostManager.new
-			@manager.setup('gedit', @temp_dir, @post_dir)
+			@manager.setup('gedit', @post_dir)
 		end
 
 		it "should add the attribute to the post index" do
@@ -291,7 +269,7 @@ describe PostManager do
 
 			system "touch #{@post_dir}/post.1"
 			@manager = PostManager.new
-			@manager.setup('gedit', @temp_dir, @post_dir)
+			@manager.setup('gedit', @post_dir)
 		end
 
 		it "should remove the attribute from the post index" do
@@ -320,7 +298,7 @@ describe PostManager do
 			end
 
 			@manager = PostManager.new
-			@manager.setup('gedit', @temp_dir, @post_dir)
+			@manager.setup('gedit', @post_dir)
 
 			post = @manager.get_latest_created_post
 			post.filename.should == "post.1"
@@ -342,7 +320,7 @@ describe PostManager do
 			end
 
 			@manager = PostManager.new
-			@manager.setup('gedit', @temp_dir, @post_dir)
+			@manager.setup('gedit', @post_dir)
 
 			post = @manager.get_latest_created_post
 			post.filename.should == "post.2"
@@ -360,7 +338,7 @@ describe PostManager do
 			end
 
 			@manager = PostManager.new
-			@manager.setup('gedit', @temp_dir, @post_dir)
+			@manager.setup('gedit', @post_dir)
 			
 			post1 = @manager.get_post_by_title("title1")
 			post2 = @manager.get_post_by_title("title2")

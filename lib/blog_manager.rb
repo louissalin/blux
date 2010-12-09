@@ -35,7 +35,6 @@ class BlogManager
 		@home = ENV['HOME']
 		@blux_dir = "#{@home}/.blux"
 		@post_dir = "#{@blux_dir}/post"
-		@blux_tmp_dir = "#{@blux_dir}/tmp"
 		@blux_rc = "#{@home}/.bluxrc"
 
 		@post_manager = post_manager
@@ -49,17 +48,13 @@ class BlogManager
 		unless Dir.exists?(@post_dir)
 			Dir.mkdir(@post_dir) 
 		end
-
-		unless Dir.exists?(@blux_tmp_dir)
-			Dir.mkdir(@blux_tmp_dir) 
-		end
 	end
 
 	def load_config
 		@config = BluxConfigurationReader.new
 		@config.load_config @blux_rc, @verbose
 
-		@post_manager.setup(@config.launch_editor_cmd, @blux_tmp_dir, @post_dir, @options)
+		@post_manager.setup(@config.launch_editor_cmd, @post_dir, @options)
 	end
 
 	def publish(post)

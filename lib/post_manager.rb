@@ -29,11 +29,10 @@ class PostManager
 
 	include BluxIndexer
 
-	def setup(editor_cmd, temp_dir, post_dir, options = {})
+	def setup(editor_cmd, post_dir, options = {})
 		@verbose = options[:verbose] ||= false
 
 		@launch_editor_cmd = editor_cmd
-		@temp_dir = temp_dir
 		@post_dir = post_dir
 		@index_file = "#{@post_dir}/.post_index"
 
@@ -49,18 +48,13 @@ class PostManager
 	end
 
 	def create_post
-		temp_file = Tempfile.new('post', @temp_dir)
-		temp_file.close
+		post_file = Tempfile.new('post', @post_dir)
+		post_file.close
 
 		post = nil
-		if system "#{@launch_editor_cmd} #{temp_file.path}"
-			if temp_file.size > 0
-				move_temp_file temp_file.path
-				filename = File.basename(temp_file.path)
-
-				post = Post.new(filename, self)
-				post.creation_time = Time.now
-			end
+		if system "#{@launch_editor_cmd} #{post_file.path}"
+			post = Post.new(filename, self)
+			post.creation_time = Time.now
 		else
 			msg = "couldn't launch editor with command #{@launch_editor_cmd}"
 			raise RuntimeError, msg
@@ -77,13 +71,6 @@ class PostManager
 		post
 	end
 	
-	def move_temp_file(tempfile)
-		unless system "mv #{tempfile} #{@post_dir}"
-			msg = "failed to move the temp file to the post folder"
-			raise RuntimeError, msg
-		end
-	end
-
 	def edit_post(filename)
 		check_filename(filename) do  |post_filename|
 			if system "#{@launch_editor_cmd} #{post_filename}"
