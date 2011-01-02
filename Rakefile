@@ -9,11 +9,11 @@ Echoe.new('Blux', '0.0.6') do |p|
 	p.email = 'louis.phil@gmail.com'
 	p.ignore_pattern = ["tags", "TODO", "plan", "gem-public_cert.pem"]
 	p.development_dependencies = ["OptionParser >=0.5.1",
+								  "parseconfig >= 0.5.2",
 								  "atom-tools >=2.0.5",
-								  "json >=1.4.6",
 								  "RedCloth >=4.2.3"]
 	p.runtime_dependencies = ["OptionParser >=0.5.1",
 							  "atom-tools >=2.0.5",
-							  "json >=1.4.6",
+							  "parseconfig >= 0.5.2",
 							  "RedCloth >=4.2.3"]
 end
