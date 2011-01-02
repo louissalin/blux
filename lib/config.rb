@@ -44,6 +44,7 @@ module Blux
 			override_default_values if File.exists?(@config_path)
 		end
 
+	private
 		def override_default_values
 			config = ParseConfig.new @config_path
 			@config.editor_cmd = config.params[EDITOR_CMD_KEY]
