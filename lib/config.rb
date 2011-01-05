@@ -21,15 +21,39 @@
 require 'parseconfig'
 
 module Blux
-	class ConfigSettings
-		attr_accessor :editor_cmd
+	class Config
+		def initialize(data={})
+			@data = {}
+			update!(data)
+		end
 
-		DEFAULT_EDITOR_CMD = 'vi'
+		def update!(data)
+			data.each do |key, value|
+				self[key] = value
+			end
+		end
 
-		def initialize
-			@editor_cmd = DEFAULT_EDITOR_CMD
+		def [](key)
+			@data[key.to_sym]
+		end
+
+		def []=(key, value)
+			if value.class == Hash
+				@data[key.to_sym] = Config.new(value)
+			else
+				@data[key.to_sym] = value
+			end
+		end
+
+		def method_missing(sym, *args)
+			if sym.to_s =~ /(.+)=$/
+				self[$1] = args.first
+			else
+				self[sym]
+			end
 		end
 	end
+
 
 	class ConfigReader
 		attr_reader :config
@@ -37,17 +61,20 @@ module Blux
 		CONFIG_FILENAME = '/.bluxrc'
 		EDITOR_CMD_KEY = 'editor_cmd'
 
-		def initialize
-			@config = ConfigSettings.new
-			@config_path = "#{ENV['HOME']}#{CONFIG_FILENAME}"
+		def get_config
+			config = Config.new
+			config.editor_cmd = 'vi'
 
-			override_default_values if File.exists?(@config_path)
+			config_path = "#{ENV['HOME']}#{CONFIG_FILENAME}"
+			override_default_values(config, config_path) if File.exists?(config_path)
+
+			config
 		end
 
 	private
-		def override_default_values
-			config = ParseConfig.new @config_path
-			@config.editor_cmd = config.params[EDITOR_CMD_KEY]
+		def override_default_values(config, config_path)
+			config_parser = ParseConfig.new config_path
+			config.editor_cmd = config_parser.params[EDITOR_CMD_KEY]
 		end
 	end
 end

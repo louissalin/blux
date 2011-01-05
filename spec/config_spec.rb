@@ -9,11 +9,11 @@ describe Blux::ConfigReader, "initialize" do
 	end
 
 	it "creates a new config object" do
-		@reader.config.should_not eq(nil)
+		@reader.get_config.should_not eq(nil)
 	end
 
 	it "should load the default configuration settings" do
-		config = @reader.config
+		config = @reader.get_config
 		config.editor_cmd.should eq("vi")
 	end
 end
@@ -29,7 +29,7 @@ describe Blux::ConfigReader, "override default settings" do
 	end
 
 	it "should overload the default config settings if a local config file is found" do
-		config = @reader.config
+		config = @reader.get_config
 		config.editor_cmd.should eq("vim")
 	end
 end
