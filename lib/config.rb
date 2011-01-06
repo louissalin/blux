@@ -19,9 +19,12 @@
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'parseconfig'
+require 'singleton'
 
 module Blux
 	class Config
+		include Singleton
+
 		def initialize(data={})
 			@data = {}
 			update!(data)
@@ -61,14 +64,12 @@ module Blux
 		CONFIG_FILENAME = '/.bluxrc'
 		EDITOR_CMD_KEY = 'editor_cmd'
 
-		def get_config
-			config = Config.new
+		def read_config
+			config = Config.instance
 			config.editor_cmd = 'vi'
 
 			config_path = "#{ENV['HOME']}#{CONFIG_FILENAME}"
 			override_default_values(config, config_path) if File.exists?(config_path)
-
-			config
 		end
 
 	private
