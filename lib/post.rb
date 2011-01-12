@@ -1,10 +1,12 @@
 module Blux
 	class Post
-		attr_reader :text, :creation_date
+		attr_accessor :text, :creation_date, :category, :title
 
-		def initialize
-			@text = ''
+		def initialize(text)
+			@text = text
 			@creation_date = Time.now
+			@category = ''
+			@title = ''
 		end
 	end
 end

@@ -1,16 +1,12 @@
 require 'app'
 
 describe Blux::App, "initialize" do
-	before :all do
-		stub_config_reader
-	end
-
 	it "should load the config file" do
+		stub_config_reader
+
 		Blux::App.new
 		Blux::Config.instance.editor_cmd.should eq('vi')
-	end
 
-	after :all do
 		restore_config_reader
 	end
 
