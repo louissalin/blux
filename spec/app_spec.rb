@@ -34,12 +34,14 @@ end
 
 describe Blux::App, "when creating a new post" do
 	include AppSpecHelper
-	it "should launch the editor defined in the config" do
+	#it "should launch the editor defined in the config" do
+	it "should create an new post" do
 		stub_config_reader
 
 		app = Blux::App.new
-		app.should_receive(:system).with('some_editor_cmd')
+		#app.should_receive(:system).with('some_editor_cmd')
 		app.create_new_post
+		app.current_post.text.should eq('')
 
 		restore_config_reader
 	end

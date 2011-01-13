@@ -19,15 +19,18 @@
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'config'
+require 'post'
 
 module Blux
 	class App
+		attr_reader :current_post
+
 		def initialize
 			ConfigReader.new.read_config
 		end
 
 		def create_new_post
-			system Config.instance.editor_cmd
+			@current_post = Post.new('')
 		end
 	end
 end
