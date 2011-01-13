@@ -16,13 +16,32 @@ end
 
 describe Blux::App, "when creating a new post" do
 	include AppSpecHelper
-	it "should create an new post" do
+
+	before :all do
 		stub_config_reader
+	end
 
-		app = Blux::App.new
-		app.create_new_post
-		app.current_post.text.should eq('')
+	before :each do
+		@app = Blux::App.new
+	end
 
+	it "should create an new post" do
+		@app.create_new_post
+		@app.current_post.text.should eq('')
+	end
+
+	it "should call the editor to edit the post" do
+		class Blux::Post
+			def edit
+				@text = 'asdfasdf'
+			end
+		end
+
+		@app.create_new_post
+		@app.current_post.text.should eq('asdfasdf')
+	end
+
+	after :all do
 		restore_config_reader
 	end
 end
