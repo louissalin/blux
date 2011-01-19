@@ -1,5 +1,6 @@
 require 'post'
 require 'config'
+require 'tempfile'
 
 describe Blux::Post, "when creating a new post" do
 	before :each do
@@ -26,12 +27,38 @@ describe Blux::Post, "when creating a new post" do
 	end
 end
 
-describe Blux::Post, "when editing a post" do
-	it "should launch the editor defined in the config" do
-		Blux::Config.instance.editor_cmd = 'some_editor_cmd'
+describe Blux::Post, "when preparing to edit a post" do
+	before :all do
+		class Blux::PostFile
+			def initialize
+			end
+		end
+	end
 
-		post = Blux::Post.new('this is text')
-		post.should_receive(:system).with('some_editor_cmd')
-		post.edit
+	before :each do
+		Blux::Config.instance.editor_cmd = 'some_editor_cmd'
+		@post = Blux::Post.new('this is text')
+	end
+
+	it "should create a temp file to hold the text" do
+		Blux::PostFile.should_receive(:new)
+		@post.edit
+	end
+
+	it "should fille the post file with the post's text" do
+		Blux::PostFile.should_receive(:text=).with('this is text')
+		@post.edit
+	end
+
+	it "should launch the editor defined in the config" do
+		@post.should_receive(:system).with('some_editor_cmd')
+		@post.edit
+	end
+end
+
+describe Blux::PostFile, "when creating a post file" do
+	it "should create a temp file" do
+		Tempfile.should_receive(:new).with('blux')
+		postFile = Blux::PostFile.new
 	end
 end
