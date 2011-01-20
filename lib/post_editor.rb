@@ -18,23 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'tempfile'
+
 module Blux
-	class Post
-		attr_accessor :text, :creation_date, :category, :title
-
-		def initialize(text)
-			@text = text
-			@creation_date = Time.now
-			@category = ''
-			@title = ''
-		end
-
-		def edit
-		end
-
-		private
-		def get_post_file
-			PostFile.new
+	class PostEditor
+		def edit(post)
+			Tempfile.new('blux')
 		end
 	end
 end
