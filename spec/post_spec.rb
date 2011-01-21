@@ -1,4 +1,5 @@
 require 'post'
+require 'post_editor'
 require 'config'
 
 describe Blux::Post, "when creating a new post" do
@@ -23,5 +24,17 @@ describe Blux::Post, "when creating a new post" do
 
 	it "should not have a title" do
 		@post.title.should eq('')
+	end
+end
+
+describe Blux::Post, "when editing a post" do
+	it "should use the post editor to edit the post" do
+		post = Blux::Post.new('this is text')
+
+		editor_mock = mock('editor_mock')
+		Blux::PostEditor.should_receive(:new).and_return(editor_mock)
+
+		editor_mock.should_receive(:edit).with(post)
+		post.edit
 	end
 end

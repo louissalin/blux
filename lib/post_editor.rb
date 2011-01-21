@@ -19,10 +19,14 @@
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'tempfile'
-require 'config'
+require 'singleton'
+
+require File.dirname(__FILE__) + '/config.rb'
 
 module Blux
 	class PostEditor
+		include Singleton
+
 		def edit(post)
 			tmp_file = Tempfile.new('blux')
 
@@ -30,7 +34,11 @@ module Blux
 				file.puts post.text
 			end
 
-			system "#{Config.instance.editor_cmd} #{tmp_file.path}"
+			if system "#{Config.instance.editor_cmd} #{tmp_file.path}"
+				File.open(tmp_file.path, 'r') do |file|
+					post.text = file.read
+				end
+			end
 		end
 	end
 end

@@ -5,7 +5,7 @@ require 'config'
 
 describe Blux::PostEditor, "when editing a post" do
 	before :each do
-		@editor = Blux::PostEditor.new
+		@editor = Blux::PostEditor.instance
 		@post = Blux::Post.new('this is text')
 		
 		@tempfile_stub = TempfileStub.new
@@ -16,11 +16,7 @@ describe Blux::PostEditor, "when editing a post" do
 		File.should_receive(:open).with('path', 'w').and_yield(@file)
 	end
 
-	it "should create a temp file" do
-		@editor.edit(@post)
-	end
-
-	it "should fill the temp file with the content of the post" do
+	it "should create the temp file with the content of the post" do
 		@editor.edit(@post)
 	end
 
@@ -29,6 +25,23 @@ describe Blux::PostEditor, "when editing a post" do
 
 		@editor.should_receive(:system).with('some_editor_cmd path')
 		@editor.edit(@post)
+	end
+
+	it "should not update the post if the editing was not successful" do
+		@editor.stub!(:system).with('some_editor_cmd path').and_return(false)
+
+		@editor.edit(@post)
+		@post.text.should eq('this is text')
+	end
+
+	it "should update the post if the editing was successful" do
+		@editor.stub!(:system).with('some_editor_cmd path').and_return(true)
+
+		File.should_receive(:open).with('path', 'r').and_yield(@file)
+		@file.should_receive(:read).and_return('new text')
+
+		@editor.edit(@post)
+		@post.text.should eq('new text')
 	end
 end
 

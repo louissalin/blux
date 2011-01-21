@@ -18,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'config'
-require 'post'
+require File.dirname(__FILE__) + '/config.rb'
+require File.dirname(__FILE__) + '/post.rb'
 
 module Blux
 	class App
