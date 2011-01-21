@@ -23,7 +23,11 @@ require 'tempfile'
 module Blux
 	class PostEditor
 		def edit(post)
-			Tempfile.new('blux')
+			tmp_file = Tempfile.new('blux')
+
+			File.open(tmp_file.path, 'w') do |file|
+				file.puts post.text
+			end
 		end
 	end
 end
