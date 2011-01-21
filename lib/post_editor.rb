@@ -19,6 +19,7 @@
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'tempfile'
+require 'config'
 
 module Blux
 	class PostEditor
@@ -28,6 +29,8 @@ module Blux
 			File.open(tmp_file.path, 'w') do |file|
 				file.puts post.text
 			end
+
+			system "#{Config.instance.editor_cmd} #{tmp_file.path}"
 		end
 	end
 end

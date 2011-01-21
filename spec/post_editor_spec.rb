@@ -1,16 +1,19 @@
 require 'tempfile'
 require 'post_editor'
 require 'post'
+require 'config'
 
 describe Blux::PostEditor, "when editing a post" do
 	before :each do
 		@editor = Blux::PostEditor.new
 		@post = Blux::Post.new('this is text')
+		
 		@tempfile_stub = TempfileStub.new
+		Tempfile.stub!(:new).and_return(@tempfile_stub)
 
-		def Tempfile.initialize
-			return @tempfile_stub
-		end
+		@file = mock('file')
+		@file.should_receive(:puts).with('this is text')
+		File.should_receive(:open).with('path', 'w').and_yield(@file)
 	end
 
 	it "should create a temp file" do
@@ -18,12 +21,13 @@ describe Blux::PostEditor, "when editing a post" do
 	end
 
 	it "should fill the temp file with the content of the post" do
-		Tempfile.stub!(:new).and_return(@tempfile_stub)
+		@editor.edit(@post)
+	end
 
-		file = mock('file')
+	it "should call the editor to edit the temp file" do
+		Blux::Config.instance.editor_cmd = 'some_editor_cmd'
 
-		File.should_receive(:open).with('path', 'w').and_yield(file)
-		file.should_receive(:puts).with('this is text')
+		@editor.should_receive(:system).with('some_editor_cmd path')
 		@editor.edit(@post)
 	end
 end
