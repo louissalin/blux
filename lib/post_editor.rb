@@ -28,17 +28,15 @@ module Blux
 		include Singleton
 
 		def edit(post)
-			tmp_file = Tempfile.new('blux')
+			tf = Tempfile.new('blux')
+			tf.puts 'test'
+			tf.close
 
-			File.open(tmp_file.path, 'w') do |file|
-				file.puts post.text
+			if system "#{Config.instance.editor_cmd} #{tf.path}"
+				tf.open
+				post.text = tf.read
 			end
 
-			if system "#{Config.instance.editor_cmd} #{tmp_file.path}"
-				File.open(tmp_file.path, 'r') do |file|
-					post.text = file.read
-				end
-			end
 		end
 	end
 end

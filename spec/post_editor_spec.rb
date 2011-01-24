@@ -11,9 +11,7 @@ describe Blux::PostEditor, "when editing a post" do
 		@tempfile_stub = TempfileStub.new
 		Tempfile.stub!(:new).and_return(@tempfile_stub)
 
-		@file = mock('file')
-		@file.should_receive(:puts).with('this is text')
-		File.should_receive(:open).with('path', 'w').and_yield(@file)
+		Blux::Config.instance.editor_cmd = 'some_editor_cmd'
 	end
 
 	it "should create the temp file with the content of the post" do
@@ -21,8 +19,6 @@ describe Blux::PostEditor, "when editing a post" do
 	end
 
 	it "should call the editor to edit the temp file" do
-		Blux::Config.instance.editor_cmd = 'some_editor_cmd'
-
 		@editor.should_receive(:system).with('some_editor_cmd path')
 		@editor.edit(@post)
 	end
@@ -37,8 +33,8 @@ describe Blux::PostEditor, "when editing a post" do
 	it "should update the post if the editing was successful" do
 		@editor.stub!(:system).with('some_editor_cmd path').and_return(true)
 
-		File.should_receive(:open).with('path', 'r').and_yield(@file)
-		@file.should_receive(:read).and_return('new text')
+		file = mock('file')
+		@tempfile_stub.should_receive(:open)
 
 		@editor.edit(@post)
 		@post.text.should eq('new text')
@@ -48,5 +44,18 @@ end
 class TempfileStub
 	def path
 		'path'
+	end
+
+	def puts val
+	end
+
+	def close
+	end
+
+	def open
+	end
+
+	def read
+		'new text'
 	end
 end
