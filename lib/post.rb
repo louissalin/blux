@@ -37,7 +37,8 @@ module Blux
 		end
 
 		def save
-			Repository.instance.save(self)
+			repo = Repository.new
+			repo.save(self)
 		end
 
 		private

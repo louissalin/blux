@@ -45,7 +45,7 @@ describe Blux::Post, "when saving a post" do
 		post = Blux::Post.new('this is text')
 
 		repo = mock('repository')
-		Blux::Repository.should_receive(:instance).and_return(repo)
+		Blux::Repository.should_receive(:new).and_return(repo)
 
 		repo.should_receive(:save).with(post)
 		post.save

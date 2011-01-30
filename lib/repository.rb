@@ -22,6 +22,12 @@ require 'singleton'
 
 module Blux
 	class Repository
-		include Singleton
+		def initialize
+			puts "test"
+			blux_dir = "#{ENV['HOME']}/.blux"
+			unless Dir.exist?(blux_dir)
+				Dir.mkdir(blux_dir)
+			end
+		end
 	end
 end
