@@ -18,31 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 
-require File.dirname(__FILE__) + '/post_editor.rb'
-require File.dirname(__FILE__) + '/repository.rb'
+require 'singleton'
 
 module Blux
-	class Post
-		attr_accessor :text, :creation_date, :category, :title
-
-		def initialize(text)
-			@text = text
-			@creation_date = Time.now
-			@category = ''
-			@title = ''
-		end
-
-		def edit
-			PostEditor.instance.edit(self)
-		end
-
-		def save
-			Repository.instance.save(self)
-		end
-
-		private
-		def get_post_file
-			PostFile.new
-		end
+	class Repository
+		include Singleton
 	end
 end

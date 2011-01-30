@@ -17,31 +17,18 @@ end
 describe Blux::App, "when creating a new post" do
 	include AppSpecHelper
 
-	before :all do
+	it "should call the editor to edit the post, and then save the post" do
 		stub_config_reader
-	end
 
-	before :each do
-		@app = Blux::App.new
-	end
+		app = Blux::App.new
 
-	it "should create an new post" do
-		@app.create_new_post
-		@app.current_post.text.should eq('')
-	end
+		post = mock('post')
+		Blux::Post.should_receive(:new).and_return(post)
 
-	it "should call the editor to edit the post" do
-		class Blux::Post
-			def edit
-				@text = 'asdfasdf'
-			end
-		end
+		post.should_receive(:edit)
+		post.should_receive(:save)
+		app.create_new_post
 
-		@app.create_new_post
-		@app.current_post.text.should eq('asdfasdf')
-	end
-
-	after :all do
 		restore_config_reader
 	end
 end

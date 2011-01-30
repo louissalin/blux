@@ -32,6 +32,7 @@ module Blux
 		def create_new_post
 			@current_post = Post.new('')
 			@current_post.edit
+			@current_post.save
 		end
 	end
 end
