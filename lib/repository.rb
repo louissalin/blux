@@ -18,16 +18,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Blux.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'singleton'
-
 module Blux
 	class Repository
-		def initialize
-			puts "test"
-			blux_dir = "#{ENV['HOME']}/.blux"
-			unless Dir.exist?(blux_dir)
-				Dir.mkdir(blux_dir)
+		def initialize(location = nil)
+			location ||= "#{ENV['HOME']}/.blux"
+			unless Dir.exist?(location)
+				Dir.mkdir(location)
 			end
+		end
+
+		def save(model)
 		end
 	end
 end
