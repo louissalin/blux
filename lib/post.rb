@@ -23,13 +23,14 @@ require File.dirname(__FILE__) + '/repository.rb'
 
 module Blux
 	class Post
-		attr_accessor :text, :creation_date, :category, :title
+		attr_accessor :id, :text, :creation_date, :category, :title
 
 		def initialize(text)
 			@text = text
 			@creation_date = Time.now
 			@category = ''
 			@title = ''
+			@id = nil
 		end
 
 		def edit

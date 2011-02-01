@@ -26,6 +26,10 @@ describe Blux::Post, "when creating a new post" do
 	it "should not have a title" do
 		@post.title.should eq('')
 	end
+
+	it "should have a nil id" do
+		@post.id.should eq(nil)
+	end
 end
 
 describe Blux::Post, "when editing a post" do
