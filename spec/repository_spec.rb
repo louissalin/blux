@@ -1,5 +1,6 @@
 require 'repository'
 require 'post'
+require 'helpers/repository_spec_helper'
 
 describe Blux::Repository, "when creating an instance of the repository" do
 	before :each do
@@ -31,44 +32,21 @@ describe Blux::Repository, "when creating an instance of the repository" do
 	end
 end
 
-describe Blux::Repository, "when saving the first post" do
-	it "should assign a new id of 1" do
-		pstore = mock('pstore')
-		PStore.stub(:new).and_return(pstore)
-		pstore.stub(:transaction)
-		pstore.stub(:[]).with(:posts).and_return([])
+describe Blux::Repository, "when saving posts" do
+	include RepositoryTestSetup
 
-		blux_dir = "#{ENV['HOME']}/.blux"
-		Dir.stub(:exist?).with(blux_dir).and_return(true)
-		repo = Blux::Repository.new(blux_dir)
-
-		post = Blux::Post.new('test')
-		repo.save(post)
-
-		post.id.should eq(1)
+	it "should assign a new id of 1 when the repo is empty" do
+		setup_pstore_mock()
+		@post.id.should eq(1)
 	end
-end
 
-describe Blux::Repository, "when saving a post" do
 	it "should assign a new id incrementally" do
-		pstore = mock('pstore')
-		PStore.stub(:new).and_return(pstore)
-		pstore.stub(:transaction)
-		pstore.stub(:[]).with(:posts).and_return([1, 2])
-
-		blux_dir = "#{ENV['HOME']}/.blux"
-		Dir.stub(:exist?).with(blux_dir).and_return(true)
-		repo = Blux::Repository.new(blux_dir)
-
-		post = Blux::Post.new('test')
-		repo.save(post)
-
-		post.id.should eq(3)
+		setup_pstore_mock(1, 2)
+		@post.id.should eq(3)
 	end
-end
 
-describe Blux::Repository, "when saving a post after having deleted one" do
-	it "should assign the 1st available id" do
-		# do math n(n+1)/2 to find a whole, or inc by one if not found
+	it "should assign the 1st available id after a post was deleted" do
+		setup_pstore_mock(1, 2, 4)
+		@post.id.should eq(3)
 	end
 end

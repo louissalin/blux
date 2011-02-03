@@ -41,7 +41,17 @@ module Blux
 
 		private
 		def get_available_id
-			@store[:posts].length + 1
+			return 1 if @store[:posts].length == 0
+			
+			highest_id = (@store[:posts].max {|a, b| a.id <=> b.id}).id
+			id_total = @store[:posts].inject(0) {|sum, post| sum += post.id}
+			expected_total = highest_id * (highest_id + 1) / 2
+
+			if id_total == expected_total
+				return highest_id + 1
+			else
+				return expected_total - id_total
+			end
 		end
 	end
 end
